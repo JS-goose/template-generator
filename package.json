@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "core-js": "^3.38.1",
-    "rss-parser": "^3.13.0",
     "vue": "^3.5.12"
   },
   "devDependencies": {
