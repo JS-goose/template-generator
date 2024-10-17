@@ -6,7 +6,6 @@
 <script>
 import { onMounted } from 'vue';
 import HelloWorld from './components/HelloWorld.vue';
-import {parse} from 'rss-to-json';
 
 export default {
   name: 'App',
@@ -17,9 +16,7 @@ export default {
   setup() {
     onMounted(() => {
       console.log('components mounted');
-      parse('https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml').then(pmRSS => {
-        console.log(JSON.stringify(pmRSS))
-      })
+
     });
   },
 };
