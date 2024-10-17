@@ -17,8 +17,6 @@ export default {
   setup() {
     onMounted(() => {
       console.log('components mounted');
-      console.log(parse);
-
       parse('https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml').then(pmRSS => {
         console.log(JSON.stringify(pmRSS))
       })
