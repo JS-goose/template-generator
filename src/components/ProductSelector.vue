@@ -5,6 +5,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { parseString } from 'xml2js';
+
 export default {
   name: 'ProductSelector',
   props: {
@@ -14,7 +17,24 @@ export default {
     return {
       pmBaseURL: 'https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml',
       damBaseURL: 'https://cloudinary.com/documentation/rss/cloudinary-dam-release-notes.xml',
-      cldIntURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml'
+      cldIntURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml',
+      jsonResults: null,
+      fetchError: null,
+    };
+  },
+  methods: {
+    async fetchRSSFeed() {
+      this.jsonResults = null;
+      this.fetchError = null;
+      try {
+        const response = await axios.get(this.pmBaseURL);
+        this.convertRssToJson(response.data);
+      } catch (error) {
+
+      }
+    },
+    convertRssToJson(xml) {
+      parseString
     }
   }
 };
