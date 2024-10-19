@@ -1,16 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Template Generator" />
+  <ProductSelector msg="RSS Template Generator" />
 </template>
 
 <script>
 import { onMounted } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import ProductSelector from './components/ProductSelector.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
+    ProductSelector,
   },
 
   setup() {
