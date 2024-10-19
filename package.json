@@ -8,8 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "core-js": "^3.38.1",
-    "vue": "^3.5.12"
+    "vue": "^3.5.12",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",
