@@ -1,6 +1,9 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <button @click="fetchRSSFeed">Fetch RSS Feed</button>
+    <pre v-if="jsonResults">{{ jsonResults }}</pre>
+    <p v-if="fetchError">{{ fetchError }}</p>
   </div>
 </template>
 
@@ -24,19 +27,27 @@ export default {
   },
   methods: {
     async fetchRSSFeed() {
+      const proxy = 'https://cors-anywhere.herokuapp.com/';
       this.jsonResults = null;
       this.fetchError = null;
       try {
+        // This needs a proxy or needs to be handled by a back end
         const response = await axios.get(this.pmBaseURL);
         this.convertRssToJson(response.data);
       } catch (error) {
-
+        this.error = `Error fetching the ${this.pmBaseURL} feed - check URL for accuracy`;
       }
     },
     convertRssToJson(xml) {
-      parseString
-    }
-  }
+      parseString(xml, { explicitArray: false }, (error, result) => {
+        if (error) {
+          this.error = 'Problem parsing the XML';
+          return;
+        }
+        this.jsonResults = JSON.stringify(result, null, 2);
+      });
+    },
+  },
 };
 </script>
 
