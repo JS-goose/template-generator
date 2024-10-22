@@ -6,6 +6,7 @@ module.exports = defineConfig({
     resolve: {
       fallback: {
         timers: false, // ignore timers module
+        stream: false, // ignore stream module 
       }
     }
   }
