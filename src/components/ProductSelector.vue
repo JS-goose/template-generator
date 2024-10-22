@@ -31,8 +31,9 @@ export default {
       this.jsonResults = null;
       this.fetchError = null;
       try {
-        // This needs a proxy or needs to be handled by a back end
-        const response = await axios.get(this.pmBaseURL);
+        // This proxy needs to be looked at because it's returning a 403 forbidden
+        const response = await axios.get(proxy + this.pmBaseURL);
+        console.log('request sent');
         this.convertRssToJson(response.data);
       } catch (error) {
         this.error = `Error fetching the ${this.pmBaseURL} feed - check URL for accuracy`;
