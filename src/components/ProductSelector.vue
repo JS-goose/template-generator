@@ -27,6 +27,7 @@ export default {
   },
   methods: {
     async fetchRSSFeed() {
+      // Proxy isn't working - needs replacement
       const proxy = 'https://cors-anywhere.herokuapp.com/';
       this.jsonResults = null;
       this.fetchError = null;
