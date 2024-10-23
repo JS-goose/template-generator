@@ -28,12 +28,12 @@ export default {
   methods: {
     async fetchRSSFeed() {
       // Proxy isn't working - needs replacement
-      const proxy = 'https://cors-anywhere.herokuapp.com/';
+      const proxy = 'https://thingproxy.freeboard.io/fetch/';
       this.jsonResults = null;
       this.fetchError = null;
       try {
         // This proxy needs to be looked at because it's returning a 403 forbidden
-        const response = await axios.get(proxy + this.pmBaseURL);
+        const response = await axios.get(proxy2 + this.pmBaseURL);
         console.log('request sent');
         this.convertRssToJson(response.data);
       } catch (error) {
