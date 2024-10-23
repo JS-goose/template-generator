@@ -6,18 +6,16 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       fallback: {
-        stream: require.resolve('stream-browserify'), // For sax.js
-        process: require.resolve('process/browser'), // For process
-        buffer: require.resolve('buffer/'), // For Buffer (if needed)
-        timers: require.resolve('timers-browserify'), // For timers
-        // Add any other polyfills you might need
+        stream: require.resolve('stream-browserify'),
+        process: require.resolve('process'), // Fixed line for process
+        buffer: require.resolve('buffer/'),
+        timers: require.resolve('timers-browserify'),
       },
     },
     plugins: [
       new webpack.ProvidePlugin({
-        process: 'process/browser',
+        process: 'process',
         Buffer: ['buffer', 'Buffer'],
-        // If you need to provide any other globals, add them here
       }),
     ],
   },
