@@ -1,10 +1,24 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <button @click="fetchRSSFeed">Fetch RSS Feed</button>
-    <pre v-if="jsonResults">{{ jsonResults }}</pre>
-    <p v-if="fetchError">{{ fetchError }}</p>
-  </div>
+  <section>
+    <div>
+      <h1>PM Generator</h1>
+      <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
+      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <p v-if="fetchError">{{ fetchError }}</p>
+    </div>
+    <div>
+      <h1>DAM Generator</h1>
+      <button @click="fetchRSSFeed(this.damBaseURL)">Fetch DAM RSS Feed</button>
+      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <p v-if="fetchError">{{ fetchError }}</p>
+    </div>
+    <div>
+      <h1>CLD Integrations Generator</h1>
+      <button @click="fetchRSSFeed(this.cldIntURL)">Fetch Integrations RSS Feed</button>
+      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <p v-if="fetchError">{{ fetchError }}</p>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -26,18 +40,19 @@ export default {
     };
   },
   methods: {
-    async fetchRSSFeed() {
+    async fetchRSSFeed(productTypeURL) {
+      console.log(productTypeURL);
       // Proxy isn't working - needs replacement
       const proxy = 'https://thingproxy.freeboard.io/fetch/';
       this.jsonResults = null;
       this.fetchError = null;
       try {
-        // This proxy needs to be looked at because it's returning a 403 forbidden
-        const response = await axios.get(proxy2 + this.pmBaseURL);
+        const response = await axios.get(proxy + productTypeURL);
         console.log('request sent');
         this.convertRssToJson(response.data);
       } catch (error) {
-        this.error = `Error fetching the ${this.pmBaseURL} feed - check URL for accuracy`;
+        //
+        this.error = `Error fetching the ${productTypeURL} feed - check URL for accuracy`;
       }
     },
     convertRssToJson(xml) {
@@ -68,5 +83,12 @@ li {
 }
 a {
   color: #42b983;
+}
+
+section {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  justify-content: space-evenly;
 }
 </style>
