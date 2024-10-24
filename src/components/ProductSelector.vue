@@ -10,7 +10,7 @@
       >
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
-    <!-- <div>
+    <div>
       <h1>DAM Generator</h1>
       <button @click="fetchRSSFeed(this.damBaseURL)">Fetch DAM RSS Feed</button>
       <pre v-if="jsonResults">{{ jsonResults }}</pre>
@@ -21,7 +21,7 @@
       <button @click="fetchRSSFeed(this.cldIntURL)">Fetch Integrations RSS Feed</button>
       <pre v-if="jsonResults">{{ jsonResults }}</pre>
       <p v-if="fetchError">{{ fetchError }}</p>
-    </div> -->
+    </div>
   </section>
 </template>
 
@@ -55,7 +55,7 @@ export default {
       try {
         const response = await axios.get(proxy + productTypeURL);
         console.log('request sent');
-        this.convertRssToJson(response.data);
+        await this.convertRssToJson(response.data);
         // console.log(response.data, typeof response.data);
       } catch (error) {
         //
@@ -80,32 +80,29 @@ export default {
             rssItem.rssKey = rssNum++;
             console.log('RSSITEM', rssItem);
             const rssObj = rssItem.rssKey;
-            console.log(rssObj, 'WRGTFSFGSFGSFGSFGSDFGSDFGSDFGSDF');
 
             if (!grouped[rssObj]) {
               grouped[rssObj] = [];
-              console.log('GROUPED[rssObj]', grouped[rssObj]);
             }
 
             grouped[rssObj].push({
-              pubDate: rssItem.pubDate[0],
-              desc: rssItem.description[0],
-              link: rssItem.link[0],
-              title: rssItem.title[0],
-              rssKey: rssItem.key,
+              pubDate: rssItem?.pubDate[0],
+              desc: rssItem?.description[0],
+              link: rssItem?.link[0],
+              title: rssItem?.title[0],
+              rssKey: rssItem?.key,
             });
-            console.log('INSIDE THE LOOP AFTER its updated', grouped[rssObj]);
-            console.log('GROUPED OBJ:', grouped);
           });
-          const groupedArray = Object.keys(grouped).map((key) => ({
+          //! Need to clear the array each time before adding new items
+          // Not reliably updating with new results - will need a watch and then update when new information has arrived as the array is reactive
+          this.groupedItemsArray = Object.keys(grouped).map((key) => ({
             pubDate: grouped[key][0].pubDate,
             desc: grouped[key][0].desc,
             link: grouped[key][0].link,
             title: grouped[key][0].title,
             rssKey: key,
           }));
-          resolve(groupedArray);
-          console.log(groupedArray);
+          resolve();
         });
       });
     },
