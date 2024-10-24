@@ -3,10 +3,14 @@
     <div>
       <h1>PM Generator</h1>
       <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
-      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <!-- <pre v-if="jsonResults">{{ jsonResults }}</pre> -->
+      <pre v-for="key in jsonResults" :key="key.title">
+        key:{{ key }}: desc:{{  }}
+       </pre
+      >
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
-    <div>
+    <!-- <div>
       <h1>DAM Generator</h1>
       <button @click="fetchRSSFeed(this.damBaseURL)">Fetch DAM RSS Feed</button>
       <pre v-if="jsonResults">{{ jsonResults }}</pre>
@@ -17,7 +21,7 @@
       <button @click="fetchRSSFeed(this.cldIntURL)">Fetch Integrations RSS Feed</button>
       <pre v-if="jsonResults">{{ jsonResults }}</pre>
       <p v-if="fetchError">{{ fetchError }}</p>
-    </div>
+    </div> -->
   </section>
 </template>
 
@@ -50,13 +54,14 @@ export default {
         const response = await axios.get(proxy + productTypeURL);
         console.log('request sent');
         this.convertRssToJson(response.data);
+        console.log(response.data)
       } catch (error) {
         //
         this.error = `Error fetching the ${productTypeURL} feed - check URL for accuracy`;
       }
     },
     convertRssToJson(xml) {
-      parseString(xml, { explicitArray: false }, (error, result) => {
+      parseString(xml, { explicitArray: true }, (error, result) => {
         if (error) {
           this.error = 'Problem parsing the XML';
           return;
