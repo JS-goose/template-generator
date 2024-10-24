@@ -5,7 +5,7 @@
       <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
       <!-- <pre v-if="jsonResults">{{ jsonResults }}</pre> -->
       <pre v-for="key in jsonResults" :key="key.title">
-        key:{{ key }}: desc:{{  }}
+        key:{{ key }}: desc:{{}}
        </pre
       >
       <p v-if="fetchError">{{ fetchError }}</p>
@@ -27,6 +27,7 @@
 
 <script>
 import axios from 'axios';
+import { title } from 'process';
 import { parseString } from 'xml2js';
 
 export default {
@@ -41,6 +42,7 @@ export default {
       cldIntURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml',
       jsonResults: null,
       fetchError: null,
+      groupedItemsArray: [],
     };
   },
   methods: {
@@ -54,19 +56,44 @@ export default {
         const response = await axios.get(proxy + productTypeURL);
         console.log('request sent');
         this.convertRssToJson(response.data);
-        console.log(response.data)
+        // console.log(response.data, typeof response.data);
       } catch (error) {
         //
         this.error = `Error fetching the ${productTypeURL} feed - check URL for accuracy`;
       }
     },
     convertRssToJson(xml) {
-      parseString(xml, { explicitArray: true }, (error, result) => {
-        if (error) {
-          this.error = 'Problem parsing the XML';
-          return;
-        }
-        this.jsonResults = JSON.stringify(result, null, 2);
+      return new Promise((resolve, reject) => {
+        parseString(xml, { explicitArray: true }, (error, result) => {
+          if (error) {
+            this.error = 'Problem parsing the XML';
+            reject('Problem parsing the XML');
+            return;
+          }
+          // this.jsonResults = JSON.stringify(result, null, 2);
+          const items = result.rss.channel[0].item;
+          const grouped = {};
+
+          items.forEach((rssItem) => {
+            console.log('RSSITEM', rssItem);
+            const title = rssItem.title[0];
+
+            if (!grouped[title]) {
+              grouped[title] = [];
+            }
+
+            grouped[title].push({
+              title: grouped[title].title,
+              desc: grouped[title].descrption,
+            });
+          });
+          const groupedArray = Object.keys(grouped).map((key) => ({
+            category: key,
+            items: grouped[key],
+          }));
+          resolve(groupedArray);
+          console.log(groupedArray)
+        });
       });
     },
   },
