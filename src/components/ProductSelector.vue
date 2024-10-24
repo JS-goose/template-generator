@@ -73,26 +73,39 @@ export default {
           // this.jsonResults = JSON.stringify(result, null, 2);
           const items = result.rss.channel[0].item;
           const grouped = {};
+          let rssNum = 0;
 
           items.forEach((rssItem) => {
+            // rssItem.push({key:key++})
+            rssItem.rssKey = rssNum++;
             console.log('RSSITEM', rssItem);
-            const title = rssItem.title[0];
+            const rssObj = rssItem.rssKey;
+            console.log(rssObj, 'WRGTFSFGSFGSFGSFGSDFGSDFGSDFGSDF');
 
-            if (!grouped[title]) {
-              grouped[title] = [];
+            if (!grouped[rssObj]) {
+              grouped[rssObj] = [];
+              console.log('GROUPED[rssObj]', grouped[rssObj]);
             }
 
-            grouped[title].push({
-              title: grouped[title].title,
-              desc: grouped[title].descrption,
+            grouped[rssObj].push({
+              pubDate: rssItem.pubDate[0],
+              desc: rssItem.description[0],
+              link: rssItem.link[0],
+              title: rssItem.title[0],
+              rssKey: rssItem.key,
             });
+            console.log('INSIDE THE LOOP AFTER its updated', grouped[rssObj]);
+            console.log('GROUPED OBJ:', grouped);
           });
           const groupedArray = Object.keys(grouped).map((key) => ({
-            category: key,
-            items: grouped[key],
+            pubDate: grouped[key][0].pubDate,
+            desc: grouped[key][0].desc,
+            link: grouped[key][0].link,
+            title: grouped[key][0].title,
+            rssKey: key,
           }));
           resolve(groupedArray);
-          console.log(groupedArray)
+          console.log(groupedArray);
         });
       });
     },
