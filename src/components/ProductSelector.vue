@@ -1,10 +1,13 @@
 <template>
   <section>
+    <label for="all-rss-feeds-selection">
+      Pull all RSS feeds
+      <input type="checkbox" name="all-rss-feeds-selection" id="all-rss-feeds-selection">
+    </label>
     <div>
       <h1>PM Generator</h1>
       <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
-      <!-- <pre v-if="jsonResults">{{ jsonResults }}</pre> -->
-      <pre v-for="key in jsonResults" :key="key.title">
+      <pre v-for="key in this.groupedItemsArray" :key="key.title">
         key:{{ key }}: desc:{{}}
        </pre
       >
@@ -48,7 +51,6 @@ export default {
   methods: {
     async fetchRSSFeed(productTypeURL) {
       console.log(productTypeURL);
-      // Proxy isn't working - needs replacement
       const proxy = 'https://thingproxy.freeboard.io/fetch/';
       this.jsonResults = null;
       this.fetchError = null;
@@ -130,7 +132,7 @@ a {
 section {
   display: flex;
   flex-direction: row;
-  width: 100vw;
+  width: 100%;
   justify-content: space-evenly;
 }
 </style>
