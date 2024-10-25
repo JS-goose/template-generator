@@ -7,10 +7,16 @@
     <div>
       <h1>PM Generator</h1>
       <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
-      <pre v-for="key in this.pmGroupedItemsArray" :key="key.title">
+      <ul>
+        <!-- TODO This needs better layout/styling as it's unreadable -->
+        <li v-for="key in this.pmGroupedItemsArray" :key="key.title">
+          {{ key.title }} - {{ key.pubDate }} {{ key.desc }} {{ key.link }}
+        </li>
+      </ul>
+      <!-- <pre v-for="key in this.pmGroupedItemsArray" :key="key.title">
         {{ key }}
        </pre
-      >
+      > -->
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
     <div>
