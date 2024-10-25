@@ -2,27 +2,33 @@
   <section>
     <label for="all-rss-feeds-selection">
       Pull all RSS feeds
-      <input type="checkbox" name="all-rss-feeds-selection" id="all-rss-feeds-selection">
+      <input type="checkbox" name="all-rss-feeds-selection" id="all-rss-feeds-selection" />
     </label>
     <div>
       <h1>PM Generator</h1>
       <button @click="fetchRSSFeed(this.pmBaseURL)">Fetch PM RSS Feed</button>
-      <pre v-for="key in this.groupedItemsArray" :key="key.title">
-        key:{{ key }}: desc:{{}}
+      <pre v-for="key in this.pmGroupedItemsArray" :key="key.title">
+        {{ key }}
        </pre
       >
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
     <div>
       <h1>DAM Generator</h1>
-      <button @click="fetchRSSFeed(this.damBaseURL)">Fetch DAM RSS Feed</button>
-      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <button @click="fetchRSSFeed(this.damBaseURL)">Fetch PM RSS Feed</button>
+      <pre v-for="key in this.damGroupedItemsArray" :key="key.title">
+        {{ key }}
+       </pre
+      >
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
     <div>
       <h1>CLD Integrations Generator</h1>
-      <button @click="fetchRSSFeed(this.cldIntURL)">Fetch Integrations RSS Feed</button>
-      <pre v-if="jsonResults">{{ jsonResults }}</pre>
+      <button @click="fetchRSSFeed(this.cldIntURL)">Fetch PM RSS Feed</button>
+      <pre v-for="key in this.intGroupedItemsArray" :key="key.title">
+        {{ key }}
+       </pre
+      >
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
   </section>
@@ -45,26 +51,35 @@ export default {
       cldIntURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml',
       jsonResults: null,
       fetchError: null,
-      groupedItemsArray: [],
+      pmGroupedItemsArray: [],
+      damGroupedItemsArray: [],
+      intGroupedItemsArray: [],
     };
   },
   methods: {
-    async fetchRSSFeed(productTypeURL) {
+    async fetchRSSFeed(productTypeURL = this.pmBaseURL) {
       console.log(productTypeURL);
+      const productString = productTypeURL.includes('cloudinary-pm-release-notes.xml')
+        ? 'pm'
+        : productTypeURL.includes('cloudinary-dam-release-notes.xml')
+        ? 'dam'
+        : productTypeURL.includes('cloudinary-int-release-notes.xml')
+        ? 'int'
+        : '';
       const proxy = 'https://thingproxy.freeboard.io/fetch/';
       this.jsonResults = null;
       this.fetchError = null;
       try {
         const response = await axios.get(proxy + productTypeURL);
         console.log('request sent');
-        await this.convertRssToJson(response.data);
+        await this.convertRssToJson(response.data, productString);
         // console.log(response.data, typeof response.data);
       } catch (error) {
         //
         this.error = `Error fetching the ${productTypeURL} feed - check URL for accuracy`;
       }
     },
-    convertRssToJson(xml) {
+    convertRssToJson(xml, productString) {
       return new Promise((resolve, reject) => {
         parseString(xml, { explicitArray: true }, (error, result) => {
           if (error) {
@@ -97,13 +112,31 @@ export default {
           });
           //! Need to clear the array each time before adding new items
           // Not reliably updating with new results - will need a watch and then update when new information has arrived as the array is reactive
-          this.groupedItemsArray = Object.keys(grouped).map((key) => ({
-            pubDate: grouped[key][0].pubDate,
-            desc: grouped[key][0].desc,
-            link: grouped[key][0].link,
-            title: grouped[key][0].title,
-            rssKey: key,
-          }));
+          if (productString == 'pm') {
+            this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
+              pubDate: grouped[key][0].pubDate,
+              desc: grouped[key][0].desc,
+              link: grouped[key][0].link,
+              title: grouped[key][0].title,
+              rssKey: key,
+            }));
+          } else if (productString == 'dam') {
+            this.damGroupedItemsArray = Object.keys(grouped).map((key) => ({
+              pubDate: grouped[key][0].pubDate,
+              desc: grouped[key][0].desc,
+              link: grouped[key][0].link,
+              title: grouped[key][0].title,
+              rssKey: key,
+            }));
+          } else {
+            this.intGroupedItemsArray = Object.keys(grouped).map((key) => ({
+              pubDate: grouped[key][0].pubDate,
+              desc: grouped[key][0].desc,
+              link: grouped[key][0].link,
+              title: grouped[key][0].title,
+              rssKey: key,
+            }));
+          }
           resolve();
         });
       });
@@ -131,8 +164,12 @@ a {
 
 section {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   justify-content: space-evenly;
+}
+
+section > div {
+  width: 300px;
 }
 </style>
