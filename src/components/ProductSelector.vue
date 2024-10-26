@@ -10,13 +10,21 @@
       <ul>
         <!-- TODO This needs better layout/styling as it's unreadable -->
         <li v-for="key in this.pmGroupedItemsArray" :key="key.title">
-          {{ key.title }} - {{ key.pubDate }} {{ key.desc }} {{ key.link }}
+          <div>
+            {{ key.title}}
+          </div>
+          <div>
+            {{ key.pubDate }}
+          </div>
+          <div>
+            {{ key.desc}}
+          </div>
+          <div>
+            {{ key.link }}
+          </div>
+          <!-- {{ key.title }} - {{ key.pubDate }} {{ key.desc }} {{ key.link }} -->
         </li>
       </ul>
-      <!-- <pre v-for="key in this.pmGroupedItemsArray" :key="key.title">
-        {{ key }}
-       </pre
-      > -->
       <p v-if="fetchError">{{ fetchError }}</p>
     </div>
     <div>
@@ -42,7 +50,6 @@
 
 <script>
 import axios from 'axios';
-import { title } from 'process';
 import { parseString } from 'xml2js';
 
 export default {
@@ -175,7 +182,13 @@ section {
   justify-content: space-evenly;
 }
 
-section > div {
-  width: 300px;
+li {
+  max-width: 45%;
+  text-align: left;
+  border: 1px solid red;
+}
+
+li > div {
+  border: 1px solid gray;
 }
 </style>
