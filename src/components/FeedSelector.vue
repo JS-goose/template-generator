@@ -1,5 +1,5 @@
 <template>
-  <section></section>
+  <section>Move Feed selector to this component</section>
 </template>
 <script>
   export default {
