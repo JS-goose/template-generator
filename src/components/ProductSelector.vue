@@ -22,7 +22,6 @@
           <div>
             {{ key.link }}
           </div>
-          <!-- {{ key.title }} - {{ key.pubDate }} {{ key.desc }} {{ key.link }} -->
         </li>
       </ul>
       <p v-if="fetchError">{{ fetchError }}</p>
@@ -192,3 +191,4 @@ li > div {
   border: 1px solid gray;
 }
 </style>
+
