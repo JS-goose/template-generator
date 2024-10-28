@@ -1,21 +1,21 @@
 <template>
-  <ProductSelector msg="RSS Template Generator" />
+  <ProductSelectorLandingPage msg="RSS Template Generator" />
+  <!-- <FeedSelector /> -->
 </template>
 
 <script>
 import { onMounted } from 'vue';
-import ProductSelector from './components/ProductSelector.vue';
+import ProductSelectorLandingPage from './components/ProductSelectorLandingPage.vue';
 
 export default {
   name: 'App',
   components: {
-    ProductSelector,
+    ProductSelectorLandingPage,
   },
 
   setup() {
     onMounted(() => {
       console.log('components mounted');
-
     });
   },
 };
