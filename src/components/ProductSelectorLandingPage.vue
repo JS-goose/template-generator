@@ -158,36 +158,10 @@ export default {
 </script>
 
 <style scoped>
-/* TODO Move appropriate styling into component file */
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-
 section {
   display: flex;
   flex-direction: column;
   width: 100%;
   justify-content: space-evenly;
-}
-
-li {
-  max-width: 45%;
-  text-align: left;
-  border: 1px solid red;
-}
-
-li > div {
-  border: 1px solid gray;
 }
 </style>

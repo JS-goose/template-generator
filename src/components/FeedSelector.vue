@@ -5,9 +5,19 @@
       <h1>{{ name }} Generator</h1>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
       <ul>
-        <li v-for="key in computedExample(name)" :key="key.title">
+        <li v-for="key in arrayToLoop(name)" :key="key.title" class="feed-selector-rss-list-item">
           <div>
-            {{ key.title }}
+            <label for="rss-list-item-include-checkbox">
+              Include
+              <input
+                type="checkbox"
+                name="rss-list-item-include-checkbox"
+                id="rss-list-item-include-checkbox"
+                @click="includeInTemplate(key)"
+            /></label>
+          </div>
+          <div class="rss-list-item-title-container">
+            <p>{{ key.title }}</p>
           </div>
           <div>
             {{ key.pubDate }}
@@ -32,7 +42,7 @@ export default {
   data() {
     return {
       products: ['pm', 'dam', 'int'],
-      fetchError: String,
+      fetchError: '',
       pmGroupedItemsArray: [],
       damGroupedItemsArray: [],
       intGroupedItemsArray: [],
@@ -123,10 +133,14 @@ export default {
         });
       });
     },
-    computedExample(name) {
+    arrayToLoop(name) {
       if (name == 'pm') return this.pmGroupedItemsArray;
       if (name == 'dam') return this.damGroupedItemsArray;
       if (name == 'int') return this.intGroupedItemsArray;
+    },
+    includeInTemplate(rssItem) {
+      // TODO Logic to include this/these items in the template to download
+      console.log(rssItem);
     },
   },
   computed: {},
@@ -138,5 +152,22 @@ export default {
 };
 </script>
 <style lang="css" scoped>
-@import '';
+.feed-selector-rss-list-item {
+  max-width: 45%;
+  text-align: left;
+  display: inline-block;
+  margin: 0.75em;
+  padding: 0.35em;
+  border: 1px solid gray;
+  border-radius: 3px;
+}
+
+.rss-list-item-title-container > p {
+  text-align: center;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
 </style>
