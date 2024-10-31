@@ -3,6 +3,8 @@
     <!-- TODO Add "Up to date at: 1843" or "Last Updated at 1843" component to show user when the last time data was pulled from RSS feed -->
     <div v-for="name in products" :key="name">
       <h1>{{ name }} Generator</h1>
+      <!-- TODO This needs attention as it's not rendering properly.  The data is being updated and is accurage -->
+      <p v-if="timesUpdated.pm != ''">Last updated: {{ timesUpdated.pm }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
       <ul>
         <li v-for="key in arrayToLoop(name)" :key="key.title" class="feed-selector-rss-list-item">
@@ -17,7 +19,7 @@
             /></label>
           </div>
           <div class="rss-list-item-title-container">
-            <p>{{ key.title }}</p>
+            <p>{{ key.title.toUpperCase() }}</p>
           </div>
           <div>
             {{ key.pubDate }}
@@ -51,6 +53,7 @@ export default {
       intBaseURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml',
       jsonResults: null,
       fetchError: null,
+      timesUpdated: { pm: '', dam: '', int: '' },
     };
   },
   methods: {
@@ -76,6 +79,7 @@ export default {
     },
     convertRssToJson(xml, productString) {
       console.log('productString', productString);
+      const now = new Date().toLocaleTimeString();
       return new Promise((resolve, reject) => {
         parseString(xml, { explicitArray: true }, (error, result) => {
           if (error) {
@@ -104,7 +108,9 @@ export default {
               rssKey: rssItem?.key,
             });
           });
+          // TODO validate changes and commit if accurate
           if (productString.includes('pm')) {
+            this.timesUpdated.pm = now;
             this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
               pubDate: grouped[key][0].pubDate,
               desc: grouped[key][0].desc,
@@ -113,6 +119,7 @@ export default {
               rssKey: key,
             }));
           } else if (productString.includes('dam')) {
+            this.timesUpdated.dam = now;
             this.damGroupedItemsArray = Object.keys(grouped).map((key) => ({
               pubDate: grouped[key][0].pubDate,
               desc: grouped[key][0].desc,
@@ -121,6 +128,7 @@ export default {
               rssKey: key,
             }));
           } else {
+            this.timesUpdated.int = now;
             this.intGroupedItemsArray = Object.keys(grouped).map((key) => ({
               pubDate: grouped[key][0].pubDate,
               desc: grouped[key][0].desc,
