@@ -22,12 +22,17 @@ export default {
 </script>
 
 <style>
+/* TODO Apply Cloudinary styling guide found here: https://cloudinary.com/brand  */
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+button {
+  padding: 3px;
 }
 </style>
