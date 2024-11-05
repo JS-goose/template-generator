@@ -3,8 +3,7 @@
     <!-- TODO Add "Up to date at: 1843" or "Last Updated at 1843" component to show user when the last time data was pulled from RSS feed -->
     <div v-for="name in products" :key="name">
       <h1>{{ name }} Generator</h1>
-      <!-- TODO This needs attention as it's not rendering properly.  The data is being updated and is accurage -->
-      <p v-if="timesUpdated.pm != ''">Last updated: {{ timesUpdated.pm }}</p>
+      <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
       <button @click="clearRSSFeedData(name)">Clear {{ name }} Feed Data</button>
       <ul>
@@ -155,6 +154,9 @@ export default {
     includeInTemplate(rssItem) {
       // TODO Logic to include this/these items in the template to download
       console.log(rssItem);
+    },
+    feedPullTime(name) {
+      return this.timesUpdated[name];
     },
   },
   computed: {},
