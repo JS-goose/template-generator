@@ -6,6 +6,7 @@
       <!-- TODO This needs attention as it's not rendering properly.  The data is being updated and is accurage -->
       <p v-if="timesUpdated.pm != ''">Last updated: {{ timesUpdated.pm }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
+      <button @click="clearRSSFeedData(name)">Clear {{ name }} Feed Data</button>
       <ul>
         <li v-for="key in arrayToLoop(name)" :key="key.title" class="feed-selector-rss-list-item">
           <div>
@@ -145,6 +146,11 @@ export default {
       if (name == 'pm') return this.pmGroupedItemsArray;
       if (name == 'dam') return this.damGroupedItemsArray;
       if (name == 'int') return this.intGroupedItemsArray;
+    },
+    clearRSSFeedData(productName) {
+      if (productName == 'pm') return (this.pmGroupedItemsArray = []);
+      if (productName == 'dam') return (this.damGroupedItemsArray = []);
+      if (productName == 'int') return (this.intGroupedItemsArray = []);
     },
     includeInTemplate(rssItem) {
       // TODO Logic to include this/these items in the template to download
