@@ -1,6 +1,5 @@
 <template>
   <article>
-    <!-- TODO Add "Up to date at: 1843" or "Last Updated at 1843" component to show user when the last time data was pulled from RSS feed -->
     <div v-for="name in products" :key="name">
       <h1>{{ name }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
@@ -108,7 +107,6 @@ export default {
               rssKey: rssItem?.key,
             });
           });
-          // TODO validate changes and commit if accurate
           if (productString.includes('pm')) {
             this.timesUpdated.pm = now;
             this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
