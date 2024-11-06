@@ -90,10 +90,30 @@ export default {
           const grouped = {};
           let rssNum = 0;
 
+          // * Adding tags here prevents data processing of all but the first RSS item
+          // items.forEach((rssItem) => {
+          //   console.log('RSSITEMHERE', rssItem.description);
+          //   const tags = keyword_extractor.extract(rssItem.description, {
+          //     language: 'english',
+          //     remove_digits: false,
+          //     return_changed_case: true,
+          //     return_chained_words: false,
+          //     remove_duplicates: true,
+          //   });
+          //   console.log('TAGSTAGSTAGS',tags);
+          // });
+
           items.forEach((rssItem) => {
             rssItem.rssKey = rssNum++;
             const rssObj = rssItem.rssKey;
-
+            const tags = keyword_extractor.extract(rssItem.description.join(), {
+              language: 'english',
+              remove_digits: false,
+              return_changed_case: true,
+              return_chained_words: false,
+              remove_duplicates: true,
+            });
+            console.log('TAGS HERE', tags)
             if (!grouped[rssObj]) {
               grouped[rssObj] = [];
             }
@@ -104,7 +124,7 @@ export default {
               link: rssItem?.link[0],
               title: rssItem?.title[0],
               rssKey: rssItem?.key,
-              tags: '',
+              tags: tags,
             });
           });
           if (productString.includes('pm')) {
@@ -138,7 +158,6 @@ export default {
               tags: grouped[key][0].tags,
             }));
           }
-          this.addTagsToFeedItems(productString);
           resolve();
         });
       });
@@ -146,6 +165,16 @@ export default {
     addTagsToFeedItems(productString) {
       if (productString.includes('cloudinary-pm-release-notes.xml')) {
         console.log('PM STRING');
+        this.pmGroupedItemsArray.forEach((rssItem) => {
+          const tags = keyword_extractor.extract(rssItem.desc, {
+            language: 'english',
+            remove_digits: false,
+            return_changed_case: true,
+            return_chained_words: false,
+            remove_duplicates: true,
+          });
+          console.log(tags);
+        });
       }
 
       if (productString.includes('cloudinary-dam-release-notes.xml')) {
