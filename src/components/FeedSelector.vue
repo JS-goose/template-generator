@@ -38,6 +38,7 @@
 <script>
 import axios from 'axios';
 import { parseString } from 'xml2js';
+import keyword_extractor from 'keyword-extractor';
 
 export default {
   data() {
@@ -57,7 +58,6 @@ export default {
   },
   methods: {
     async fetchRSSFeed(productType = 'pm') {
-      console.log(productType);
       const productString = productType.includes('pm')
         ? this.pmBaseURL
         : productType.includes('dam')
@@ -92,7 +92,6 @@ export default {
 
           items.forEach((rssItem) => {
             rssItem.rssKey = rssNum++;
-            console.log('RSSITEM', rssItem);
             const rssObj = rssItem.rssKey;
 
             if (!grouped[rssObj]) {
@@ -105,6 +104,7 @@ export default {
               link: rssItem?.link[0],
               title: rssItem?.title[0],
               rssKey: rssItem?.key,
+              tags: '',
             });
           });
           if (productString.includes('pm')) {
@@ -115,6 +115,7 @@ export default {
               link: grouped[key][0].link,
               title: grouped[key][0].title,
               rssKey: key,
+              tags: grouped[key][0].tags,
             }));
           } else if (productString.includes('dam')) {
             this.timesUpdated.dam = now;
@@ -124,6 +125,7 @@ export default {
               link: grouped[key][0].link,
               title: grouped[key][0].title,
               rssKey: key,
+              tags: grouped[key][0].tags,
             }));
           } else {
             this.timesUpdated.int = now;
@@ -133,11 +135,26 @@ export default {
               link: grouped[key][0].link,
               title: grouped[key][0].title,
               rssKey: key,
+              tags: grouped[key][0].tags,
             }));
           }
+          this.addTagsToFeedItems(productString);
           resolve();
         });
       });
+    },
+    addTagsToFeedItems(productString) {
+      if (productString.includes('cloudinary-pm-release-notes.xml')) {
+        console.log('PM STRING');
+      }
+
+      if (productString.includes('cloudinary-dam-release-notes.xml')) {
+        console.log('DAM STRING');
+      }
+
+      if (productString.includes('cloudinary-int-release-notes.xml')) {
+        console.log('INT STRING');
+      }
     },
     arrayToLoop(name) {
       if (name == 'pm') return this.pmGroupedItemsArray;
