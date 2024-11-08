@@ -58,6 +58,7 @@ export default {
   },
   methods: {
     async fetchRSSFeed(productType = 'pm') {
+      // * Depending on the product type, choose the correct url
       const productString = productType.includes('pm')
         ? this.pmBaseURL
         : productType.includes('dam')
@@ -65,6 +66,8 @@ export default {
         : productType.includes('int')
         ? this.intBaseURL
         : '';
+
+      // * Proxy due to CORS
       const proxy = 'https://thingproxy.freeboard.io/fetch/';
       this.jsonResults = null;
       this.fetchError = null;
@@ -78,6 +81,7 @@ export default {
     },
     convertRssToJson(xml, productString) {
       console.log('productString', productString);
+      // * Set the date to let the user know when the last time data was updated
       const now = new Date().toLocaleTimeString();
       return new Promise((resolve, reject) => {
         parseString(xml, { explicitArray: true }, (error, result) => {
@@ -90,19 +94,7 @@ export default {
           const grouped = {};
           let rssNum = 0;
 
-          // * Adding tags here prevents data processing of all but the first RSS item
-          // items.forEach((rssItem) => {
-          //   console.log('RSSITEMHERE', rssItem.description);
-          //   const tags = keyword_extractor.extract(rssItem.description, {
-          //     language: 'english',
-          //     remove_digits: false,
-          //     return_changed_case: true,
-          //     return_chained_words: false,
-          //     remove_duplicates: true,
-          //   });
-          //   console.log('TAGSTAGSTAGS',tags);
-          // });
-
+          // * Loop over the returned data, add tags, and organize
           items.forEach((rssItem) => {
             rssItem.rssKey = rssNum++;
             const rssObj = rssItem.rssKey;
@@ -113,7 +105,7 @@ export default {
               return_chained_words: false,
               remove_duplicates: true,
             });
-            console.log('TAGS HERE', tags)
+            // * If the data item doesn't exist in the obj, add it
             if (!grouped[rssObj]) {
               grouped[rssObj] = [];
             }
@@ -127,6 +119,7 @@ export default {
               tags: tags,
             });
           });
+          // * Depending on the product, organize data in a readable manner and add to the correct array
           if (productString.includes('pm')) {
             this.timesUpdated.pm = now;
             this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
@@ -161,29 +154,6 @@ export default {
           resolve();
         });
       });
-    },
-    addTagsToFeedItems(productString) {
-      if (productString.includes('cloudinary-pm-release-notes.xml')) {
-        console.log('PM STRING');
-        this.pmGroupedItemsArray.forEach((rssItem) => {
-          const tags = keyword_extractor.extract(rssItem.desc, {
-            language: 'english',
-            remove_digits: false,
-            return_changed_case: true,
-            return_chained_words: false,
-            remove_duplicates: true,
-          });
-          console.log(tags);
-        });
-      }
-
-      if (productString.includes('cloudinary-dam-release-notes.xml')) {
-        console.log('DAM STRING');
-      }
-
-      if (productString.includes('cloudinary-int-release-notes.xml')) {
-        console.log('INT STRING');
-      }
     },
     arrayToLoop(name) {
       if (name == 'pm') return this.pmGroupedItemsArray;
