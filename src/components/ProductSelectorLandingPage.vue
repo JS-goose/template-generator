@@ -1,17 +1,20 @@
 <template>
   <section>
-    <label for="all-rss-feeds-selection">
-      Pull all RSS feeds
-      <input type="checkbox" name="all-rss-feeds-selection" id="all-rss-feeds-selection" />
-    </label>
+    <h1>RSS Feed to Email Template Generator</h1>
+    <div>
+      <button>Pull All RSS Feeds</button>
+      <!-- TODO Build logic for tag search -->
+      <label for="all-rss-feeds-tag-search">
+        Tag Search
+        <input type="text" name="all-rss-feeds-tag-search" id="all-rss-feeds-tag-search"
+      /></label>
+    </div>
     <FeedSelector />
   </section>
 </template>
 
 <script>
 import FeedSelector from './FeedSelector.vue';
-// import axios from 'axios';
-// import { parseString } from 'xml2js';
 
 export default {
   name: 'ProductSelectorLandingPage',
