@@ -50,5 +50,9 @@ export default {
 
 button {
   padding: 3px;
+  background-color: var(--cldBlue);
+  color: white;
+  border: 5px solid transparent;
+  border-radius: 3px;
 }
 </style>

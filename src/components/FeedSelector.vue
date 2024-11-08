@@ -1,6 +1,6 @@
 <template>
   <article>
-    <div v-for="name in products" :key="name">
+    <div v-for="name in products" :key="name" class="feed-data-container">
       <h1>{{ name }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
@@ -184,6 +184,8 @@ export default {
 <style lang="css" scoped>
 .feed-selector-rss-list-item {
   max-width: 45%;
+  height: 200px;
+  display: inline-block;
   text-align: left;
   display: inline-block;
   margin: 0.75em;
@@ -194,6 +196,15 @@ export default {
 
 .rss-list-item-title-container > p {
   text-align: center;
+}
+
+.feed-data-container {
+  height: 100%;
+  width: 100%;
+}
+
+.feed-data-container > button {
+  margin-right: 1em;
 }
 
 ul {
