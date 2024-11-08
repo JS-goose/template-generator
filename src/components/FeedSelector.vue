@@ -21,13 +21,18 @@
             <p>{{ key.title.toUpperCase() }}</p>
           </div>
           <div>
-            {{ key.pubDate }}
+            <p><span class="feed-item-label">Publish Date:</span> {{ key.pubDate }}</p>
           </div>
           <div>
-            {{ key.desc }}
+            <p><span class="feed-item-label">Description:</span> {{ key.desc }}</p>
           </div>
           <div>
-            {{ key.link }}
+            <p>
+              <span class="feed-item-label">Link:</span>
+              <a :href="key.link" target="_blank" rel="noopener noreferrer">
+                {{ key.link }}
+              </a>
+            </p>
           </div>
         </li>
       </ul>
@@ -205,6 +210,10 @@ export default {
 
 .feed-data-container > button {
   margin-right: 1em;
+}
+
+.feed-item-label {
+  font-weight: 600;
 }
 
 ul {

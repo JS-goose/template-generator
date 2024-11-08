@@ -48,6 +48,14 @@ export default {
   width: 100%;
 }
 
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--cldMidnightBlue);
+}
+
 button {
   padding: 3px;
   background-color: var(--cldBlue);
