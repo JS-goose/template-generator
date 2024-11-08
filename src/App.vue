@@ -22,18 +22,23 @@ export default {
 
 <style>
 /* TODO Apply Cloudinary styling guide found here: https://cloudinary.com/brand  */
+@font-face {
+  font-family: CldInter;
+  src: url(assets/fonts/static/Inter_28pt-Regular.ttf);
+}
+
 #app {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: CldInter, Helvetica, Arial, sans-serif;
   /* * Primary CLD Colors */
-  --cldBlue: #3448C5;
+  --cldBlue: #3448c5;
   --cldAegeanBlue: #101926;
-  --cldCetaceanBlue: #0C163B;
-  --cldMidnightBlue: #3F5FFF;
-  --cldSkyBlue: #0D9AFF;
-  --cldTurquoiseBlue: #48C4D8;
+  --cldCetaceanBlue: #0c163b;
+  --cldMidnightBlue: #3f5fff;
+  --cldSkyBlue: #0d9aff;
+  --cldTurquoiseBlue: #48c4d8;
   /* * Secondary CLD Colors */
-  --cldCoral: #FF5050;
-  --cldYellow: #F7BC00;
+  --cldCoral: #ff5050;
+  --cldYellow: #f7bc00;
   --cldSlate: #162436;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
