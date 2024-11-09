@@ -1,5 +1,6 @@
 <template>
   <article>
+    <p>Tag search value: {{ tagSearchInputValue }}</p>
     <div v-for="name in products" :key="name" class="feed-data-container">
       <h1>{{ name }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
@@ -46,6 +47,10 @@ import { parseString } from 'xml2js';
 import keyword_extractor from 'keyword-extractor';
 
 export default {
+  props: {
+    tagSearchInputValue: String,
+    required: false
+  },
   data() {
     return {
       products: ['pm', 'dam', 'int'],

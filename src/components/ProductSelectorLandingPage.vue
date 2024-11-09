@@ -6,34 +6,42 @@
       <!-- TODO Build logic for tag search -->
       <label for="all-rss-feeds-tag-search">
         Tag Search
-        <input type="text" name="all-rss-feeds-tag-search" id="all-rss-feeds-tag-search"
+        <input
+          type="text"
+          name="all-rss-feeds-tag-search"
+          id="all-rss-feeds-tag-search"
+          placeholder="ai, video, etc."
+          v-model="tagSearchInputValue"
+          maxlength="250"
       /></label>
     </div>
-    <FeedSelector />
+    <FeedSelector :tagSearchInputValue="tagSearchInputValue" />
   </section>
 </template>
 
 <script>
-import FeedSelector from './FeedSelector.vue';
+  import FeedSelector from "./FeedSelector.vue";
 
-export default {
-  name: 'ProductSelectorLandingPage',
-  components: {
-    FeedSelector,
-  },
+  export default {
+    name: "ProductSelectorLandingPage",
+    components: {
+      FeedSelector,
+    },
 
-  data() {
-    return {};
-  },
-  methods: {},
-};
+    data() {
+      return {
+        tagSearchInputValue: "",
+      };
+    },
+    methods: {},
+  };
 </script>
 
 <style scoped>
-section {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  justify-content: space-evenly;
-}
+  section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-evenly;
+  }
 </style>
