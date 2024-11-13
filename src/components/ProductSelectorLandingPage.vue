@@ -2,8 +2,7 @@
   <section>
     <h1>RSS Feed to Email Template Generator</h1>
     <div>
-      <button>Pull All RSS Feeds</button>
-      <!-- TODO Build logic for tag search -->
+      <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">Pull All RSS Feeds</button>
       <label for="all-rss-feeds-tag-search">
         Tag Search
         <input
@@ -14,34 +13,55 @@
           v-model="tagSearchInputValue"
           maxlength="250"
       /></label>
+      <button v-if="this.displayClearBtn" @click="clearAllFeedsData()" class="all-feeds-buttons">
+        Clear All RSS Feed Data
+      </button>
     </div>
-    <FeedSelector :tagSearchInputValue="tagSearchInputValue" />
+    <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
   </section>
 </template>
 
 <script>
-  import FeedSelector from "./FeedSelector.vue";
+import FeedSelector from './FeedSelector.vue';
 
-  export default {
-    name: "ProductSelectorLandingPage",
-    components: {
-      FeedSelector,
-    },
+export default {
+  name: 'ProductSelectorLandingPage',
+  components: {
+    FeedSelector,
+  },
 
-    data() {
-      return {
-        tagSearchInputValue: "",
-      };
+  data() {
+    return {
+      tagSearchInputValue: '',
+      displayClearBtn: false,
+    };
+  },
+  methods: {
+    pullAllRSSFeeds() {
+      this.$refs.child.fetchRSSFeed('pm');
+      this.$refs.child.fetchRSSFeed('dam');
+      this.$refs.child.fetchRSSFeed('int');
+      this.displayClearBtn = true;
     },
-    methods: {},
-  };
+    clearAllFeedsData() {
+      this.$refs.child.clearRSSFeedData('pm');
+      this.$refs.child.clearRSSFeedData('dam');
+      this.$refs.child.clearRSSFeedData('int');
+      this.displayClearBtn = false;
+    },
+  },
+};
 </script>
 
 <style scoped>
-  section {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    justify-content: space-evenly;
-  }
+section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.all-feeds-buttons {
+  margin: 5px;
+}
 </style>
