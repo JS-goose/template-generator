@@ -18,6 +18,7 @@
       </button>
     </div>
     <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
+    <button>Generate Email Copy</button>
   </section>
 </template>
 
@@ -63,5 +64,9 @@ section {
 
 .all-feeds-buttons {
   margin: 5px;
+}
+
+button {
+  max-width: 20em;
 }
 </style>
