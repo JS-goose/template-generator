@@ -1,6 +1,6 @@
 <template>
   <nav>
-    Logo here
+    <img src="../assets//images/cloudinary_full_logo_white_small.png" alt="">
     <h1>RSS Feed to Email Template Generator</h1>
     <ul>
       <li>Link 1</li>
@@ -22,8 +22,11 @@ nav {
   align-items: center;
   justify-content: space-evenly;
   border-bottom: 1px solid var(--cldSlate);
+  color: white;
+  background-color: var(--cldAegeanBlue);
   width: 100%;
   margin: 0;
+  padding: 1em
 }
 
 nav > ul {
