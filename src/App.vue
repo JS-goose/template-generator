@@ -49,6 +49,7 @@ export default {
   color: #2c3e50;
   height: 100%;
   width: 100%;
+  margin: 0;
 }
 
 a {

@@ -1,6 +1,5 @@
 <template>
   <section>
-    <h1>RSS Feed to Email Template Generator</h1>
     <div>
       <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">Pull All RSS Feeds</button>
       <label for="all-rss-feeds-tag-search">
