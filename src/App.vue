@@ -1,15 +1,18 @@
 <template>
+  <Nav />
   <ProductSelectorLandingPage />
 </template>
 
 <script>
 import { onMounted } from 'vue';
 import ProductSelectorLandingPage from './components/ProductSelectorLandingPage.vue';
+import Nav from './components/Nav.vue';
 
 export default {
   name: 'App',
   components: {
     ProductSelectorLandingPage,
+    Nav
   },
 
   setup() {
