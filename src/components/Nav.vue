@@ -56,7 +56,7 @@
     list-style: none;
   }
 
-  ul > li{
+  ul > li {
     padding: 1em;
   }
 </style>
