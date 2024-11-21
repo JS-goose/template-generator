@@ -24,6 +24,9 @@ export default {
 </script>
 
 <style>
+body: {
+  margin: 0;
+}
 /* TODO Apply Cloudinary styling guide found here: https://cloudinary.com/brand  */
 @font-face {
   font-family: CldInter;
@@ -54,10 +57,16 @@ export default {
 
 a {
   text-decoration: none;
+  color: var(--cldCoral)
 }
 
 a:visited {
-  color: var(--cldMidnightBlue);
+  color: var(--cldCoral);
+}
+
+a:hover {
+  color:white;
+  text-decoration: underline; 
 }
 
 button {
