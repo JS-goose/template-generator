@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style>
-body: {
+body {
   margin: 0;
 }
 /* TODO Apply Cloudinary styling guide found here: https://cloudinary.com/brand  */
