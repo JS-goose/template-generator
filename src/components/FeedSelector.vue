@@ -1,5 +1,7 @@
 <template>
   <article>
+    <!-- TODO Better logic for error handling -->
+    <p v-if="fetchError">{{ fetchError }}</p>
     <p>Tag search value: {{ tagSearchInputValue }}</p>
     <div v-for="name in products" :key="name" class="feed-data-container">
       <h1>{{ name }} Generator</h1>
@@ -37,7 +39,6 @@
           </div>
         </li>
       </ul>
-      <p v-if="fetchError">{{ fetchError }}</p>
     </div>
   </article>
 </template>
@@ -54,7 +55,7 @@ export default {
   data() {
     return {
       products: ['pm', 'dam', 'int'],
-      fetchError: '',
+      fetchError: null,
       pmGroupedItemsArray: [],
       damGroupedItemsArray: [],
       intGroupedItemsArray: [],
@@ -62,7 +63,6 @@ export default {
       damBaseURL: 'https://cloudinary.com/documentation/rss/cloudinary-dam-release-notes.xml',
       intBaseURL: 'https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml',
       jsonResults: null,
-      fetchError: null,
       timesUpdated: { pm: '', dam: '', int: '' },
     };
   },
