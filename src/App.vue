@@ -33,7 +33,7 @@
     src: url(assets/fonts/static/Inter_28pt-Regular.ttf);
   }
 
-  #app {
+  #generator {
     font-family: CldInter, Helvetica, Arial, sans-serif;
     /* * Primary CLD Colors */
     --cldBlue: #3448c5;
