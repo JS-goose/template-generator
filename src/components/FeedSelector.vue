@@ -1,6 +1,10 @@
 <template>
   <article>
     <!-- TODO Better logic for error handling -->
+    <p>
+      number of items selected for template:
+      {{ this.rssObjsForTemplate.length }}
+    </p>
     <p v-if="fetchError">{{ fetchError }}</p>
     <p>Tag search value: {{ tagSearchInputValue }}</p>
     <div v-for="name in products" :key="name" class="feed-data-container">
@@ -78,6 +82,7 @@
           "https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml",
         jsonResults: null,
         timesUpdated: { pm: "", dam: "", int: "" },
+        rssObjsForTemplate: [],
       };
     },
     methods: {
@@ -193,6 +198,14 @@
       includeInTemplate(rssItem) {
         // TODO Logic to include this/these items in the template to download
         console.log(rssItem);
+        // TODO This doesn't work - needs some attention
+        const uniques = this.rssObjsForTemplate.value.find(
+          (item) => item.pubDate === rssItem.pubDate
+        );
+        if (!uniques) {
+          this.rssObjsForTemplate.push(rssItem);
+          console.log(rssObjsForTemplate);
+        }
       },
       feedPullTime(name) {
         return this.timesUpdated[name];
