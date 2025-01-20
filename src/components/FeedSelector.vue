@@ -196,15 +196,20 @@
         if (productName == "int") return (this.intGroupedItemsArray = []);
       },
       includeInTemplate(rssItem) {
-        // TODO Logic to include this/these items in the template to download
-        console.log(rssItem);
-        // TODO This doesn't work - needs some attention
-        const uniques = this.rssObjsForTemplate.value.find(
-          (item) => item.pubDate === rssItem.pubDate
+        // * Check for duplicates
+        const uniques = this.rssObjsForTemplate.find(
+          (item) => item.rssKey === rssItem.rssKey
         );
+        // * If RSS item isn't in array, push item to array
         if (!uniques) {
           this.rssObjsForTemplate.push(rssItem);
-          console.log(rssObjsForTemplate);
+          console.log(this.rssObjsForTemplate);
+        }
+        // * If RSS item is in the array, remove it
+        if (uniques) {
+          this.rssObjsForTemplate = this.rssObjsForTemplate.filter(
+            (item) => item.rssKey !== rssItem.rssKey
+          );
         }
       },
       feedPullTime(name) {
