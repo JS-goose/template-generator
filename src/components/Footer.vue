@@ -25,12 +25,14 @@
 
 <style lang="css" scoped>
   footer {
-    margin: 0;
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 300px;
+    margin-top: auto;
   }
   #footer-top {
+    margin-top: auto;
     background-color: var(--cldCetaceanBlue);
     height: 100%;
     justify-content: space-evenly;

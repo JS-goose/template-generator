@@ -59,10 +59,9 @@
     text-align: center;
     color: #2c3e50;
     margin: 0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    /* justify-content: space-between; */
-    height: 100vh;
   }
 
   a {
