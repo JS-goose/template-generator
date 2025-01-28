@@ -22,7 +22,11 @@
         Clear All RSS Feed Data
       </button>
     </div>
-    <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
+    <FeedSelector
+      :tagSearchInputValue="tagSearchInputValue"
+      ref="child"
+      @displayGenerateEmailBtn="handleGenEmailDisplayEvent"
+    />
     <button v-if="displayGenEmailBtn">Generate Email Copy</button>
   </section>
 </template>
@@ -57,6 +61,9 @@
         this.$refs.child.clearRSSFeedData("dam");
         this.$refs.child.clearRSSFeedData("int");
         this.displayClearBtn = false;
+      },
+      handleGenEmailDisplayEvent(boolean) {
+        this.displayGenEmailBtn = boolean;
       },
     },
   };

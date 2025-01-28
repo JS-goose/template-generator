@@ -104,7 +104,8 @@
           const response = await axios.get(proxy + productString);
           console.log("request sent", proxy + productString);
           await this.convertRssToJson(response.data, productString);
-          this.$emit("displayGenEmailBtn", true);
+          // console.log("RESPONSE DATA", response);
+          // this.$emit("displayGenEmailBtn", true);
         } catch (error) {
           this.error = `Error fetching the ${productString} feed - check URL for accuracy`;
         }
@@ -123,7 +124,7 @@
             const items = result.rss.channel[0].item;
             const grouped = {};
             let rssNum = 0;
-
+            console.log(items);
             // * Loop over the returned data, add tags, and organize
             items.forEach((rssItem) => {
               rssItem.rssKey = rssNum++;
@@ -196,6 +197,7 @@
         if (productName == "int") return (this.intGroupedItemsArray = []);
       },
       includeInTemplate(rssItem) {
+        this.$emit("displayGenerateEmailBtn", true);
         // * Check for duplicates
         const uniques = this.rssObjsForTemplate.find(
           (item) => item.rssKey === rssItem.rssKey
