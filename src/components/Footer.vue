@@ -25,26 +25,27 @@
 
 <style lang="css" scoped>
   footer {
-    padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   #footer-top {
     background-color: var(--cldCetaceanBlue);
     height: 100%;
+    justify-content: space-evenly;
   }
 
   #footer-bottom {
     background-color: var(--cldAegeanBlue);
     height: 60%;
+    justify-content: space-evenly;
   }
 
   #footer-top,
   #footer-bottom {
     display: flex;
     width: 100%;
-    padding: 0;
     margin: 0;
     color: white;
   }
