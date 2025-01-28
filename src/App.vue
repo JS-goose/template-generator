@@ -36,6 +36,11 @@
     src: url(assets/fonts/static/Inter_28pt-Regular.ttf);
   }
 
+  body {
+    width: 100%;
+    height: 100%;
+  }
+
   #generator {
     font-family: CldInter, Helvetica, Arial, sans-serif;
     /* * Primary CLD Colors */
@@ -53,9 +58,11 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    height: 100%;
-    width: 100%;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    height: 100vh;
   }
 
   a {

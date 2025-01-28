@@ -46,7 +46,6 @@
     border-bottom: 1px solid var(--cldSlate);
     color: white;
     background-color: var(--cldAegeanBlue);
-    width: 100%;
     margin: 0;
     padding: 1em;
   }
