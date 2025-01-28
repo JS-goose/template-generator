@@ -197,7 +197,6 @@
         if (productName == "int") return (this.intGroupedItemsArray = []);
       },
       includeInTemplate(rssItem) {
-        this.$emit("displayGenerateEmailBtn", true);
         // * Check for duplicates
         const uniques = this.rssObjsForTemplate.find(
           (item) => item.rssKey === rssItem.rssKey

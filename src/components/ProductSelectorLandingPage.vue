@@ -27,7 +27,7 @@
       ref="child"
       @displayGenerateEmailBtn="handleGenEmailDisplayEvent"
     />
-    <button v-if="displayGenEmailBtn">Generate Email Copy</button>
+    <button>Generate Email Copy</button>
   </section>
 </template>
 
@@ -44,7 +44,6 @@
       return {
         tagSearchInputValue: "",
         displayClearBtn: false,
-        displayGenEmailBtn: false,
       };
     },
     methods: {
@@ -61,9 +60,6 @@
         this.$refs.child.clearRSSFeedData("dam");
         this.$refs.child.clearRSSFeedData("int");
         this.displayClearBtn = false;
-      },
-      handleGenEmailDisplayEvent(boolean) {
-        this.displayGenEmailBtn = boolean;
       },
     },
   };
