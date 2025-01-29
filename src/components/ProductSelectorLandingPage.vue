@@ -4,6 +4,7 @@
       <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
         Pull All RSS Feeds
       </button>
+      <button class="all-feeds-buttons">Generate Email Copy</button>
       <label for="all-rss-feeds-tag-search">
         Tag Search
         <input
@@ -23,7 +24,6 @@
       </button>
     </div>
     <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
-    <button>Generate Email Copy</button>
   </section>
 </template>
 
