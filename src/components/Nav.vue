@@ -50,6 +50,18 @@
     padding: 1em;
   }
 
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: white;
+  }
+
+  a:visited {
+    color: inherit;
+  }
+
   nav > ul {
     display: flex;
     list-style: none;

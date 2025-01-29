@@ -54,6 +54,7 @@
     --cldCoral: #ff5050;
     --cldYellow: #f7bc00;
     --cldSlate: #162436;
+    --cldLightBlue: #b3cffb;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
@@ -62,20 +63,6 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  }
-
-  a {
-    text-decoration: none;
-    color: var(--cldCoral);
-  }
-
-  a:visited {
-    color: var(--cldCoral);
-  }
-
-  a:hover {
-    color: white;
-    text-decoration: underline;
   }
 
   button {
