@@ -1,6 +1,6 @@
 <template>
-  <section>
-    <div>
+  <section id="all-feeds-wrapper">
+    <div id="all-feeds-control-container">
       <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
         Pull All RSS Feeds
       </button>
@@ -22,11 +22,7 @@
         Clear All RSS Feed Data
       </button>
     </div>
-    <FeedSelector
-      :tagSearchInputValue="tagSearchInputValue"
-      ref="child"
-      @displayGenerateEmailBtn="handleGenEmailDisplayEvent"
-    />
+    <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
     <button>Generate Email Copy</button>
   </section>
 </template>

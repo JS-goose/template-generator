@@ -1,12 +1,14 @@
 <template>
-  <article>
+  <article id="all-feeds-display-container">
     <!-- TODO Better logic for error handling -->
-    <p>
-      number of items selected for template:
-      {{ this.rssObjsForTemplate.length }}
-    </p>
-    <p v-if="fetchError">{{ fetchError }}</p>
-    <p>Tag search value: {{ tagSearchInputValue }}</p>
+    <div id="all-feeds-display-container-controls">
+      <p>
+        number of items selected for template:
+        {{ this.rssObjsForTemplate.length }}
+      </p>
+      <p v-if="fetchError">{{ fetchError }}</p>
+      <p>Tag search value: {{ tagSearchInputValue }}</p>
+    </div>
     <div v-for="name in products" :key="name" class="feed-data-container">
       <h1>{{ name }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
@@ -104,8 +106,7 @@
           const response = await axios.get(proxy + productString);
           console.log("request sent", proxy + productString);
           await this.convertRssToJson(response.data, productString);
-          // console.log("RESPONSE DATA", response);
-          // this.$emit("displayGenEmailBtn", true);
+          console.log("RESPONSE DATA", response);
         } catch (error) {
           this.error = `Error fetching the ${productString} feed - check URL for accuracy`;
         }
@@ -124,7 +125,7 @@
             const items = result.rss.channel[0].item;
             const grouped = {};
             let rssNum = 0;
-            console.log(items);
+            console.log("ITEMS AFTER PARSING", items);
             // * Loop over the returned data, add tags, and organize
             items.forEach((rssItem) => {
               rssItem.rssKey = rssNum++;
@@ -226,6 +227,14 @@
   };
 </script>
 <style lang="css" scoped>
+  #all-feeds-display-container {
+    width: 100%;
+  }
+  #all-feeds-display-container-controls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
   .feed-selector-rss-list-item {
     max-width: 45%;
     height: 200px;
