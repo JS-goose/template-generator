@@ -52,14 +52,15 @@
 
   a {
     text-decoration: none;
-  }
-
-  a:hover {
     color: white;
   }
 
+  a:hover {
+    color: var(--cldLightBlue);
+  }
+
   a:visited {
-    color: inherit;
+    color: white;
   }
 
   nav > ul {
