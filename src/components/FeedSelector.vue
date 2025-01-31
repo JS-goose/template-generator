@@ -1,13 +1,19 @@
 <template>
   <article id="all-feeds-display-container">
     <!-- TODO Better logic for error handling -->
+    <h2 v-if="fetchError">{{ fetchError }}</h2>
     <div id="all-feeds-display-container-controls">
-      <p>
-        number of items selected for template:
-        {{ this.rssObjsForTemplate.length }}
-      </p>
-      <p v-if="fetchError">{{ fetchError }}</p>
-      <p>Tag search value: {{ tagSearchInputValue }}</p>
+      <form>
+        <label for="rssObjSelectionCount"># of items selected:</label>
+        <input
+          disabled
+          type="text"
+          name="rssObjSelectionCount"
+          id="rssObjSelectionCount"
+          :value="this.rssObjsForTemplate.length"
+        />
+        <p>Tag search value: {{ tagSearchInputValue }}</p>
+      </form>
     </div>
     <div v-for="name in products" :key="name" class="feed-data-container">
       <h1>{{ name }} Generator</h1>
@@ -233,8 +239,25 @@
   #all-feeds-display-container-controls {
     display: flex;
     justify-content: center;
+    flex-direction: row;
+    align-items: baseline;
     width: 100%;
   }
+
+  #all-feeds-display-container-controls > form {
+    display: flex;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: baseline;
+    width: 100%;
+  }
+
+  #all-feeds-display-container-controls > form > input {
+    margin-right: 1.25em;
+    width: 3.5em;
+  }
+
   .feed-selector-rss-list-item {
     max-width: 45%;
     height: 200px;
