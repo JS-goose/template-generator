@@ -33,6 +33,7 @@
     height: 300px;
     margin-top: auto;
     color: var(--cldLightBlue);
+    font-size: 1.05em;
   }
 
   #footer-top {

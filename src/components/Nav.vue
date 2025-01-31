@@ -53,6 +53,8 @@
   a {
     text-decoration: none;
     color: white;
+    font-weight: 600;
+    font-size: 1.15em;
   }
 
   a:hover {
