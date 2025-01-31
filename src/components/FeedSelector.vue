@@ -300,4 +300,13 @@
     list-style-type: none;
     padding: 0;
   }
+
+  #rss-list-item-include-checkbox {
+    width: 1.25em;
+    height: 1.25em;
+  }
+
+  #rss-list-item-include-checkbox:hover {
+    cursor: pointer;
+  }
 </style>
