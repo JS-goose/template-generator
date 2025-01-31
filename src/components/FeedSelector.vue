@@ -54,9 +54,8 @@
           </div>
           <div>
             <p>
-              <span class="feed-item-label">Link:</span>
               <a :href="key.link" target="_blank" rel="noopener noreferrer">
-                {{ key.link }}
+                Learn More
               </a>
             </p>
           </div>
@@ -259,15 +258,25 @@
   }
 
   .feed-selector-rss-list-item {
-    max-width: 45%;
-    height: 200px;
+    max-width: 35%;
+    height: 250px;
     display: inline-block;
     text-align: left;
-    display: inline-block;
     margin: 0.75em;
-    padding: 0.35em;
-    border: 1px solid gray;
-    border-radius: 3px;
+    padding: 0.35em 0.35em 0.35em 1em;
+    border-radius: 5px;
+    -webkit-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
+    -moz-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
+    box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
+  }
+
+  a {
+    color: var(--cldSkyBlue);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--cldSlate);
   }
 
   .rss-list-item-title-container > p {
