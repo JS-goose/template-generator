@@ -4,7 +4,9 @@
       <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
         Pull All RSS Feeds
       </button>
-      <button class="all-feeds-buttons">Generate Email Copy</button>
+      <button @click="generateTemplate" class="all-feeds-buttons">
+        Generate Template
+      </button>
       <label for="all-rss-feeds-tag-search">
         Tag Search
         <input
@@ -56,6 +58,9 @@
         this.$refs.child.clearRSSFeedData("dam");
         this.$refs.child.clearRSSFeedData("int");
         this.displayClearBtn = false;
+      },
+      generateTemplate() {
+        console.log("GENERATE TEMPLATE");
       },
     },
   };
