@@ -16,7 +16,7 @@
       </form>
     </div>
     <div v-for="name in products" :key="name" class="feed-data-container">
-      <h1>{{ name }} Generator</h1>
+      <h1>{{ name.toUpperCase() }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
       <button @click="clearRSSFeedData(name)">
