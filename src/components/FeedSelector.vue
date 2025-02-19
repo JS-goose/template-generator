@@ -22,7 +22,7 @@
       <button @click="clearRSSFeedData(name)">
         Clear {{ name }} Feed Data
       </button>
-      <ul>
+      <ul class="feed-selector-rss-list-container">
         <li
           v-for="key in arrayToLoop(name)"
           :key="key.title"
@@ -257,7 +257,17 @@
     width: 3.5em;
   }
 
+  .feed-selector-rss-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+  }
+
   .feed-selector-rss-list-item {
+    flex: 0 0 50%;
+    box-sizing: border-box;
     max-width: 35%;
     height: 250px;
     display: inline-block;
