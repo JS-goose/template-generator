@@ -263,6 +263,7 @@
     margin: 0;
     padding: 0;
     justify-content: center;
+    /* align-content: center;  */
   }
 
   .feed-selector-rss-list-item {
