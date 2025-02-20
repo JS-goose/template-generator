@@ -72,5 +72,6 @@
     color: white;
     border: 5px solid transparent;
     border-radius: 3px;
+    cursor: pointer;
   }
 </style>
