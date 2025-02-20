@@ -258,20 +258,16 @@
   }
 
   .feed-selector-rss-list-container {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0;
-    padding: 0;
-    justify-content: center;
-    /* align-content: center;  */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 1rem;
   }
 
   .feed-selector-rss-list-item {
-    flex: 0 0 50%;
     box-sizing: border-box;
-    max-width: 35%;
-    height: 250px;
-    display: inline-block;
+    height: 100%;
+    min-height: 300px;
+    overflow: auto;
     text-align: left;
     margin: 0.75em;
     padding: 0.35em 0.35em 0.35em 1em;
