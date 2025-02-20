@@ -23,6 +23,7 @@
         Clear {{ name }} Feed Data
       </button>
       <ul class="feed-selector-rss-list-container">
+        <!-- TODO Adjust the selected class as it's adding the effects to items from other feeds that have not been selected -->
         <li
           v-for="key in arrayToLoop(name)"
           :key="key.title"
