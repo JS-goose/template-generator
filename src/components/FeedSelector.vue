@@ -27,6 +27,11 @@
           v-for="key in arrayToLoop(name)"
           :key="key.title"
           class="feed-selector-rss-list-item"
+          :class="{
+            selected: rssObjsForTemplate.some(
+              (item) => item.rssKey === key.rssKey
+            ),
+          }"
         >
           <div>
             <label for="rss-list-item-include-checkbox">
@@ -278,6 +283,11 @@
     -webkit-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
     -moz-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
     box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
+  }
+
+  .selected {
+    background-color: var(--cldLightBlue);
+    border: 1px solid var(--cldSlate);
   }
 
   a {
