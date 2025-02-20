@@ -212,7 +212,7 @@
           this.rssObjsForTemplate.push(rssItem);
           console.log(this.rssObjsForTemplate);
         }
-        // * If RSS item is in the array, remove it
+        // * If RSS item is in the array, remove it on another click
         if (uniques) {
           this.rssObjsForTemplate = this.rssObjsForTemplate.filter(
             (item) => item.rssKey !== rssItem.rssKey
@@ -221,6 +221,9 @@
       },
       feedPullTime(name) {
         return this.timesUpdated[name];
+      },
+      getRssData() {
+        return this.rssObjsForTemplate;
       },
     },
     computed: {},

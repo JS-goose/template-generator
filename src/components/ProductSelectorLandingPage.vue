@@ -25,7 +25,10 @@
         Clear All RSS Feed Data
       </button>
     </div>
-    <FeedSelector :tagSearchInputValue="tagSearchInputValue" ref="child" />
+    <FeedSelector
+      :tagSearchInputValue="tagSearchInputValue"
+      ref="feedSelectorRef"
+    />
   </section>
 </template>
 
@@ -42,6 +45,7 @@
       return {
         tagSearchInputValue: "",
         displayClearBtn: false,
+        rssDataFromFeedSelector: [],
       };
     },
     methods: {
@@ -60,7 +64,10 @@
         this.displayClearBtn = false;
       },
       generateTemplate() {
-        console.log("GENERATE TEMPLATE");
+        // * Pull data from child component
+        if (this.$refs.feedSelectorRef) {
+          this.rssDataFromFeedSelector = this.$refs.feedSelectorRef.getRssData();
+        }
       },
     },
   };
