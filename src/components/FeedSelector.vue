@@ -152,7 +152,7 @@
               if (!grouped[rssObj]) {
                 grouped[rssObj] = [];
               }
-
+              // TODO parse URLs for formatting like the following: PM - rn_pm_11_29_2024 | DAM - rn_dam_11_26_2024 | INT will require much more processing
               grouped[rssObj].push({
                 pubDate: rssItem?.pubDate[0],
                 desc: rssItem?.description[0],
@@ -172,6 +172,8 @@
                 title: grouped[key][0].title,
                 rssKey: key,
                 tags: grouped[key][0].tags,
+                // TODO working on the link structure mentioned above
+                // directLink: `https://cloudinary.com/documentation/rn_pm_${g}`
               }));
             } else if (productString.includes("dam")) {
               this.timesUpdated.dam = now;
