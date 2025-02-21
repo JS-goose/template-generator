@@ -21,7 +21,31 @@
           href="https://github.com/JS-goose/template-generator"
           target="_blank"
           rel="noreferrer noopener"
-          >Project Documentation</a
+          >Template Builder Documentation</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://cloudinary.com/documentation/programmable_media_release_notes"
+          target="_blank"
+          rel="noreferrer noopener"
+          >PM Release Notes</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://cloudinary.com/documentation/digital_asset_management_release_notes"
+          target="_blank"
+          rel="noreferrer noopener"
+          >DAM Release Notes</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://cloudinary.com/documentation/integrations_release_notes"
+          target="_blank"
+          rel="noreferrer noopener"
+          >INT Release Notes</a
         >
       </li>
     </ul>
@@ -54,7 +78,7 @@
     text-decoration: none;
     color: white;
     font-weight: 600;
-    font-size: 1.15em;
+    font-size: 1em;
   }
 
   a:hover {
