@@ -28,12 +28,14 @@
           v-for="key in arrayToLoop(name)"
           :key="key.title"
           class="feed-selector-rss-list-item"
-          :class="{
+        >
+          <!-- ! This code applies the selected class to items no matter what array they're in as long as the position matches. -->
+          <!-- ! Needs work before implementation -->
+          <!-- :class="{
             selected: rssObjsForTemplate.some(
               (item) => item.rssKey === key.rssKey
             ),
-          }"
-        >
+          }" -->
           <div>
             <label for="rss-list-item-include-checkbox">
               Include
@@ -41,7 +43,7 @@
                 type="checkbox"
                 name="rss-list-item-include-checkbox"
                 id="rss-list-item-include-checkbox"
-                @click="includeInTemplate(key)"
+                @click="includeInTemplate(key, name)"
             /></label>
           </div>
           <div class="rss-list-item-title-container">
@@ -171,6 +173,8 @@
                 link: grouped[key][0].link,
                 title: grouped[key][0].title,
                 rssKey: key,
+                product: "pm",
+                index: `pm${key}`,
                 tags: grouped[key][0].tags,
                 // TODO working on the link structure mentioned above
                 // directLink: `https://cloudinary.com/documentation/rn_pm_${g}`
@@ -183,6 +187,8 @@
                 link: grouped[key][0].link,
                 title: grouped[key][0].title,
                 rssKey: key,
+                product: "dam",
+                index: `dam${key}`,
                 tags: grouped[key][0].tags,
               }));
             } else {
@@ -193,6 +199,8 @@
                 link: grouped[key][0].link,
                 title: grouped[key][0].title,
                 rssKey: key,
+                product: "int",
+                index: `int${key}`,
                 tags: grouped[key][0].tags,
               }));
             }
@@ -210,10 +218,11 @@
         if (productName == "dam") return (this.damGroupedItemsArray = []);
         if (productName == "int") return (this.intGroupedItemsArray = []);
       },
-      includeInTemplate(rssItem) {
+      includeInTemplate(rssItem, name) {
+        console.warn("RSSITEM FOR TEMPLATE", rssItem, name);
         // * Check for duplicates
         const uniques = this.rssObjsForTemplate.find(
-          (item) => item.rssKey === rssItem.rssKey
+          (item) => item.index === rssItem.index
         );
         // * If RSS item isn't in array, push item to array
         if (!uniques) {
@@ -223,7 +232,7 @@
         // * If RSS item is in the array, remove it on another click
         if (uniques) {
           this.rssObjsForTemplate = this.rssObjsForTemplate.filter(
-            (item) => item.rssKey !== rssItem.rssKey
+            (item) => item.index !== rssItem.index
           );
         }
       },
