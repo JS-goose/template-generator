@@ -60,16 +60,16 @@
     methods: {
       // * Emit events to child component
       pullAllRSSFeeds() {
-        this.$refs.child.fetchRSSFeed("pm");
-        this.$refs.child.fetchRSSFeed("dam");
-        this.$refs.child.fetchRSSFeed("int");
+        this.$refs.feedSelectorRef.fetchRSSFeed("pm");
+        this.$refs.feedSelectorRef.fetchRSSFeed("dam");
+        this.$refs.feedSelectorRef.fetchRSSFeed("int");
         this.displayClearBtn = true;
       },
-      // * Emit events to child component
+      // * Emit events to feedSelectorRef component
       clearAllFeedsData() {
-        this.$refs.child.clearRSSFeedData("pm");
-        this.$refs.child.clearRSSFeedData("dam");
-        this.$refs.child.clearRSSFeedData("int");
+        this.$refs.feedSelectorRef.clearRSSFeedData("pm");
+        this.$refs.feedSelectorRef.clearRSSFeedData("dam");
+        this.$refs.feedSelectorRef.clearRSSFeedData("int");
         this.displayClearBtn = false;
       },
       fetchTemplateData() {
@@ -83,15 +83,15 @@
       generateEmailTemplate() {
         this.emailTemplates = this.rssDataFromFeedSelector.map((item) => {
           return `
-                <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
-                  <h3 style="color:#2d2d2d;">${item.title}</h3>
-                  <p>${item.desc.replace(/\n/g, "<br>")}</p>
-                  <p><a href="${
-                    item.link
-                  }" style="color:#007bff;">Read More</a></p>
-                  <p><small>Published on: ${item.pubDate}</small></p>
-                </div>
-                `;
+                      <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
+                        <h3 style="color:#2d2d2d;">${item.title}</h3>
+                        <p>${item.desc.replace(/\n/g, "<br>")}</p>
+                        <p><a href="${
+                          item.link
+                        }" style="color:#007bff;">Read More</a></p>
+                        <p><small>Published on: ${item.pubDate}</small></p>
+                      </div>
+                      `;
         });
         this.openNewWindowForTemplateDisplay();
       },
@@ -100,22 +100,22 @@
 
         if (newWindow) {
           newWindow.document.write(`
-                <html>
-                <head>
-                  <title>Email Templates</title>
-                  <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-                    h3 { color: #2d2d2d; }
-                    a { color: #007bff; text-decoration: none; }
-                  </style>
-                </head>
-                <body>
-                  <h2>Generated Email Templates</h2>
-                  ${this.emailTemplates.join("")}
-                </body>
-                </html>
-              `);
+                      <html>
+                      <head>
+                        <title>Email Templates</title>
+                        <style>
+                          body { font-family: Arial, sans-serif; padding: 20px; }
+                          .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+                          h3 { color: #2d2d2d; }
+                          a { color: #007bff; text-decoration: none; }
+                        </style>
+                      </head>
+                      <body>
+                        <h2>Generated Email Templates</h2>
+                        ${this.emailTemplates.join("")}
+                      </body>
+                      </html>
+                    `);
           newWindow.document.close(); // Close document to finish writing
         } else {
           alert("Popup blocked! Please allow popups for this site.");
