@@ -28,14 +28,12 @@
           v-for="key in arrayToLoop(name)"
           :key="key.title"
           class="feed-selector-rss-list-item"
-        >
-          <!-- ! This code applies the selected class to items no matter what array they're in as long as the position matches. -->
-          <!-- ! Needs work before implementation -->
-          <!-- :class="{
+          :class="{
             selected: rssObjsForTemplate.some(
-              (item) => item.rssKey === key.rssKey
+              (item) => item.index === key.index
             ),
-          }" -->
+          }"
+        >
           <div>
             <label for="rss-list-item-include-checkbox">
               Include
