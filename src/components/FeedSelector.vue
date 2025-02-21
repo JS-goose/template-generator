@@ -60,7 +60,11 @@
           </div>
           <div>
             <p>
-              <a :href="key.link" target="_blank" rel="noopener noreferrer">
+              <a
+                :href="key.directLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Learn More
               </a>
             </p>
@@ -98,7 +102,16 @@
         rssObjsForTemplate: [],
       };
     },
+    computed: {},
     methods: {
+      // TODO This is only working on the PM array and needs to be adjusted to all products
+      convertDateString(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `https://cloudinary.com/documentation/rn_pm_${month}_${day}_${year}`;
+      },
       async fetchRSSFeed(productType = "pm") {
         // * Depending on the product type, choose the correct url
         const productString = productType.includes("pm")
@@ -173,9 +186,9 @@
                 rssKey: key,
                 product: "pm",
                 index: `pm${key}`,
+                // * Maybe these can be adjusted or processed to include classes in the URLs such as #enhancements and #new_features
+                directLink: this.convertDateString(grouped[key][0].pubDate),
                 tags: grouped[key][0].tags,
-                // TODO working on the link structure mentioned above
-                // directLink: `https://cloudinary.com/documentation/rn_pm_${g}`
               }));
             } else if (productString.includes("dam")) {
               this.timesUpdated.dam = now;
@@ -187,6 +200,7 @@
                 rssKey: key,
                 product: "dam",
                 index: `dam${key}`,
+                directLink: "NEEDS DAM DIRECT LINKS",
                 tags: grouped[key][0].tags,
               }));
             } else {
@@ -199,6 +213,7 @@
                 rssKey: key,
                 product: "int",
                 index: `int${key}`,
+                directLink: "NEEDS INT DIRECT LINK",
                 tags: grouped[key][0].tags,
               }));
             }
