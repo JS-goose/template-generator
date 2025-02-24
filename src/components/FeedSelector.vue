@@ -105,12 +105,16 @@
     computed: {},
     methods: {
       // TODO This is only working on the PM array and needs to be adjusted to all products
-      convertDateString(dateString) {
+      convertDateString(dateString, product) {
         const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `https://cloudinary.com/documentation/rn_pm_${month}_${day}_${year}`;
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        const productURLModifier = product;
+        console.warn(
+          `DATESTRING${dateString} MONTH${month} DAY${day} YEAR${year}`
+        );
+        return `https://cloudinary.com/documentation/rn_${productURLModifier}_${month}_${day}_${year}`;
       },
       async fetchRSSFeed(productType = "pm") {
         // * Depending on the product type, choose the correct url
@@ -187,7 +191,7 @@
                 product: "pm",
                 index: `pm${key}`,
                 // * Maybe these can be adjusted or processed to include classes in the URLs such as #enhancements and #new_features
-                directLink: this.convertDateString(grouped[key][0].pubDate),
+                directLink: this.convertDateString(grouped[key][0].pubDate, "pm"),
                 tags: grouped[key][0].tags,
               }));
             } else if (productString.includes("dam")) {
@@ -200,7 +204,10 @@
                 rssKey: key,
                 product: "dam",
                 index: `dam${key}`,
-                directLink: "NEEDS DAM DIRECT LINKS",
+                directLink: this.convertDateString(
+                  grouped[key][0].pubDate,
+                  "dam"
+                ),
                 tags: grouped[key][0].tags,
               }));
             } else {
