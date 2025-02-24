@@ -105,7 +105,7 @@
     computed: {},
     methods: {
       // TODO This is only working on the PM array and needs to be adjusted to all products
-      convertDateString(dateString, product) {
+      convertDateString(dateString, product, tags = "none") {
         const date = new Date(dateString);
         const year = date.getUTCFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -114,7 +114,11 @@
         console.warn(
           `DATESTRING${dateString} MONTH${month} DAY${day} YEAR${year}`
         );
-        return `https://cloudinary.com/documentation/rn_${productURLModifier}_${month}_${day}_${year}`;
+        // TODO Adjust the Integrations link logic to return a relevant link based on tags
+        // TODO like this with wordpress https://cloudinary.com/documentation/integrations_release_notes#wordpress_plugin_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1501590940_wordpress_plain_svg_title_wordpress_plugin_width_23px_style_margin_bottom_5px
+        return product === "int"
+          ? "https://cloudinary.com/documentation/integrations_release_notes"
+          : `https://cloudinary.com/documentation/rn_${productURLModifier}_${month}_${day}_${year}`;
       },
       async fetchRSSFeed(productType = "pm") {
         // * Depending on the product type, choose the correct url
@@ -220,7 +224,11 @@
                 rssKey: key,
                 product: "int",
                 index: `int${key}`,
-                directLink: "NEEDS INT DIRECT LINK",
+                directLink: this.convertDateString(
+                  grouped[key][0].pubDate,
+                  "int",
+                  grouped[key][0].tags
+                ),
                 tags: grouped[key][0].tags,
               }));
             }
