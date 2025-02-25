@@ -109,7 +109,7 @@
         const year = date.getUTCFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, "0");
         const day = String(date.getUTCDate()).padStart(2, "0");
-        const productURLModifier = product;
+
         console.warn(
           `datestring ${dateString} month ${month} day ${day} ${year}`
         );
@@ -160,7 +160,7 @@
             return "https://cloudinary.com/documentation/integrations_release_notes";
           }
         } else {
-          return `https://cloudinary.com/documentation/rn_${productURLModifier}_${month}_${day}_${year}`;
+          return `https://cloudinary.com/documentation/rn_${product}_${month}_${day}_${year}`;
         }
       },
       async fetchRSSFeed(productType = "pm") {
