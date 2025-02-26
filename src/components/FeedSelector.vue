@@ -114,40 +114,59 @@
         console.dir(tags);
         // * Get the integration URL based on tags
         const getIntegrationURL = (tags) => {
-          const integrationURLs = {
-            requiredTags: ["wordpress"],
-            wordpress:
-              "https://cloudinary.com/documentation/integrations_release_notes#wordpress_plugin_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1501590940_wordpress_plain_svg_title_wordpress_plugin_width_23px_style_margin_bottom_5px",
-            requiredTags: ["sap", "commerce"],
-            sapCommerce:
-              "https://cloudinary.com/documentation/integrations_release_notes#sap_commerce_extension_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1617879432_sap_commerce_extension_plain_svg_title_sap_commerce_extension_width_30px",
-            requiredTags: ["salesforce", "marketing"],
-            salesforceMarketingCloud:
-              "https://cloudinary.com/documentation/integrations_release_notes#salesforce_marketing_cloud_app_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_marketing_cloud_app_width_25px",
-            requiredTags: ["salesforce", "b2c"],
-            salesforceCommerceB2C:
-              "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_b2c_commerce_cartridge_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_commerce_cloud_b2c_commerce_cartridge_width_25px",
-            requiredTags: ["salesforce", "page", "designer"],
-            salesforcePageDesigner:
-              "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_page_designer_cartridge_img_src_https_cloudinary_res_cloudinary_com_image_upload_w_28_q_auto_docsite_cms_sfcc_svg_title_salesforce_commerce_cloud_page_designer_width_25px",
-            requiredTags: ["salesforce", "headless"],
-            salesforceHeadlessCommerce:
-              "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_b2c_commerce_cartridge_for_headless_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_commerce_cloud_b2c_commerce_cartridge_width_25px",
-            requiredTags: ["magento"],
-            magentoAdobeCommerce:
-              "https://cloudinary.com/documentation/integrations_release_notes#magento_adobe_commerce_extension_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1501590941_magento_plain_svg_title_magento_adobe_commerce_extension_width_18px_style_margin_left_3px",
-            requiredTags: ["figma"],
-            figma:
-              "https://cloudinary.com/documentation/integrations_release_notes#figma_plugin_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1728919342_figma_integration_plain_svg_title_figma_plugin_width_23px_style_margin_bottom_5px",
-          };
+          const tagSet = new Set(tags);
+          const integrations = [
+            // Wordpress
+            {
+              requiredTags: ["wordpress"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#wordpress_plugin_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1501590940_wordpress_plain_svg_title_wordpress_plugin_width_23px_style_margin_bottom_5px",
+            },
+            // SAP Commerce
+            {
+              requiredTags: ["sap", "commerce"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#sap_commerce_extension_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1617879432_sap_commerce_extension_plain_svg_title_sap_commerce_extension_width_30px",
+            },
+            // Salesforce Marketing Cloud
+            {
+              requiredTags: ["salesforce", "marketing"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#salesforce_marketing_cloud_app_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_marketing_cloud_app_width_25px",
+            },
+            // Salesforce Commerce B2c
+            {
+              requiredTags: ["salesforce", "b2c"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_b2c_commerce_cartridge_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_commerce_cloud_b2c_commerce_cartridge_width_25px",
+            },
+            // Salesforce Page Designer
+            {
+              requiredTags: ["salesforce", "page", "designer"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_page_designer_cartridge_img_src_https_cloudinary_res_cloudinary_com_image_upload_w_28_q_auto_docsite_cms_sfcc_svg_title_salesforce_commerce_cloud_page_designer_width_25px",
+            },
+            {
+              requiredTags: ["headless", "salesforce"],
+              salesforceHeadlessCommerce:
+                "https://cloudinary.com/documentation/integrations_release_notes#salesforce_commerce_cloud_b2c_commerce_cartridge_for_headless_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1616515093_salesforce_page_designer_cartridge_plain_svg_title_salesforce_commerce_cloud_b2c_commerce_cartridge_width_25px",
+            },
+            // Magento
+            {
+              requiredTags: ["magento"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#magento_adobe_commerce_extension_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1501590941_magento_plain_svg_title_magento_adobe_commerce_extension_width_18px_style_margin_left_3px",
+            },
+            // Figma
+            {
+              requiredTags: ["figma"],
+              url: "https://cloudinary.com/documentation/integrations_release_notes#figma_plugin_img_src_https_cloudinary_res_cloudinary_com_image_upload_v1728919342_figma_integration_plain_svg_title_figma_plugin_width_23px_style_margin_bottom_5px",
+            },
+          ];
 
           // * Loop through and return the first matching URL based on tags
-          for (const [key, url] of Object.entries(integrationURLs)) {
-            if (tags.includes(key)) {
+          for (const { requiredTags, url } of integrations) {
+            const allPresent = requiredTags.every((requiredTag) =>
+              tagSet.has(requiredTag)
+            );
+            if (allPresent) {
               return url;
             }
           }
-
           // * Defaults to the most recent integrations release notes URL if no match is found above
           return "https://cloudinary.com/documentation/integrations_release_notes";
         };
