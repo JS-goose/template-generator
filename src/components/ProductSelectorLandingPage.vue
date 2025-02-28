@@ -28,7 +28,7 @@
     </div>
     <FeedSelector :searchInputValue="searchInputValue" ref="feedSelectorRef" />
     <EmailTemplate
-      v-show="emailTemplates.length > 0"
+      v-if="emailTemplates.length > 0"
       :emailTemplates="emailTemplates"
     />
   </section>
