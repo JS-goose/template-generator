@@ -7,12 +7,32 @@
         <a href="https://github.com/JS-goose" rel="noopener noreferrer"
           >GitHub</a
         >&nbsp;|
-        <a href="https://www.linkedin.com/in/jj-goose/">LinkedIn</a>
+        <a
+          href="https://www.linkedin.com/in/jj-goose/"
+          rel="noopener noreferrer"
+          >LinkedIn</a
+        >
       </p>
-      <p><a href="https://cloudinary.com/tou">Terms of Use</a></p>
-      <p><a href="https://cloudinary.com/privacy">Privacy Policy</a></p>
       <p>
-        &copy; {{ new Date().getFullYear() }} Cloudinary. All rights reserved.
+        <a href="https://cloudinary.com/tou" rel="noopener noreferrer"
+          >Terms of Use</a
+        >
+      </p>
+      <p>
+        <a href="https://cloudinary.com/privacy" rel="noopener noreferrer"
+          >Privacy Policy</a
+        >
+      </p>
+      <p>
+        <a
+          href="https://cloudinary.com/product_updates"
+          rel="noopener noreferrer"
+          >Product Updates</a
+        >
+      </p>
+      <p>
+        &copy; {{ new Date().getUTCFullYear() }} Cloudinary. All rights
+        reserved.
       </p>
     </div>
   </footer>
