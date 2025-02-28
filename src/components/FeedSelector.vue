@@ -12,7 +12,7 @@
           id="rssObjSelectionCount"
           :value="this.rssObjsForTemplate.length"
         />
-        <p>Tag search value: {{ tagSearchInputValue }}</p>
+        <p>Search value: {{ searchInputValue }}</p>
       </form>
     </div>
     <div v-for="name in products" :key="name" class="feed-data-container">
@@ -182,7 +182,7 @@
 
   export default {
     props: {
-      tagSearchInputValue: String,
+      searchInputValue: String,
     },
     data() {
       return {
@@ -206,8 +206,8 @@
     computed: {
       // TODO search multiple tags, search
       filteredPmItems() {
-        if (!this.tagSearchInputValue) return this.pmGroupedItemsArray;
-        const searchText = this.tagSearchInputValue.toLowerCase();
+        if (!this.searchInputValue) return this.pmGroupedItemsArray;
+        const searchText = this.searchInputValue.toLowerCase();
         return this.pmGroupedItemsArray.filter(
           (item) =>
             item.tags.some((tag) => tag.includes(searchText)) ||
@@ -215,8 +215,8 @@
         );
       },
       filteredDamItems() {
-        if (!this.tagSearchInputValue) return this.damGroupedItemsArray;
-        const searchText = this.tagSearchInputValue.toLowerCase();
+        if (!this.searchInputValue) return this.damGroupedItemsArray;
+        const searchText = this.searchInputValue.toLowerCase();
         return this.damGroupedItemsArray.filter(
           (item) =>
             item.tags.some((tag) => tag.includes(searchText)) ||
@@ -224,8 +224,8 @@
         );
       },
       filteredIntItems() {
-        if (!this.tagSearchInputValue) return this.intGroupedItemsArray;
-        const searchText = this.tagSearchInputValue.toLowerCase();
+        if (!this.searchInputValue) return this.intGroupedItemsArray;
+        const searchText = this.searchInputValue.toLowerCase();
         return this.intGroupedItemsArray.filter(
           (item) =>
             item.tags.some((tag) => tag.includes(searchText)) ||
