@@ -1,9 +1,6 @@
 <template>
   <footer>
-    <div id="footer-top">
-      <p>footer top</p>
-      <p>footer logo here</p>
-    </div>
+    <div id="footer-top"></div>
     <div id="footer-bottom">
       <p>
         Built with &hearts; and &#9749; by Jonathan Sexton -
