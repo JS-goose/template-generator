@@ -35,16 +35,22 @@
       </button>
     </div>
     <FeedSelector :searchInputValue="searchInputValue" ref="feedSelectorRef" />
+    <EmailTemplate
+      v-if="emailTemplates.length"
+      :emailTemplates="emailTemplates"
+    />
   </section>
 </template>
 
 <script>
   import FeedSelector from "./FeedSelector.vue";
+  import EmailTemplate from "./EmailTemplate.vue";
 
   export default {
     name: "ProductSelectorLandingPage",
     components: {
       FeedSelector,
+      EmailTemplate,
     },
 
     data() {
@@ -82,15 +88,15 @@
       generateEmailTemplate() {
         this.emailTemplates = this.rssDataFromFeedSelector.map((item) => {
           return `
-                        <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
-                          <h3 style="color:#2d2d2d;">${item.title}</h3>
-                          <p>${item.desc.replace(/\n/g, "<br>")}</p>
-                          <p><a href="${
-                            item.link
-                          }" style="color:#007bff;">Read More</a></p>
-                          <p><small>Published on: ${item.pubDate}</small></p>
-                        </div>
-                        `;
+                          <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
+                            <h3 style="color:#2d2d2d;">${item.title}</h3>
+                            <p>${item.desc.replace(/\n/g, "<br>")}</p>
+                            <p><a href="${
+                              item.link
+                            }" style="color:#007bff;">Read More</a></p>
+                            <p><small>Published on: ${item.pubDate}</small></p>
+                          </div>
+                          `;
         });
         this.openNewWindowForTemplateDisplay();
       },
@@ -99,22 +105,22 @@
 
         if (newWindow) {
           newWindow.document.write(`
-                    <html>
-                    <head>
-                      <title>Email Templates</title>
-                      <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-                        h3 { color: #2d2d2d; }
-                        a { color: #007bff; text-decoration: none; }
-                      </style>
-                    </head>
-                    <body>
-                      <h2>Generated Email Templates</h2>
-                      ${this.emailTemplates.join("")}
-                    </body>
-                    </html>
-                  `);
+                      <html>
+                      <head>
+                        <title>Email Templates</title>
+                        <style>
+                          body { font-family: Arial, sans-serif; padding: 20px; }
+                          .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+                          h3 { color: #2d2d2d; }
+                          a { color: #007bff; text-decoration: none; }
+                        </style>
+                      </head>
+                      <body>
+                        <h2>Generated Email Templates</h2>
+                        ${this.emailTemplates.join("")}
+                      </body>
+                      </html>
+                    `);
           newWindow.document.close(); // Close document to finish writing
         } else {
           alert("Popup blocked! Please allow popups for this site.");
