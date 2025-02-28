@@ -204,18 +204,34 @@
     },
     // TODO Once these computed properties are built, I need to update the template so they reference the computed function instead of the explicit array
     computed: {
+      // TODO search multiple tags, search
       filteredPmItems() {
-        if (!this.tagSearchInputValue) {
-          console.log("computed running");
-          return this.pmGroupedItemsArray;
-        }
+        if (!this.tagSearchInputValue) return this.pmGroupedItemsArray;
         const searchText = this.tagSearchInputValue.toLowerCase();
-        return this.pmGroupedItemsArray.filter((item) =>
-          item.tags.some((tag) => tag.includes(searchText))
+        return this.pmGroupedItemsArray.filter(
+          (item) =>
+            item.tags.some((tag) => tag.includes(searchText)) ||
+            item.pubDate.toLowerCase().includes(searchText)
         );
       },
-      filteredDamItems() {},
-      filteredIntItems() {},
+      filteredDamItems() {
+        if (!this.tagSearchInputValue) return this.damGroupedItemsArray;
+        const searchText = this.tagSearchInputValue.toLowerCase();
+        return this.damGroupedItemsArray.filter(
+          (item) =>
+            item.tags.some((tag) => tag.includes(searchText)) ||
+            item.pubDate.toLowerCase().includes(searchText)
+        );
+      },
+      filteredIntItems() {
+        if (!this.tagSearchInputValue) return this.intGroupedItemsArray;
+        const searchText = this.tagSearchInputValue.toLowerCase();
+        return this.intGroupedItemsArray.filter(
+          (item) =>
+            item.tags.some((tag) => tag.includes(searchText)) ||
+            item.pubDate.toLowerCase().includes(searchText)
+        );
+      },
     },
     methods: {
       // TODO When multiple tags matching exist such as SFCC B2C Commerce and Page Designer Cartridges or when Magento tag exists the default is the integration landing page - needs to be looked at
