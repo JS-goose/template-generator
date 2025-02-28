@@ -25,7 +25,7 @@
       <!-- ! PM -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
         <li
-          v-for="key in filteredPmItems"
+          v-for="key in filteredRssItems.pm"
           :key="key.title"
           class="feed-selector-rss-list-item"
           :class="{
@@ -74,7 +74,7 @@
       <!-- ! DAM -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
         <li
-          v-for="key in filteredDamItems"
+          v-for="key in filteredRssItems.dam"
           :key="key.title"
           class="feed-selector-rss-list-item"
           :class="{
@@ -123,7 +123,7 @@
       <!-- ! INT -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
         <li
-          v-for="key in filteredIntItems"
+          v-for="key in filteredRssItems.int"
           :key="key.title"
           class="feed-selector-rss-list-item"
           :class="{
@@ -215,9 +215,9 @@
           .filter((text) => text.trim() !== "");
 
         return {
-          pm: this.rssItemFilterHelper(this.pmGroupedItemsArray, searchTerms),
-          dam: this.rssItemFilterHelper(this.damGroupedItemsArray, searchTerms),
-          int: this.rssItemFilterHelper(this.intGroupedItemsArray, searchTerms),
+          pm: this.rssItemFilterHelper(this.pmGroupedItemsArray, searchText),
+          dam: this.rssItemFilterHelper(this.damGroupedItemsArray, searchText),
+          int: this.rssItemFilterHelper(this.intGroupedItemsArray, searchText),
         };
       },
       // TODO search multiple tags, search
@@ -253,10 +253,14 @@
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
           const rssTags = rss.tags.map((tag) => tag.toLowerCase());
-          const pubDateFormatted = this.normalizeDateHelper(item.pubDate);
+          const pubDateFormatted = this.normalizeDateHelper(rss.pubDate);
 
           return searchText.some(
-            (text) => rssTags.includes(text) || pubDateFormatted.includes(text)
+            (text) =>
+              rssTags.some((tag) => tag.includes(text)) ||
+              pubDateFormatted.some((date) => date.includes(text)) ||
+              rss.title.toLowerCase().includes(text) ||
+              rss.desc.toLowerCase().includes(text)
           );
         });
       },
@@ -276,7 +280,7 @@
           return [
             new Date(Date.UTC(utcYear, utcMonth - 1, utcDay))
               .toDateString()
-              .toLowerCase(), // * "Sat Feb 01 2025"
+              .toLowerCase(), // * "sat feb 01 2025"
             `${utcYear}-${utcMonth}-${utcDay}`, // * "2025-02-01" yyyy-mm-dd
             `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm-dd-yyyy
             `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd-mm-yyyy
