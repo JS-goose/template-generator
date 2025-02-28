@@ -22,10 +22,111 @@
       <button @click="clearRSSFeedData(name)">
         Clear {{ name }} Feed Data
       </button>
-      <ul class="feed-selector-rss-list-container">
-        <!-- TODO Adjust the selected class as it's adding the effects to items from other feeds that have not been selected -->
+      <!-- ! PM -->
+      <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
+        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
         <li
-          v-for="key in arrayToLoop(name)"
+          v-for="key in filteredPmItems"
+          :key="key.title"
+          class="feed-selector-rss-list-item"
+          :class="{
+            selected: rssObjsForTemplate.some(
+              (item) => item.index === key.index
+            ),
+          }"
+        >
+          <div>
+            <label for="rss-list-item-include-checkbox">
+              Include
+              <input
+                type="checkbox"
+                name="rss-list-item-include-checkbox"
+                id="rss-list-item-include-checkbox"
+                @click="includeInTemplate(key, name)"
+            /></label>
+          </div>
+          <div class="rss-list-item-title-container">
+            <p>{{ key.title.toUpperCase() }}</p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Publish Date:</span>
+              {{ key.pubDate }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Description:</span> {{ key.desc }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <a
+                :href="key.directLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <!-- ! DAM -->
+      <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
+        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
+        <li
+          v-for="key in filteredDamItems"
+          :key="key.title"
+          class="feed-selector-rss-list-item"
+          :class="{
+            selected: rssObjsForTemplate.some(
+              (item) => item.index === key.index
+            ),
+          }"
+        >
+          <div>
+            <label for="rss-list-item-include-checkbox">
+              Include
+              <input
+                type="checkbox"
+                name="rss-list-item-include-checkbox"
+                id="rss-list-item-include-checkbox"
+                @click="includeInTemplate(key, name)"
+            /></label>
+          </div>
+          <div class="rss-list-item-title-container">
+            <p>{{ key.title.toUpperCase() }}</p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Publish Date:</span>
+              {{ key.pubDate }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Description:</span> {{ key.desc }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <a
+                :href="key.directLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <!-- ! INT -->
+      <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
+        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
+        <li
+          v-for="key in filteredIntItems"
           :key="key.title"
           class="feed-selector-rss-list-item"
           :class="{
@@ -82,7 +183,6 @@
   export default {
     props: {
       tagSearchInputValue: String,
-      required: false,
     },
     data() {
       return {
@@ -102,7 +202,21 @@
         rssObjsForTemplate: [],
       };
     },
-    computed: {},
+    // TODO Once these computed properties are built, I need to update the template so they reference the computed function instead of the explicit array
+    computed: {
+      filteredPmItems() {
+        if (!this.tagSearchInputValue) {
+          console.log("computed running");
+          return this.pmGroupedItemsArray;
+        }
+        const searchText = this.tagSearchInputValue.toLowerCase();
+        return this.pmGroupedItemsArray.filter((item) =>
+          item.tags.some((tag) => tag.includes(searchText))
+        );
+      },
+      filteredDamItems() {},
+      filteredIntItems() {},
+    },
     methods: {
       // TODO When multiple tags matching exist such as SFCC B2C Commerce and Page Designer Cartridges or when Magento tag exists the default is the integration landing page - needs to be looked at
       getDynamicReleaseNotesURL(dateString, product, tags) {
@@ -111,7 +225,6 @@
         const year = date.getUTCFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, "0");
         const day = String(date.getUTCDate()).padStart(2, "0");
-        console.dir(tags);
         // * Get the integration URL based on tags
         const getIntegrationURL = (tags) => {
           const tagSet = new Set(tags);
@@ -201,7 +314,7 @@
           await this.convertRssToJson(response.data, productString);
           console.log("RESPONSE DATA", response);
         } catch (error) {
-          this.error = `Error fetching the ${productString} feed - check URL for accuracy`;
+          this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
         }
       },
       convertRssToJson(xml, productString) {
@@ -334,7 +447,6 @@
         return this.rssObjsForTemplate;
       },
     },
-    computed: {},
     watch: {
       message(newValue, oldValue) {
         console.log(newValue, oldValue);
