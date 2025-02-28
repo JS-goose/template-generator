@@ -24,7 +24,6 @@
       </button>
       <!-- ! PM -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
-        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
         <li
           v-for="key in filteredPmItems"
           :key="key.title"
@@ -74,7 +73,6 @@
       </ul>
       <!-- ! DAM -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
-        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
         <li
           v-for="key in filteredDamItems"
           :key="key.title"
@@ -124,7 +122,6 @@
       </ul>
       <!-- ! INT -->
       <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
-        <!-- TODO  if statement here to cover each product and then I can remove the arrayToLoop function-->
         <li
           v-for="key in filteredIntItems"
           :key="key.title"
@@ -202,38 +199,94 @@
         rssObjsForTemplate: [],
       };
     },
-    // TODO Once these computed properties are built, I need to update the template so they reference the computed function instead of the explicit array
     computed: {
+      filteredRssItems() {
+        if (!this.searchInputValue) {
+          return {
+            pm: this.pmGroupedItemsArray,
+            dam: this.damGroupedItemsArray,
+            int: this.intGroupedItemsArray,
+          };
+        }
+
+        const searchText = this.searchInputValue
+          .toLowerCase()
+          .split(/[,\s]+/)
+          .filter((text) => text.trim() !== "");
+
+        return {
+          pm: this.rssItemFilterHelper(this.pmGroupedItemsArray, searchTerms),
+          dam: this.rssItemFilterHelper(this.damGroupedItemsArray, searchTerms),
+          int: this.rssItemFilterHelper(this.intGroupedItemsArray, searchTerms),
+        };
+      },
       // TODO search multiple tags, search
-      filteredPmItems() {
-        if (!this.searchInputValue) return this.pmGroupedItemsArray;
-        const searchText = this.searchInputValue.toLowerCase();
-        return this.pmGroupedItemsArray.filter(
-          (item) =>
-            item.tags.some((tag) => tag.includes(searchText)) ||
-            item.pubDate.toLowerCase().includes(searchText)
-        );
-      },
-      filteredDamItems() {
-        if (!this.searchInputValue) return this.damGroupedItemsArray;
-        const searchText = this.searchInputValue.toLowerCase();
-        return this.damGroupedItemsArray.filter(
-          (item) =>
-            item.tags.some((tag) => tag.includes(searchText)) ||
-            item.pubDate.toLowerCase().includes(searchText)
-        );
-      },
-      filteredIntItems() {
-        if (!this.searchInputValue) return this.intGroupedItemsArray;
-        const searchText = this.searchInputValue.toLowerCase();
-        return this.intGroupedItemsArray.filter(
-          (item) =>
-            item.tags.some((tag) => tag.includes(searchText)) ||
-            item.pubDate.toLowerCase().includes(searchText)
-        );
-      },
+      // filteredPmItems() {
+      //   if (!this.searchInputValue) return this.pmGroupedItemsArray;
+      //   const searchText = this.searchInputValue.toLowerCase();
+      //   return this.pmGroupedItemsArray.filter(
+      //     (item) =>
+      //       item.tags.some((tag) => tag.includes(searchText)) ||
+      //       item.pubDate.toLowerCase().includes(searchText)
+      //   );
+      // },
+      // filteredDamItems() {
+      //   if (!this.searchInputValue) return this.damGroupedItemsArray;
+      //   const searchText = this.searchInputValue.toLowerCase();
+      //   return this.damGroupedItemsArray.filter(
+      //     (item) =>
+      //       item.tags.some((tag) => tag.includes(searchText)) ||
+      //       item.pubDate.toLowerCase().includes(searchText)
+      //   );
+      // },
+      // filteredIntItems() {
+      //   if (!this.searchInputValue) return this.intGroupedItemsArray;
+      //   const searchText = this.searchInputValue.toLowerCase();
+      //   return this.intGroupedItemsArray.filter(
+      //     (item) =>
+      //       item.tags.some((tag) => tag.includes(searchText)) ||
+      //       item.pubDate.toLowerCase().includes(searchText)
+      //   );
+      // },
     },
     methods: {
+      rssItemFilterHelper(rssItems, searchText) {
+        return rssItems.filter((rss) => {
+          const rssTags = rss.tags.map((tag) => tag.toLowerCase());
+          const pubDateFormatted = this.normalizeDateHelper(item.pubDate);
+
+          return searchText.some(
+            (text) => rssTags.includes(text) || pubDateFormatted.includes(text)
+          );
+        });
+      },
+      normalizeDateHelper(dateString) {
+        try {
+          const date = new Date(dateString);
+          // TODO Add robust error handling here to let the user know this date string is invalid
+          if (isNaN(date.getTime())) {
+            console.error("Invalid date format:", dateString);
+            return [];
+          }
+
+          const utcYear = date.getUTCFullYear();
+          const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0"); // Zero-padded
+          const utcDay = String(date.getUTCDate()).padStart(2, "0");
+
+          return [
+            new Date(Date.UTC(utcYear, utcMonth - 1, utcDay))
+              .toDateString()
+              .toLowerCase(), // * "Sat Feb 01 2025"
+            `${utcYear}-${utcMonth}-${utcDay}`, // * "2025-02-01" yyyy-mm-dd
+            `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm-dd-yyyy
+            `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd-mm-yyyy
+          ];
+        } catch (dateError) {
+          // TODO Add robust error handling here to let the user know this date string is invalid
+          console.error("Date conversion error:", dateError);
+          return [];
+        }
+      },
       // TODO When multiple tags matching exist such as SFCC B2C Commerce and Page Designer Cartridges or when Magento tag exists the default is the integration landing page - needs to be looked at
       getDynamicReleaseNotesURL(dateString, product, tags) {
         // * Helper function to convert the published date string value and provide dynamic URLs based on the product
