@@ -220,34 +220,6 @@
           int: this.rssItemFilterHelper(this.intGroupedItemsArray, searchText),
         };
       },
-      // TODO search multiple tags, search
-      // filteredPmItems() {
-      //   if (!this.searchInputValue) return this.pmGroupedItemsArray;
-      //   const searchText = this.searchInputValue.toLowerCase();
-      //   return this.pmGroupedItemsArray.filter(
-      //     (item) =>
-      //       item.tags.some((tag) => tag.includes(searchText)) ||
-      //       item.pubDate.toLowerCase().includes(searchText)
-      //   );
-      // },
-      // filteredDamItems() {
-      //   if (!this.searchInputValue) return this.damGroupedItemsArray;
-      //   const searchText = this.searchInputValue.toLowerCase();
-      //   return this.damGroupedItemsArray.filter(
-      //     (item) =>
-      //       item.tags.some((tag) => tag.includes(searchText)) ||
-      //       item.pubDate.toLowerCase().includes(searchText)
-      //   );
-      // },
-      // filteredIntItems() {
-      //   if (!this.searchInputValue) return this.intGroupedItemsArray;
-      //   const searchText = this.searchInputValue.toLowerCase();
-      //   return this.intGroupedItemsArray.filter(
-      //     (item) =>
-      //       item.tags.some((tag) => tag.includes(searchText)) ||
-      //       item.pubDate.toLowerCase().includes(searchText)
-      //   );
-      // },
     },
     methods: {
       rssItemFilterHelper(rssItems, searchText) {
@@ -274,7 +246,7 @@
           }
 
           const utcYear = date.getUTCFullYear();
-          const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0"); // Zero-padded
+          const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
           const utcDay = String(date.getUTCDate()).padStart(2, "0");
 
           return [

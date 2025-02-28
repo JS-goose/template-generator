@@ -21,8 +21,8 @@
           type="text"
           name="all-rss-feeds-tag-search"
           id="all-rss-feeds-tag-search"
-          placeholder="keyword or date"
-          title="Date in the format of Feb 21 2025"
+          placeholder="Comma separated tags, keywords, or date"
+          title="Format = yyyy-mm-dd/mm-dd-yyyy/dd-mm-yyyy"
           v-model="searchInputValue"
           maxlength="250"
       /></label>
@@ -82,13 +82,15 @@
       generateEmailTemplate() {
         this.emailTemplates = this.rssDataFromFeedSelector.map((item) => {
           return `
-            <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
-              <h3 style="color:#2d2d2d;">${item.title}</h3>
-              <p>${item.desc.replace(/\n/g, "<br>")}</p>
-              <p><a href="${item.link}" style="color:#007bff;">Read More</a></p>
-              <p><small>Published on: ${item.pubDate}</small></p>
-            </div>
-            `;
+                        <div style="border:1px solid #ddd; padding: 10px; margin-bottom: 10px; font-family: Arial, sans-serif;">
+                          <h3 style="color:#2d2d2d;">${item.title}</h3>
+                          <p>${item.desc.replace(/\n/g, "<br>")}</p>
+                          <p><a href="${
+                            item.link
+                          }" style="color:#007bff;">Read More</a></p>
+                          <p><small>Published on: ${item.pubDate}</small></p>
+                        </div>
+                        `;
         });
         this.openNewWindowForTemplateDisplay();
       },
@@ -97,22 +99,22 @@
 
         if (newWindow) {
           newWindow.document.write(`
-                                    <html>
-                                    <head>
-                                      <title>Email Templates</title>
-                                      <style>
-                                        body { font-family: Arial, sans-serif; padding: 20px; }
-                                        .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-                                        h3 { color: #2d2d2d; }
-                                        a { color: #007bff; text-decoration: none; }
-                                      </style>
-                                    </head>
-                                    <body>
-                                      <h2>Generated Email Templates</h2>
-                                      ${this.emailTemplates.join("")}
-                                    </body>
-                                    </html>
-                                  `);
+                    <html>
+                    <head>
+                      <title>Email Templates</title>
+                      <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+                        h3 { color: #2d2d2d; }
+                        a { color: #007bff; text-decoration: none; }
+                      </style>
+                    </head>
+                    <body>
+                      <h2>Generated Email Templates</h2>
+                      ${this.emailTemplates.join("")}
+                    </body>
+                    </html>
+                  `);
           newWindow.document.close(); // Close document to finish writing
         } else {
           alert("Popup blocked! Please allow popups for this site.");
@@ -133,6 +135,10 @@
 
   .all-feeds-buttons {
     margin: 5px;
+  }
+
+  #all-rss-feeds-tag-search {
+    width: 300px;
   }
 
   button {
