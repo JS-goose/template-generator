@@ -28,7 +28,7 @@
     </div>
     <FeedSelector :searchInputValue="searchInputValue" ref="feedSelectorRef" />
     <EmailTemplate
-      v-if="emailTemplates.length"
+      v-show="emailTemplates.length > 0"
       :emailTemplates="emailTemplates"
     />
   </section>
@@ -74,43 +74,32 @@
         // * Pull data from child component
         if (this.$refs.feedSelectorRef) {
           this.rssDataFromFeedSelector = this.$refs.feedSelectorRef.getRssData();
+          console.warn("Fetched Data:", this.rssDataFromFeedSelector);
+          // TODO Needs better error handling
+          if (this.rssDataFromFeedSelector.length === 0) {
+            console.error("No data received from FeedSelector!");
+            return;
+          }
           this.generateEmailTemplate();
         }
       },
       generateEmailTemplate() {
-        this.emailTemplates = this.rssDataFromFeedSelector.map((item) => ({
-          title: item.title,
-          desc: item.desc.replace(/\n/g, "<br>"),
-          link: item.link,
-          pubDate: item.pubDate,
-        }));
-      },
-      // openNewWindowForTemplateDisplay() {
-      //   const newWindow = window.open("", "_blank", "width=1280,height=720");
+        if (!this.rssDataFromFeedSelector.length) {
+          console.warn("No RSS items to generate template.");
+          return;
+        }
 
-      //   if (newWindow) {
-      //     newWindow.document.write(`
-      //                   <html>
-      //                   <head>
-      //                     <title>Email Templates</title>
-      //                     <style>
-      //                       body { font-family: Arial, sans-serif; padding: 20px; }
-      //                       .email-container { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-      //                       h3 { color: #2d2d2d; }
-      //                       a { color: #007bff; text-decoration: none; }
-      //                     </style>
-      //                   </head>
-      //                   <body>
-      //                     <h2>Generated Email Templates</h2>
-      //                     ${this.emailTemplates.join("")}
-      //                   </body>
-      //                   </html>
-      //                 `);
-      //     newWindow.document.close(); // Close document to finish writing
-      //   } else {
-      //     alert("Popup blocked! Please allow popups for this site.");
-      //   }
-      // },
+        this.emailTemplates = this.rssDataFromFeedSelector.map((item) => ({
+          title: item.title || "Untitled",
+          desc: item.desc
+            ? item.desc.replace(/\n/g, "<br>")
+            : "No description available.",
+          link: item.link || "#",
+          pubDate: item.pubDate || "Unknown date",
+        }));
+
+        console.log("Generated Templates:", this.emailTemplates);
+      },
     },
   };
 </script>
