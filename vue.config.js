@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service');
+const { title } = require('process');
 const webpack = require('webpack');
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -19,4 +20,12 @@ module.exports = defineConfig({
       }),
     ],
   },
+  pages: {
+    index: {
+      entry: 'src/main.js',
+      template: 'public/index.html',
+      filename: 'index.html',
+      title: 'Cloudinary RSS Mailer'
+    }
+  }
 });
