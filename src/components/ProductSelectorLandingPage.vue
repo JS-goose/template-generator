@@ -4,7 +4,11 @@
       <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
         Pull All RSS Feeds
       </button>
-      <button @click="fetchTemplateData" class="all-feeds-buttons">
+      <button
+        @click="fetchTemplateData"
+        class="all-feeds-buttons"
+        v-if="templateUpdated"
+      >
         Generate Template
       </button>
       <label for="all-rss-feeds-tag-search">
@@ -26,7 +30,11 @@
         Clear All RSS Feed Data
       </button>
     </div>
-    <FeedSelector :searchInputValue="searchInputValue" ref="feedSelectorRef" />
+    <FeedSelector
+      :searchInputValue="searchInputValue"
+      ref="feedSelectorRef"
+      @templateObjsUpdated="handleTemplateUpdate"
+    />
     <EmailTemplate
       v-if="showTemplateModal"
       :emailTemplates="emailTemplates"
@@ -53,9 +61,20 @@
         rssDataFromFeedSelector: [],
         emailTemplates: [],
         showTemplateModal: false,
+        templateObjsUpdated: false,
+        templateObjsLength: 0,
       };
     },
+    computed: {
+      templateUpdated() {
+        return this.templateObjsUpdated && this.templateObjsLength;
+      },
+    },
     methods: {
+      handleTemplateUpdate(count) {
+        this.templateObjsUpdated = true;
+        this.templateObjsLength = count;
+      },
       // * Emit events to child component
       pullAllRSSFeeds() {
         this.$refs.feedSelectorRef.fetchRSSFeed("pm");

@@ -482,6 +482,7 @@
             (item) => item.index !== rssItem.index
           );
         }
+        this.$emit("templateObjsUpdated", this.rssObjsForTemplate.length);
       },
       feedPullTime(name) {
         return this.timesUpdated[name];
