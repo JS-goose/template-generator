@@ -254,8 +254,11 @@
               .toDateString()
               .toLowerCase(), // * "sat feb 01 2025"
             `${utcYear}-${utcMonth}-${utcDay}`, // * "2025-02-01" yyyy-mm-dd
-            `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm-dd-yyyy
-            `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd-mm-yyyy
+            `${utcMonth}-${utcDay}-${utcYear}`, // * "02-01-2025" mm-dd-yyyy
+            `${utcDay}-${utcMonth}-${utcYear}`, // * "01-02-2025" dd-mm-yyyy
+            `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm/dd/yyyy
+            `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd/mm/yyyy
+            `${utcDay}/${utcMonth}/${utcYear}`, // * "2025/02/01" yyyy/mm/dd
           ];
         } catch (dateError) {
           // TODO Add robust error handling here to let the user know this date string is invalid
