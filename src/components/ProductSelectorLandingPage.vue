@@ -28,8 +28,9 @@
     </div>
     <FeedSelector :searchInputValue="searchInputValue" ref="feedSelectorRef" />
     <EmailTemplate
-      v-if="emailTemplates.length > 0"
+      v-if="showTemplateModal"
       :emailTemplates="emailTemplates"
+      :closeTemplateModal="toggleTemplateModal"
     />
   </section>
 </template>
@@ -51,6 +52,7 @@
         displayClearBtn: false,
         rssDataFromFeedSelector: [],
         emailTemplates: [],
+        showTemplateModal: false,
       };
     },
     methods: {
@@ -69,6 +71,7 @@
         this.searchInputValue = "";
         this.emailTemplates = [];
         this.displayClearBtn = false;
+        this.showTemplateModal = false;
       },
       fetchTemplateData() {
         // * Pull data from child component
@@ -84,6 +87,7 @@
         }
       },
       generateEmailTemplate() {
+        // TODO Needs better error handling
         if (!this.rssDataFromFeedSelector.length) {
           console.warn("No RSS items to generate template.");
           return;
@@ -97,8 +101,11 @@
           link: item.link || "#",
           pubDate: item.pubDate || "Unknown date",
         }));
-
+        this.showTemplateModal = true;
         console.log("Generated Templates:", this.emailTemplates);
+      },
+      toggleTemplateModal() {
+        this.showTemplateModal = !this.showTemplateModal;
       },
     },
   };
