@@ -1,11 +1,4 @@
 {
-  "functions": {
-    "api/rss.js": {
-      "runtime": "nodejs",
-      "memory": 128,
-      "maxDuration": 5
-    }
-  },
   "routes": [
     {
       "src": "/api/rss",
