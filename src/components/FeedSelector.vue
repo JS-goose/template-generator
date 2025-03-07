@@ -343,25 +343,47 @@
       },
       async fetchRSSFeed(productType = "pm") {
         // * Depending on the product type, choose the correct url
-        const productString = productType.includes("pm")
-          ? this.pmBaseURL
-          : productType.includes("dam")
-          ? this.damBaseURL
-          : productType.includes("int")
-          ? this.intBaseURL
-          : "";
+        // const productString = productType.includes("pm")
+        //   ? this.pmBaseURL
+        //   : productType.includes("dam")
+        //   ? this.damBaseURL
+        //   : productType.includes("int")
+        //   ? this.intBaseURL
+        //   : "";
 
         // * Proxy due to CORS
-        const proxy = "https://thingproxy.freeboard.io/fetch/";
-        this.jsonResults = null;
-        this.fetchError = null;
+        // const proxy = "https://thingproxy.freeboard.io/fetch/";
+        // this.jsonResults = null;
+        // this.fetchError = null;
+        // try {
+        //   const response = await axios.get(proxy + productString);
+        //   console.log("request sent", proxy + productString);
+        //   await this.convertRssToJson(response.data, productString);
+        //   console.log("RESPONSE DATA", response);
+        // } catch (error) {
+        //   this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
+        // }
         try {
-          const response = await axios.get(proxy + productString);
-          console.log("request sent", proxy + productString);
-          await this.convertRssToJson(response.data, productString);
-          console.log("RESPONSE DATA", response);
+          const vercelApiEndpoint = `https://template-generator-ten.vercel.app/api/rss?feed=${productType}`;
+          const cachedXmlData = localStorage.getItem(`rss_${productType}`);
+          if (cachedXmlData) {
+            console.log("Serving cached RSS data for", productType);
+            this.convertRssToJson(JSON.parse(cachedXmlData), productType);
+            return;
+          }
+          console.log("Fetching fresh RSS data for", productType);
+          const response = await fetch(vercelApiEndpoint);
+          if (!response.ok) throw new Error("Failed to fetch RSS");
+
+          const xmlData = await response.text();
+          const parsedData = await this.convertRssToJson(xmlData, productType);
+
+          // * Cache the response
+          localStorage.setItem(`rss_${productType}`, JSON.stringify(parsedData));
+          this.convertRssToJson(parsedData, productType);
         } catch (error) {
-          this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
+          console.error(`Error fetching RSS for ${productType}:`, error);
+          this.fetchError = `Error fetching ${productType} feed. Please try again later.`;
         }
       },
       convertRssToJson(xml, productString) {
@@ -371,7 +393,7 @@
         return new Promise((resolve, reject) => {
           parseString(xml, { explicitArray: true }, (error, result) => {
             if (error) {
-              this.error = "Problem parsing the XML";
+              this.fetchError = "Problem parsing the XML";
               reject("Problem parsing the XML");
               return;
             }
@@ -454,7 +476,7 @@
                 tags: grouped[key][0].tags,
               }));
             }
-            resolve();
+            resolve(items);
           });
         });
       },
