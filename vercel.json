@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/rss.js": {
-      "runtime": "nodejs18.x",
+      "runtime": "nodejs",
       "memory": 128,
       "maxDuration": 5
     }
@@ -14,5 +14,10 @@
         "Cache-Control": "s-maxage=3600, stale-while-revalidate"
       }
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NODE_VERSION": "18"
+    }
+  }
 }
