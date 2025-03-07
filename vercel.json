@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x",
+      "memory": 128,
+      "maxDuration": 5
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/rss",
+      "dest": "/api/rss.js",
+      "headers": {
+        "Cache-Control": "s-maxage=3600, stale-while-revalidate"
+      }
+    }
+  ]
+}
