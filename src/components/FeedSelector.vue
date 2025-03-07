@@ -363,6 +363,7 @@
         // } catch (error) {
         //   this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
         // }
+        // ! New code is causing fetch erros that cascade into errors parsing the XML - needs attention !
         try {
           const vercelApiEndpoint = `https://template-generator-ten.vercel.app/api/rss?feed=${productType}`;
           const cachedXmlData = localStorage.getItem(`rss_${productType}`);
