@@ -6,13 +6,16 @@ const cache = new NodeCache({ stdTTL: 3600 });
 export default async function handler(req, res) {
   try {
     // * Defaults to Programmable Media feed
-    const feed = req.query.feed || "pm"; 
     const feedUrls = {
-      pm: "https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml",
-      dam: "https://cloudinary.com/documentation/rss/cloudinary-dam-release-notes.xml",
-      int: "https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml",
+        pm: "https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml",
+        dam: "https://cloudinary.com/documentation/rss/cloudinary-dam-release-notes.xml",
+        int: "https://cloudinary.com/documentation/rss/cloudinary-int-release-notes.xml",
     };
-
+    
+    const feed = req.query.feed || "pm"; 
+    if (!feedUrls[feed]) {
+        return res.status(400).json({ error: "Invalid feed type" });
+      }
     const rssUrl = feedUrls[feed];
     if (!rssUrl) {
       return res.status(400).json({ error: "Invalid feed type" });

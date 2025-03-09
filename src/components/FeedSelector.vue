@@ -342,27 +342,6 @@
         )}_${month}_${day}_${year}`;
       },
       async fetchRSSFeed(productType = "pm") {
-        // * Depending on the product type, choose the correct url
-        // const productString = productType.includes("pm")
-        //   ? this.pmBaseURL
-        //   : productType.includes("dam")
-        //   ? this.damBaseURL
-        //   : productType.includes("int")
-        //   ? this.intBaseURL
-        //   : "";
-
-        // * Proxy due to CORS
-        // const proxy = "https://thingproxy.freeboard.io/fetch/";
-        // this.jsonResults = null;
-        // this.fetchError = null;
-        // try {
-        //   const response = await axios.get(proxy + productString);
-        //   console.log("request sent", proxy + productString);
-        //   await this.convertRssToJson(response.data, productString);
-        //   console.log("RESPONSE DATA", response);
-        // } catch (error) {
-        //   this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
-        // }
         // ! New code is causing fetch erros that cascade into errors parsing the XML - needs attention !
         try {
           const vercelApiEndpoint = `https://template-generator-ten.vercel.app/api/rss?feed=${productType}`;
