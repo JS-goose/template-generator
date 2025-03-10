@@ -342,25 +342,68 @@
         )}_${month}_${day}_${year}`;
       },
       async fetchRSSFeed(productType = "pm") {
-        // ! New code is causing fetch erros that cascade into errors parsing the XML - needs attention !
+        // // ! New code is causing fetch erros that cascade into errors parsing the XML - needs attention !
+        // try {
+        //   const vercelApiEndpoint = `https://template-generator-ten.vercel.app/api/rss?feed=${productType}`;
+        //   const cachedXmlData = localStorage.getItem(`rss_${productType}`);
+        //   if (cachedXmlData) {
+        //     console.log("Serving cached RSS data for", productType);
+        //     this.convertRssToJson(JSON.parse(cachedXmlData), productType);
+        //     return;
+        //   }
+        //   console.log("Fetching fresh RSS data for", productType);
+        //   const response = await fetch(vercelApiEndpoint);
+        //   if (!response.ok) throw new Error("Failed to fetch RSS");
+
+        //   const xmlData = await response.text();
+        //   const parsedData = await this.convertRssToJson(xmlData, productType);
+
+        //   // * Cache the response
+        //   localStorage.setItem(`rss_${productType}`, JSON.stringify(parsedData));
+        //   this.convertRssToJson(parsedData, productType);
+        // } catch (error) {
+        //   console.error(`Error fetching RSS for ${productType}:`, error);
+        //   this.fetchError = `Error fetching ${productType} feed. Please try again later.`;
+        // }
+
         try {
-          const vercelApiEndpoint = `https://template-generator-ten.vercel.app/api/rss?feed=${productType}`;
-          const cachedXmlData = localStorage.getItem(`rss_${productType}`);
+          const vercelApiEndpoint = `/api/rss?feed=${productType}`;
+
+          console.log("Fetching RSS from:", vercelApiEndpoint);
+
+          // ✅ Safe access to localStorage
+          let cachedXmlData = null;
+          try {
+            cachedXmlData = localStorage.getItem(`rss_${productType}`);
+          } catch (error) {
+            console.warn("LOCAL STORAGE NOT AVAILABLE:", error);
+          }
+
           if (cachedXmlData) {
-            console.log("Serving cached RSS data for", productType);
+            console.log("Getting cached RSS data for", productType);
             this.convertRssToJson(JSON.parse(cachedXmlData), productType);
             return;
           }
-          console.log("Fetching fresh RSS data for", productType);
+
           const response = await fetch(vercelApiEndpoint);
           if (!response.ok) throw new Error("Failed to fetch RSS");
 
           const xmlData = await response.text();
+          console.log("Received XML Data:", xmlData.substring(0, 100)); // Show first 100 chars for debugging
+
           const parsedData = await this.convertRssToJson(xmlData, productType);
 
-          // * Cache the response
-          localStorage.setItem(`rss_${productType}`, JSON.stringify(parsedData));
-          this.convertRssToJson(parsedData, productType);
+          // ✅ Safe localStorage setItem
+          try {
+            localStorage.setItem(
+              `rss_${productType}`,
+              JSON.stringify(parsedData)
+            );
+          } catch (error) {
+            console.warn("Failed to store in localStorage:", error);
+          }
+
+          this.processRSSData(parsedData, productType);
         } catch (error) {
           console.error(`Error fetching RSS for ${productType}:`, error);
           this.fetchError = `Error fetching ${productType} feed. Please try again later.`;
@@ -371,13 +414,24 @@
         // * Set the date to let the user know when the last time data was updated
         const now = new Date().toLocaleTimeString();
         return new Promise((resolve, reject) => {
+          if (!xml || typeof xml !== "string") {
+            console.error("XML data is not available or is wrong type: ", xml);
+            this.fetchError =
+              "Problem parsing the XML - no data exists or is of wrong type";
+            reject(
+              "Problem parsing the XML - no data exists or is of wrong type"
+            );
+          }
+
           parseString(xml, { explicitArray: true }, (error, result) => {
             if (error) {
               this.fetchError = "Problem parsing the XML";
               reject("Problem parsing the XML");
               return;
             }
-            const items = result.rss.channel[0].item;
+
+            const items = result?.rss?.channel[0]?.item;
+
             const grouped = {};
             let rssNum = 0;
             console.log("ITEMS AFTER PARSING", items);
