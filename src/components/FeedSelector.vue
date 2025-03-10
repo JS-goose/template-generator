@@ -403,7 +403,7 @@
             console.warn("Failed to store in localStorage:", error);
           }
 
-          this.processRSSData(parsedData, productType);
+          this.convertRssToJson(parsedData, productType);
         } catch (error) {
           console.error(`Error fetching RSS for ${productType}:`, error);
           this.fetchError = `Error fetching ${productType} feed. Please try again later.`;

@@ -77,6 +77,7 @@
       },
       // * Emit events to child component
       pullAllRSSFeeds() {
+        // TODO this needs a check to see if the cached data exists, and if so, pull that instead of doing API calls
         this.$refs.feedSelectorRef.fetchRSSFeed("pm");
         this.$refs.feedSelectorRef.fetchRSSFeed("dam");
         this.$refs.feedSelectorRef.fetchRSSFeed("int");
