@@ -1,4 +1,7 @@
 {
+  "git": {
+    "deploymentEnables": false
+  },
   "routes": [
     {
       "src": "/api/rss",
