@@ -414,9 +414,9 @@
         // * Set the date to let the user know when the last time data was updated
         const now = new Date().toLocaleTimeString();
         return new Promise((resolve, reject) => {
-          if (!xml || typeof xml !== "string") {
+          if (!xml || typeof xml !== "object") {
             console.error(
-              "XML data is not available or is wrong type: ",
+              "XML data is not available or is the wrong data type: ",
               typeof xml,
               xml
             );
