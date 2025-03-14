@@ -415,7 +415,11 @@
         const now = new Date().toLocaleTimeString();
         return new Promise((resolve, reject) => {
           if (!xml || typeof xml !== "string") {
-            console.error("XML data is not available or is wrong type: ", xml);
+            console.error(
+              "XML data is not available or is wrong type: ",
+              typeof xml,
+              xml
+            );
             this.fetchError =
               "Problem parsing the XML - no data exists or is of wrong type";
             reject(
