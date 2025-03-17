@@ -2,7 +2,7 @@
 
 ## Description
 
-web application designed to simplify the creation of HTML emails and templates for customer communication. This tool allows Cloudinary CSMs and AMs to generate structured email content using Cloudinary's **release notes** and **feature updates** fetched from RSS feeds. It integrates **Programmable Media**, **Digital Asset Management (DAM)**, and **Integrations** feeds, parsing them dynamically and formatting them into a ready-to-use email template.
+A web application designed to simplify the creation of HTML emails and templates for customer communication. This tool allows Cloudinary CSMs and AMs to generate structured email content using Cloudinary's **release notes** and **feature updates** fetched from RSS feeds. It integrates **Programmable Media**, **Digital Asset Management (DAM)**, and **Integrations** feeds, parsing them dynamically and formatting them into a ready-to-use email template.
 An in-depth paragraph about your project and overview of use.
 
 ## Getting Started
