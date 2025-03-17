@@ -27,8 +27,7 @@ An in-depth paragraph about your project and overview of use.
 
 ### Installing
 
-- How/where to download your program
-- Any modifications needed to be made to files/folders
+- `npm install`
 
 ### Executing program
 
@@ -39,32 +38,41 @@ How to run the program locally on your own machine.
   - `git clone https://github.com/jsexton-cloudinary/template-generator.git`
   - Once cloned, run this command in your terminal to change locations: `cd cloudinary-template-generator.git`
 
-- Next, run this command in your terminal: `npm run serve`
-- Finally, open your browser of choice and load the page located at: `https://localhost:8080`
+- Then, run `npm install` in your terminal to install all project dependencies.
+- Next, run this command in your terminal (this will compile for hot-reload development): `npm run serve`
+- Finally, open your browser of choice and load the page located at: `http://localhost:8080`
 
 ## Help
 
-Any advise for common problems or issues.
+If you encounter any issues, please check the Issues section on GitHub. You can also reach out via email or submit a pull request if you have improvements to suggest.
+
+You can also try these one or all of these commands in the terminal:
 
 ```
-command to run if program contains helper info
+npm help
+git help
+vue --help
 ```
 
 ## Authors
 
 Contributors names and contact info
 
-- [Jonathan Sexton](https://github.com/JS-goose)
-  - Professional account: [Jonathan Sexton](https://github.com/jsexton-cloudinary)
-- [@DomPizzie](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc) - thank you for the great README template!
+- Personal Github account [Jonathan Sexton](https://github.com/JS-goose)
+- Professional Github account: [Jonathan Sexton](https://github.com/jsexton-cloudinary)
+  - Lead Developer
 
 ## Version History
 
 - 0.2
   - Various bug fixes and optimizations
-  - See [commit change]() or See [release history]()
+    - moved email template generation to it's own component
+    - caching mechanism added for RSS data
+    - styling changes to various aspects of project
+    - Cloudinary brand styling added
 - 0.1
   - Pre-alpha - Initial Release
+    - Added RSS feed pull mechanisms from Cloudinary documentation
 
 ## License
 
@@ -74,4 +82,5 @@ This project is licensed under the [NAME HERE] License - see the LICENSE.md file
 
 Inspiration, code snippets, etc.
 
--
+- [@DomPizzie](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc) - _thank you for the great README template!_
+- Cloudinary CSM team - _Project Concept and Feedback_
