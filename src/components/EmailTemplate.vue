@@ -37,24 +37,27 @@
     mounted() {
       this.initializeEditorContent();
       document.body.style.overflow = "hidden";
+      // * Delegate click behavior for links inside editable area
+      this.$refs.editor.addEventListener("click", this.handleLinkClick);
     },
     beforeDestroy() {
       document.body.style.overflow = "";
+      this.$refs.editor.removeEventListener("click", this.handleLinkClick);
     },
     methods: {
       initializeEditorContent() {
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                <div class="rss-item-container">
-                  <h4>
-                    <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                      ${email.title}
-                    </a>
-                  </h4>
-                  <p>${email.desc}</p>
-                </div>
-              `
+      <div class="rss-item-container">
+        <h4>
+          <a href="${email.link}" target="_blank" rel="noopener noreferrer">
+            ${email.title}
+          </a>
+        </h4>
+        <p>${email.desc}</p>
+      </div>
+    `
           )
           .join("");
 
@@ -73,6 +76,17 @@
         this.editorContent = "";
         document.body.style.overflow = "";
         this.closeTemplateModal();
+      },
+      handleLinkClick(event) {
+        const target = event.target;
+        // if (target.tagName === "A") {
+        //   event.preventDefault();
+        //   window.open(target.href, "_blank", "noopener,noreferrer");
+        // }
+        // * Only open links in window if user holds Ctrl or Cmd
+        if ((event.metaKey || event.ctrlKey) && target.tagName === "A") {
+          window.open(target.href, "_blank", "noopener,noreferrer");
+        }
       },
     },
   };
@@ -144,5 +158,13 @@
   .finalize-button:hover {
     color: var(--cldBlue);
     background: white;
+  }
+
+  a {
+    cursor: pointer;
+  }
+
+  a:visited {
+    color: var(--cldBlue);
   }
 </style>
