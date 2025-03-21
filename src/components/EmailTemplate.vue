@@ -13,17 +13,27 @@
       ></textarea>
 
       <!-- RSS Items (Read-Only) -->
-      <div
-        v-for="(email, index) in emailTemplates"
-        :key="index"
-        class="rss-item-container"
-      >
-        <h3>{{ email.title }}</h3>
-        <p v-html="email.desc"></p>
-        <p><a :href="email.link" target="_blank">Read More</a></p>
-        <p>
-          <small>Published on: {{ email.pubDate }}</small>
-        </p>
+      <div>
+        <ul>
+          <li
+            v-for="(email, index) in emailTemplates"
+            :key="index"
+            class="rss-item-container"
+          >
+            <div>
+              <h4>
+                <a
+                  :href="email.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ email.title }}</a
+                >
+              </h4>
+              <p v-html="email.desc"></p>
+              <p></p>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <!-- Finalize Button -->
@@ -96,11 +106,12 @@
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+  ul {
+    list-style: none;
+  }
   .rss-item-container {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-top: 10px;
     background: #fff;
+    text-align: left;
   }
   .finalize-button {
     color: white;
