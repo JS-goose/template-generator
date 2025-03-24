@@ -1,21 +1,6 @@
 <template>
   <article id="all-feeds-display-container">
-    <!-- TODO Better logic for error handling -->
-    <!-- <h2 v-if="fetchError">{{ fetchError }}</h2>
-    <div id="all-feeds-display-container-controls">
-      <form>
-        <label for="rssObjSelectionCount"># of items selected:</label>
-        <input
-          disabled
-          type="text"
-          name="rssObjSelectionCount"
-          id="rssObjSelectionCount"
-          :value="this.rssObjsForTemplate.length"
-        />
-        <p>Search value: {{ searchInputValue }}</p>
-      </form>
-    </div> -->
-    <!-- Global Fixed Toolbar -->
+    <!-- Global Fixed Controls Toolbar -->
     <div class="feed-global-toolbar">
       <div class="toolbar-left-group">
         <button @click="pullAllRSSFeeds" class="toolbar-btn">

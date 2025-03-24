@@ -1,37 +1,6 @@
 <template>
   <section id="all-feeds-wrapper">
-    <div id="all-feeds-control-container">
-      <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
-        Pull All RSS Feeds
-      </button>
-      <button
-        @click="fetchTemplateData"
-        class="all-feeds-buttons"
-        v-if="templateUpdated"
-      >
-        Generate Template
-      </button>
-      <label for="all-rss-feeds-tag-search">
-        Search
-        <input
-          type="text"
-          name="all-rss-feeds-tag-search"
-          id="all-rss-feeds-tag-search"
-          placeholder="Comma separated tags, keywords, or date"
-          title="Format = yyyy-mm-dd/mm-dd-yyyy/dd-mm-yyyy"
-          v-model="searchInputValue"
-          maxlength="250"
-      /></label>
-      <button
-        v-if="this.displayClearBtn"
-        @click="clearAllFeedsData()"
-        class="all-feeds-buttons"
-      >
-        Clear All RSS Feed Data
-      </button>
-    </div>
     <FeedSelector
-      :searchInputValue="searchInputValue"
       ref="feedSelectorRef"
       @templateObjsUpdated="handleTemplateUpdate"
     />
@@ -56,7 +25,6 @@
 
     data() {
       return {
-        searchInputValue: "",
         displayClearBtn: false,
         rssDataFromFeedSelector: [],
         emailTemplates: [],
@@ -87,7 +55,7 @@
         this.$refs.feedSelectorRef.clearRSSFeedData("pm");
         this.$refs.feedSelectorRef.clearRSSFeedData("dam");
         this.$refs.feedSelectorRef.clearRSSFeedData("int");
-        this.searchInputValue = "";
+        // this.searchInputValue = "";
         this.emailTemplates = [];
         this.displayClearBtn = false;
         this.showTemplateModal = false;
