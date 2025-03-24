@@ -285,6 +285,7 @@
         this.displayClearBtn = false;
         this.$emit("clearEmailTemplateData");
         this.rssObjsForTemplate = [];
+        this.searchInputValue = "";
       },
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
