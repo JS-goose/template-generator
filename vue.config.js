@@ -8,7 +8,7 @@ module.exports = defineConfig({
     resolve: {
       fallback: {
         stream: require.resolve('stream-browserify'),
-        process: require.resolve('process'), // * Fixed line for process
+        process: require.resolve('process'),
         buffer: require.resolve('buffer/'),
         timers: require.resolve('timers-browserify'),
       },
