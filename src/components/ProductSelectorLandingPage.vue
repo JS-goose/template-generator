@@ -2,8 +2,8 @@
   <section id="all-feeds-wrapper">
     <FeedSelector
       ref="feedSelectorRef"
-      @templateObjsUpdated="handleTemplateUpdate"
       @generateTemplate="fetchTemplateData"
+      @clearEmailTemplateData="onClearEmailTemplateData"
     />
     <EmailTemplate
       v-if="showTemplateModal"
@@ -39,10 +39,6 @@
       },
     },
     methods: {
-      handleTemplateUpdate(count) {
-        this.templateObjsUpdated = true;
-        this.templateObjsLength = count;
-      },
       // * Emit events to child component
       pullAllRSSFeeds() {
         this.$refs.feedSelectorRef.fetchRSSFeed("pm");
@@ -50,10 +46,9 @@
         this.$refs.feedSelectorRef.fetchRSSFeed("int");
       },
       // * Emit events to feedSelectorRef component
-      clearAllFeedsData() {
-        // TODO Add this functionality to the FeedSelector component
+      onClearEmailTemplateData() {
         this.emailTemplates = [];
-        this.showTemplateModal = false;
+        // this.showTemplateModal = false;
       },
       fetchTemplateData() {
         // * Pull data from child component

@@ -283,6 +283,8 @@
         this.clearRSSFeedData("dam");
         this.clearRSSFeedData("int");
         this.displayClearBtn = false;
+        this.$emit("clearEmailTemplateData");
+        this.rssObjsForTemplate = [];
       },
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
