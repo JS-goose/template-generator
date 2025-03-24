@@ -4,7 +4,8 @@
       <h2>Email Template</h2>
       <p>
         <small
-          >The entire section is editable, including text from RSS items</small
+          >The entire section is editable, including text, links, etc. from RSS
+          items</small
         >
       </p>
       <!-- Close Button -->
@@ -53,15 +54,15 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-            <div class="rss-item-container">
-              <h4>
-                <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                  ${email.title}
-                </a>
-              </h4>
-              <p>${email.desc}</p>
-            </div>
-          `
+              <div class="rss-item-container">
+                <h4>
+                  <a href="${email.link}" target="_blank" rel="noopener noreferrer">
+                    ${email.title}
+                  </a>
+                </h4>
+                <p>${email.desc}</p>
+              </div>
+            `
           )
           .join("");
 
