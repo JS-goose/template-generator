@@ -2,7 +2,11 @@
   <div class="modal-overlay" aria-modal="true" role="dialog">
     <div class="modal-content">
       <h2>Email Template</h2>
-
+      <p>
+        <small
+          >The entire section is editable, including text from RSS items</small
+        >
+      </p>
       <!-- Close Button -->
       <button class="close-button" @click="closeModal">✖ Close</button>
 
@@ -49,15 +53,15 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-      <div class="rss-item-container">
-        <h4>
-          <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-            ${email.title}
-          </a>
-        </h4>
-        <p>${email.desc}</p>
-      </div>
-    `
+            <div class="rss-item-container">
+              <h4>
+                <a href="${email.link}" target="_blank" rel="noopener noreferrer">
+                  ${email.title}
+                </a>
+              </h4>
+              <p>${email.desc}</p>
+            </div>
+          `
           )
           .join("");
 
@@ -116,6 +120,7 @@
     text-align: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     position: relative;
+    font-size: 14px;
   }
 
   .close-button {
@@ -133,10 +138,9 @@
     width: 100%;
     max-width: 675px;
     min-height: 300px;
-    padding: 10px;
+    padding: 2em;
     border: 1px solid #e3e3e3;
     border-radius: 5px;
-    font-size: 14px;
     text-align: left;
     overflow: auto;
   }
