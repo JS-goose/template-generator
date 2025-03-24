@@ -62,155 +62,157 @@
       </div>
     </div>
 
-    <div v-for="name in products" :key="name" class="feed-data-container">
-      <!-- ! PM -->
-      <div>{{ name }} Content</div>
-      <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
-        <li
-          v-for="key in filteredRssItems.pm"
-          :key="key.title"
-          class="feed-selector-rss-list-item"
-          :class="{
-            selected: rssObjsForTemplate.some(
-              (item) => item.index === key.index
-            ),
-          }"
-        >
-          <div>
-            <label for="rss-list-item-include-checkbox">
-              Include
-              <input
-                type="checkbox"
-                name="rss-list-item-include-checkbox"
-                id="rss-list-item-include-checkbox"
-                @click="includeInTemplate(key, name)"
-            /></label>
-          </div>
-          <div class="rss-list-item-title-container">
-            <p>{{ key.title.toUpperCase() }}</p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Publish Date:</span>
-              {{ key.pubDate }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Description:</span> {{ key.desc }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <a
-                :href="key.directLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn More
-              </a>
-            </p>
-          </div>
-        </li>
-      </ul>
-      <!-- ! DAM -->
-      <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
-        <li
-          v-for="key in filteredRssItems.dam"
-          :key="key.title"
-          class="feed-selector-rss-list-item"
-          :class="{
-            selected: rssObjsForTemplate.some(
-              (item) => item.index === key.index
-            ),
-          }"
-        >
-          <div>
-            <label for="rss-list-item-include-checkbox">
-              Include
-              <input
-                type="checkbox"
-                name="rss-list-item-include-checkbox"
-                id="rss-list-item-include-checkbox"
-                @click="includeInTemplate(key, name)"
-            /></label>
-          </div>
-          <div class="rss-list-item-title-container">
-            <p>{{ key.title.toUpperCase() }}</p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Publish Date:</span>
-              {{ key.pubDate }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Description:</span> {{ key.desc }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <a
-                :href="key.directLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn More
-              </a>
-            </p>
-          </div>
-        </li>
-      </ul>
-      <!-- ! INT -->
-      <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
-        <li
-          v-for="key in filteredRssItems.int"
-          :key="key.title"
-          class="feed-selector-rss-list-item"
-          :class="{
-            selected: rssObjsForTemplate.some(
-              (item) => item.index === key.index
-            ),
-          }"
-        >
-          <div>
-            <label for="rss-list-item-include-checkbox">
-              Include
-              <input
-                type="checkbox"
-                name="rss-list-item-include-checkbox"
-                id="rss-list-item-include-checkbox"
-                @click="includeInTemplate(key, name)"
-            /></label>
-          </div>
-          <div class="rss-list-item-title-container">
-            <p>{{ key.title.toUpperCase() }}</p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Publish Date:</span>
-              {{ key.pubDate }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <span class="feed-item-label">Description:</span> {{ key.desc }}
-            </p>
-          </div>
-          <div>
-            <p>
-              <a
-                :href="key.directLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn More
-              </a>
-            </p>
-          </div>
-        </li>
-      </ul>
+    <div class="feed-content-scroll-container">
+      <div v-for="name in products" :key="name" class="feed-data-container">
+        <!-- ! PM -->
+        <div>{{ name }} Content</div>
+        <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
+          <li
+            v-for="key in filteredRssItems.pm"
+            :key="key.title"
+            class="feed-selector-rss-list-item"
+            :class="{
+              selected: rssObjsForTemplate.some(
+                (item) => item.index === key.index
+              ),
+            }"
+          >
+            <div>
+              <label for="rss-list-item-include-checkbox">
+                Include
+                <input
+                  type="checkbox"
+                  name="rss-list-item-include-checkbox"
+                  id="rss-list-item-include-checkbox"
+                  @click="includeInTemplate(key, name)"
+              /></label>
+            </div>
+            <div class="rss-list-item-title-container">
+              <p>{{ key.title.toUpperCase() }}</p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Publish Date:</span>
+                {{ key.pubDate }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Description:</span> {{ key.desc }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <a
+                  :href="key.directLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn More
+                </a>
+              </p>
+            </div>
+          </li>
+        </ul>
+        <!-- ! DAM -->
+        <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
+          <li
+            v-for="key in filteredRssItems.dam"
+            :key="key.title"
+            class="feed-selector-rss-list-item"
+            :class="{
+              selected: rssObjsForTemplate.some(
+                (item) => item.index === key.index
+              ),
+            }"
+          >
+            <div>
+              <label for="rss-list-item-include-checkbox">
+                Include
+                <input
+                  type="checkbox"
+                  name="rss-list-item-include-checkbox"
+                  id="rss-list-item-include-checkbox"
+                  @click="includeInTemplate(key, name)"
+              /></label>
+            </div>
+            <div class="rss-list-item-title-container">
+              <p>{{ key.title.toUpperCase() }}</p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Publish Date:</span>
+                {{ key.pubDate }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Description:</span> {{ key.desc }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <a
+                  :href="key.directLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn More
+                </a>
+              </p>
+            </div>
+          </li>
+        </ul>
+        <!-- ! INT -->
+        <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
+          <li
+            v-for="key in filteredRssItems.int"
+            :key="key.title"
+            class="feed-selector-rss-list-item"
+            :class="{
+              selected: rssObjsForTemplate.some(
+                (item) => item.index === key.index
+              ),
+            }"
+          >
+            <div>
+              <label for="rss-list-item-include-checkbox">
+                Include
+                <input
+                  type="checkbox"
+                  name="rss-list-item-include-checkbox"
+                  id="rss-list-item-include-checkbox"
+                  @click="includeInTemplate(key, name)"
+              /></label>
+            </div>
+            <div class="rss-list-item-title-container">
+              <p>{{ key.title.toUpperCase() }}</p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Publish Date:</span>
+                {{ key.pubDate }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <span class="feed-item-label">Description:</span> {{ key.desc }}
+              </p>
+            </div>
+            <div>
+              <p>
+                <a
+                  :href="key.directLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn More
+                </a>
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </article>
 </template>
@@ -563,20 +565,17 @@
 </script>
 <style lang="css" scoped>
   .feed-global-toolbar {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
+    z-index: 500;
     background: white;
-    z-index: 1000;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
     padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 1rem;
+    transition: box-shadow 0.2s ease-in-out;
   }
 
   .toolbar-left-group,
@@ -627,8 +626,14 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  .feed-content-scroll-container {
+    margin-top: 20px;
+  }
+
   #all-feeds-display-container {
-    padding-top: 120px;
+    width: 100%;
+    overflow: visible;
   }
 
   #all-feeds-display-container {
