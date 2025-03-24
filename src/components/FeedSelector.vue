@@ -21,6 +21,13 @@
         >
           Clear All
         </button>
+        <button
+          @click="$emit('generateTemplate')"
+          class="toolbar-btn"
+          :disabled="!rssObjsForTemplate.length"
+        >
+          Generate Template
+        </button>
       </div>
 
       <div class="toolbar-right-group">
@@ -613,6 +620,10 @@
     background-color: #b02a37;
   }
 
+  .toolbar-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   #all-feeds-display-container {
     padding-top: 120px;
   }

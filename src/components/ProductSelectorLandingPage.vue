@@ -3,6 +3,7 @@
     <FeedSelector
       ref="feedSelectorRef"
       @templateObjsUpdated="handleTemplateUpdate"
+      @generateTemplate="fetchTemplateData"
     />
     <EmailTemplate
       v-if="showTemplateModal"
