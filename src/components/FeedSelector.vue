@@ -1,7 +1,7 @@
 <template>
   <article id="all-feeds-display-container">
     <!-- TODO Better logic for error handling -->
-    <h2 v-if="fetchError">{{ fetchError }}</h2>
+    <!-- <h2 v-if="fetchError">{{ fetchError }}</h2>
     <div id="all-feeds-display-container-controls">
       <form>
         <label for="rssObjSelectionCount"># of items selected:</label>
@@ -14,22 +14,56 @@
         />
         <p>Search value: {{ searchInputValue }}</p>
       </form>
-    </div>
-    <div class="feed-data-global-controls-bar">
-      <div class="feed-data-global-controls-control-group">
-        <strong>PM:</strong>
-        <button @click="fetchRSSFeed('pm')">Fetch PM Feed</button>
-        <button @click="clearRSSFeedData('pm')">Clear PM Feed</button>
+    </div> -->
+    <!-- Global Fixed Toolbar -->
+    <div class="feed-global-toolbar">
+      <div class="toolbar-left-group">
+        <button @click="pullAllRSSFeeds" class="toolbar-btn">
+          Pull All RSS Feeds
+        </button>
+
+        <input
+          type="text"
+          v-model="searchInputValue"
+          placeholder="Search tags, keywords, or date"
+          title="E.g. today, feb 2025, mm/dd/yyyy, or tags"
+        />
+
+        <button
+          @click="clearAllFeedsData"
+          class="toolbar-btn danger"
+          v-if="showClearAllButton"
+        >
+          Clear All
+        </button>
       </div>
-      <div class="feed-data-global-controls-control-group">
-        <strong>DAM:</strong>
-        <button @click="fetchRSSFeed('dam')">Fetch DAM Feed</button>
-        <button @click="clearRSSFeedData('dam')">Clear DAM Feed</button>
-      </div>
-      <div class="feed-data-global-controls-control-group">
-        <strong>INT:</strong>
-        <button @click="fetchRSSFeed('int')">Fetch INT Feed</button>
-        <button @click="clearRSSFeedData('int')">Clear INT Feed</button>
+
+      <div class="toolbar-right-group">
+        <div class="control-group">
+          <strong>PM:</strong>
+          <button @click="fetchRSSFeed('pm')" class="toolbar-btn">Fetch</button>
+          <button @click="clearRSSFeedData('pm')" class="toolbar-btn danger">
+            Clear
+          </button>
+        </div>
+        <div class="control-group">
+          <strong>DAM:</strong>
+          <button @click="fetchRSSFeed('dam')" class="toolbar-btn">
+            Fetch
+          </button>
+          <button @click="clearRSSFeedData('dam')" class="toolbar-btn danger">
+            Clear
+          </button>
+        </div>
+        <div class="control-group">
+          <strong>INT:</strong>
+          <button @click="fetchRSSFeed('int')" class="toolbar-btn">
+            Fetch
+          </button>
+          <button @click="clearRSSFeedData('int')" class="toolbar-btn danger">
+            Clear
+          </button>
+        </div>
       </div>
     </div>
 
@@ -198,10 +232,11 @@
 
   export default {
     props: {
-      searchInputValue: String,
+      // searchInputValue: String,
     },
     data() {
       return {
+        searchInputValue: "",
         products: ["pm", "dam", "int"],
         fetchError: null,
         pmGroupedItemsArray: [],
@@ -238,6 +273,13 @@
           dam: this.rssItemFilterHelper(this.damGroupedItemsArray, searchText),
           int: this.rssItemFilterHelper(this.intGroupedItemsArray, searchText),
         };
+      },
+      showClearAllButton() {
+        return (
+          this.pmGroupedItemsArray.length ||
+          this.damGroupedItemsArray.length ||
+          this.intGroupedItemsArray.length
+        );
       },
     },
     methods: {
@@ -521,27 +563,71 @@
   };
 </script>
 <style lang="css" scoped>
-  .feed-data-global-controls-bar {
+  .feed-global-toolbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     background: white;
-    padding: 10px 20px;
     z-index: 1000;
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
+    padding: 10px 20px;
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    flex-wrap: wrap;
+    gap: 1rem;
   }
 
-  .feed-data-global-controls-control-group {
+  .toolbar-left-group,
+  .toolbar-right-group {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
   }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  input[type="text"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 280px;
+    font-size: 0.95em;
+  }
+
+  .toolbar-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--cldBlue);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .toolbar-btn:hover {
+    background-color: var(--cldSlate);
+  }
+
+  .toolbar-btn.danger {
+    background-color: var(--cldCoral);
+  }
+
+  .toolbar-btn.danger:hover {
+    background-color: #b02a37;
+  }
+
+  #all-feeds-display-container {
+    padding-top: 120px;
+  }
+
   #all-feeds-display-container {
     width: 100%;
   }
