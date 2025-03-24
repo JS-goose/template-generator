@@ -15,14 +15,33 @@
         <p>Search value: {{ searchInputValue }}</p>
       </form>
     </div>
+    <div class="feed-data-global-controls-bar">
+      <div class="feed-data-global-controls-control-group">
+        <strong>PM:</strong>
+        <button @click="fetchRSSFeed('pm')">Fetch PM Feed</button>
+        <button @click="clearRSSFeedData('pm')">Clear PM Feed</button>
+      </div>
+      <div class="feed-data-global-controls-control-group">
+        <strong>DAM:</strong>
+        <button @click="fetchRSSFeed('dam')">Fetch DAM Feed</button>
+        <button @click="clearRSSFeedData('dam')">Clear DAM Feed</button>
+      </div>
+      <div class="feed-data-global-controls-control-group">
+        <strong>INT:</strong>
+        <button @click="fetchRSSFeed('int')">Fetch INT Feed</button>
+        <button @click="clearRSSFeedData('int')">Clear INT Feed</button>
+      </div>
+    </div>
+
     <div v-for="name in products" :key="name" class="feed-data-container">
-      <h1>{{ name.toUpperCase() }} Generator</h1>
+      <!-- <h1>{{ name.toUpperCase() }} Generator</h1>
       <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
       <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
       <button @click="clearRSSFeedData(name)">
         Clear {{ name }} Feed Data
-      </button>
+      </button> -->
       <!-- ! PM -->
+      <div>{{ name }} Content</div>
       <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
         <li
           v-for="key in filteredRssItems.pm"
@@ -502,6 +521,27 @@
   };
 </script>
 <style lang="css" scoped>
+  .feed-data-global-controls-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 10px 20px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+  }
+
+  .feed-data-global-controls-control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   #all-feeds-display-container {
     width: 100%;
   }
