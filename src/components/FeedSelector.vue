@@ -27,6 +27,9 @@
           :disabled="!rssObjsForTemplate.length"
         >
           Generate Template
+          <span v-if="rssObjsForTemplate.length"
+            >({{ rssObjsForTemplate.length }})</span
+          >
         </button>
       </div>
 
