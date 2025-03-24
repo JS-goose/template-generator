@@ -25,7 +25,7 @@
 
     data() {
       return {
-        displayClearBtn: false,
+        // displayClearBtn: false,
         rssDataFromFeedSelector: [],
         emailTemplates: [],
         showTemplateModal: false,
@@ -48,16 +48,16 @@
         this.$refs.feedSelectorRef.fetchRSSFeed("pm");
         this.$refs.feedSelectorRef.fetchRSSFeed("dam");
         this.$refs.feedSelectorRef.fetchRSSFeed("int");
-        this.displayClearBtn = true;
+        // this.displayClearBtn = true;
       },
       // * Emit events to feedSelectorRef component
       clearAllFeedsData() {
-        this.$refs.feedSelectorRef.clearRSSFeedData("pm");
-        this.$refs.feedSelectorRef.clearRSSFeedData("dam");
-        this.$refs.feedSelectorRef.clearRSSFeedData("int");
+        // this.$refs.feedSelectorRef.clearRSSFeedData("pm");
+        // this.$refs.feedSelectorRef.clearRSSFeedData("dam");
+        // this.$refs.feedSelectorRef.clearRSSFeedData("int");
         // this.searchInputValue = "";
         this.emailTemplates = [];
-        this.displayClearBtn = false;
+        // this.displayClearBtn = false;
         this.showTemplateModal = false;
       },
       fetchTemplateData() {

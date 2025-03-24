@@ -53,12 +53,6 @@
     </div>
 
     <div v-for="name in products" :key="name" class="feed-data-container">
-      <!-- <h1>{{ name.toUpperCase() }} Generator</h1>
-      <p v-if="feedPullTime(name)">Last updated: {{ feedPullTime(name) }}</p>
-      <button @click="fetchRSSFeed(name)">Fetch {{ name }} Feed</button>
-      <button @click="clearRSSFeedData(name)">
-        Clear {{ name }} Feed Data
-      </button> -->
       <!-- ! PM -->
       <div>{{ name }} Content</div>
       <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
@@ -216,11 +210,9 @@
   import keyword_extractor from "keyword-extractor";
 
   export default {
-    props: {
-      // searchInputValue: String,
-    },
     data() {
       return {
+        displayClearBtn: false,
         searchInputValue: "",
         products: ["pm", "dam", "int"],
         fetchError: null,
@@ -268,6 +260,18 @@
       },
     },
     methods: {
+      async pullAllRSSFeeds() {
+        await this.fetchRSSFeed("pm");
+        await this.fetchRSSFeed("dam");
+        await this.fetchRSSFeed("int");
+        this.displayClearBtn = true;
+      },
+      clearAllFeedsData() {
+        this.clearRSSFeedData("pm");
+        this.clearRSSFeedData("dam");
+        this.clearRSSFeedData("int");
+        this.displayClearBtn = false;
+      },
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
           const rssTags = rss.tags.map((tag) => tag.toLowerCase());
