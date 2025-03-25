@@ -65,7 +65,13 @@
     <div class="feed-content-scroll-container">
       <div v-for="name in products" :key="name" class="feed-data-container">
         <!-- ! PM -->
-        <div>{{ name }} Content</div>
+        <div :class="['product-section-header', name]">
+          <h2>{{ name.toUpperCase() }} Feed</h2>
+          <p class="section-subtitle">
+            Below are the most recent updates for {{ name.toUpperCase() }}.
+          </p>
+        </div>
+
         <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
           <li
             v-for="key in filteredRssItems.pm"
@@ -111,6 +117,9 @@
                   Learn More
                 </a>
               </p>
+            </div>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
             </div>
           </li>
         </ul>
@@ -161,6 +170,9 @@
                 </a>
               </p>
             </div>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
+            </div>
           </li>
         </ul>
         <!-- ! INT -->
@@ -184,6 +196,9 @@
                   id="rss-list-item-include-checkbox"
                   @click="includeInTemplate(key, name)"
               /></label>
+            </div>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
             </div>
             <div class="rss-list-item-title-container">
               <p>{{ key.title.toUpperCase() }}</p>
@@ -209,6 +224,9 @@
                   Learn More
                 </a>
               </p>
+            </div>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
             </div>
           </li>
         </ul>
@@ -632,6 +650,57 @@
 
   .feed-content-scroll-container {
     margin-top: 20px;
+  }
+
+  .product-section-header {
+    padding: 1em 0;
+    margin-top: 2em;
+    text-align: left;
+    border-bottom: 2px solid var(--cldLightBlue);
+  }
+
+  .product-section-header.pm {
+    border-left: 6px solid var(--cldBlue);
+    padding-left: 10px;
+    background-color: rgba(52, 72, 197, 0.05); /* light cldBlue tint */
+  }
+
+  .product-section-header.dam {
+    border-left: 6px solid var(--cldTurquoiseBlue);
+    padding-left: 10px;
+    background-color: rgba(72, 196, 216, 0.05);
+  }
+
+  .product-section-header.int {
+    border-left: 6px solid var(--cldCoral);
+    padding-left: 10px;
+    background-color: rgba(255, 80, 80, 0.05);
+  }
+
+  .section-subtitle {
+    font-size: 0.9em;
+    color: var(--cldSlate);
+    margin: 0.25em 0 0;
+  }
+
+  .product-tag {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    color: white;
+  }
+
+  .product-tag.pm {
+    background-color: var(--cldBlue);
+  }
+  .product-tag.dam {
+    background-color: var(--cldTurquoiseBlue);
+  }
+  .product-tag.int {
+    background-color: var(--cldCoral);
   }
 
   #all-feeds-display-container {
