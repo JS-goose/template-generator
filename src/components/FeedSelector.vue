@@ -33,6 +33,13 @@
         </button>
       </div>
 
+      <div class="toolbar-center-group">
+        <p>Click to jump to section:</p>
+        <a href="#pm-section">PM</a>
+        <a href="#dam-section">DAM</a>
+        <a href="#int-section">INT</a>
+      </div>
+
       <div class="toolbar-right-group">
         <div class="control-group">
           <strong>PM:</strong>
@@ -62,7 +69,7 @@
       </div>
     </div>
 
-    <div class="feed-content-scroll-container">
+    <div class="feed-content-scroll-container" id="pm-section">
       <div v-for="name in products" :key="name" class="feed-data-container">
         <!-- ! PM -->
         <div :class="['product-section-header', name]">
@@ -124,7 +131,11 @@
           </li>
         </ul>
         <!-- ! DAM -->
-        <ul class="feed-selector-rss-list-container" v-if="name === 'dam'">
+        <ul
+          class="feed-selector-rss-list-container"
+          v-if="name === 'dam'"
+          id="dam-section"
+        >
           <li
             v-for="key in filteredRssItems.dam"
             :key="key.title"
@@ -176,7 +187,11 @@
           </li>
         </ul>
         <!-- ! INT -->
-        <ul class="feed-selector-rss-list-container" v-if="name === 'int'">
+        <ul
+          class="feed-selector-rss-list-container"
+          v-if="name === 'int'"
+          id="int-section"
+        >
           <li
             v-for="key in filteredRssItems.int"
             :key="key.title"
@@ -187,18 +202,20 @@
               ),
             }"
           >
-            <div>
-              <label for="rss-list-item-include-checkbox">
-                Include
-                <input
-                  type="checkbox"
-                  name="rss-list-item-include-checkbox"
-                  id="rss-list-item-include-checkbox"
-                  @click="includeInTemplate(key, name)"
-              /></label>
-            </div>
-            <div class="product-tag" :class="name">
-              {{ name.toUpperCase() }}
+            <div class="feed-selector-rss-list-item-header">
+              <div>
+                <label for="rss-list-item-include-checkbox">
+                  Include
+                  <input
+                    type="checkbox"
+                    name="rss-list-item-include-checkbox"
+                    id="rss-list-item-include-checkbox"
+                    @click="includeInTemplate(key, name)"
+                /></label>
+              </div>
+              <div class="product-tag" :class="name">
+                {{ name.toUpperCase() }}
+              </div>
             </div>
             <div class="rss-list-item-title-container">
               <p>{{ key.title.toUpperCase() }}</p>
@@ -224,9 +241,6 @@
                   Learn More
                 </a>
               </p>
-            </div>
-            <div class="product-tag" :class="name">
-              {{ name.toUpperCase() }}
             </div>
           </li>
         </ul>
@@ -600,11 +614,13 @@
   }
 
   .toolbar-left-group,
+  .toolbar-center-group,
   .toolbar-right-group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    scroll-behavior: smooth;
   }
 
   .control-group {
@@ -751,6 +767,13 @@
     -webkit-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
     -moz-box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
     box-shadow: 10px 10px 10px 10px rgba(59, 58, 58, 5%);
+  }
+
+  .feed-selector-rss-list-item-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1em;
   }
 
   .selected {
