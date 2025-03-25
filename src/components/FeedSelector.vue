@@ -35,9 +35,15 @@
 
       <div class="toolbar-center-group">
         <p>Click to jump to section:</p>
-        <a href="#pm-section">PM</a>
-        <a href="#dam-section">DAM</a>
-        <a href="#int-section">INT</a>
+        <button class="toolbar-btn" :disabled="!pmGroupedItemsArray.length">
+          <a href="#pm-section">PM</a>
+        </button>
+        <button class="toolbar-btn" :disabled="!damGroupedItemsArray.length">
+          <a href="#dam-section">DAM</a>
+        </button>
+        <button class="toolbar-btn" :disabled="!intGroupedItemsArray.length">
+          <a href="#int-section">INT</a>
+        </button>
       </div>
 
       <div class="toolbar-right-group">
@@ -792,6 +798,10 @@
 
   a:hover {
     color: var(--cldSlate);
+  }
+
+  a:visited {
+    color: inherit;
   }
 
   .rss-list-item-title-container > p {
