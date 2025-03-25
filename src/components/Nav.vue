@@ -85,10 +85,6 @@
     color: var(--cldLightBlue);
   }
 
-  a:visited {
-    color: white;
-  }
-
   nav > ul {
     display: flex;
     list-style: none;
