@@ -90,15 +90,20 @@
               ),
             }"
           >
-            <div>
-              <label for="rss-list-item-include-checkbox">
-                Include
-                <input
-                  type="checkbox"
-                  name="rss-list-item-include-checkbox"
-                  id="rss-list-item-include-checkbox"
-                  @click="includeInTemplate(key, name)"
-              /></label>
+            <div class="feed-selector-rss-list-item-header">
+              <div>
+                <label for="rss-list-item-include-checkbox">
+                  Include
+                  <input
+                    type="checkbox"
+                    name="rss-list-item-include-checkbox"
+                    id="rss-list-item-include-checkbox"
+                    @click="includeInTemplate(key, name)"
+                /></label>
+              </div>
+              <div class="product-tag" :class="name">
+                {{ name.toUpperCase() }}
+              </div>
             </div>
             <div class="rss-list-item-title-container">
               <p>{{ key.title.toUpperCase() }}</p>
@@ -124,9 +129,6 @@
                   Learn More
                 </a>
               </p>
-            </div>
-            <div class="product-tag" :class="name">
-              {{ name.toUpperCase() }}
             </div>
           </li>
         </ul>
@@ -146,15 +148,20 @@
               ),
             }"
           >
-            <div>
-              <label for="rss-list-item-include-checkbox">
-                Include
-                <input
-                  type="checkbox"
-                  name="rss-list-item-include-checkbox"
-                  id="rss-list-item-include-checkbox"
-                  @click="includeInTemplate(key, name)"
-              /></label>
+            <div class="feed-selector-rss-list-item-header">
+              <div>
+                <label for="rss-list-item-include-checkbox">
+                  Include
+                  <input
+                    type="checkbox"
+                    name="rss-list-item-include-checkbox"
+                    id="rss-list-item-include-checkbox"
+                    @click="includeInTemplate(key, name)"
+                /></label>
+              </div>
+              <div class="product-tag" :class="name">
+                {{ name.toUpperCase() }}
+              </div>
             </div>
             <div class="rss-list-item-title-container">
               <p>{{ key.title.toUpperCase() }}</p>
@@ -180,9 +187,6 @@
                   Learn More
                 </a>
               </p>
-            </div>
-            <div class="product-tag" :class="name">
-              {{ name.toUpperCase() }}
             </div>
           </li>
         </ul>
