@@ -80,7 +80,11 @@
         v-for="tab in tabs"
         :key="tab"
         @click="activeTab = tab"
-        :class="['tab-button', { active: activeTab === tab }]"
+        :class="[
+          'tab-button',
+          tab.toLowerCase(),
+          { active: activeTab === tab },
+        ]"
       >
         {{ tab.toUpperCase() }}
         <span class="tab-count">({{ tabItemCount(tab) }})</span>
@@ -725,28 +729,67 @@
   .product-tabs {
     display: flex;
     gap: 12px;
-    margin: 1em 0 1.5em;
+    margin: 1.5em 0 1em;
     padding: 0 20px;
     flex-wrap: wrap;
   }
 
   .tab-button {
-    padding: 8px 16px;
-    font-weight: bold;
-    background-color: #f4f4f4;
-    color: var(--cldSlate);
-    border: 1px solid transparent;
-    border-radius: 5px;
+    padding: 8px 14px;
+    font-weight: 500;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 6px 6px 0 0;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    font-size: 0.95em;
+    color: white;
+    background-color: var(--cldSlate);
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .tab-button:hover {
-    background-color: #eaeaea;
+  .tab-button.all {
+    background-color: var(--cldSlate);
+  }
+
+  .tab-button.pm {
+    background-color: var(--cldBlue);
+  }
+
+  .tab-button.dam {
+    background-color: var(--cldTurquoiseBlue);
+  }
+
+  .tab-button.int {
+    background-color: var(--cldCoral);
+  }
+
+  .tab-count {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    color: white;
   }
 
   .tab-button.active {
-    background-color: var(--cldBlue);
+    font-weight: 700;
+    border-bottom: 3px solid white;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1) inset;
+  }
+
+  .tab-button:hover {
+    filter: brightness(1.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .tab-count {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
     color: white;
   }
 
