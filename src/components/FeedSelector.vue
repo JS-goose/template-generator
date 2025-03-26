@@ -75,8 +75,24 @@
       </div>
     </div>
 
+    <div class="product-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab"
+        @click="activeTab = tab"
+        :class="['tab-button', { active: activeTab === tab }]"
+      >
+        {{ tab.toUpperCase() }}
+      </button>
+    </div>
+
     <div class="feed-content-scroll-container" id="pm-section">
-      <div v-for="name in products" :key="name" class="feed-data-container">
+      <!-- <div v-for="name in products" :key="name" class="feed-data-container"> -->
+      <div
+        v-for="name in filteredProductTabs"
+        :key="name"
+        class="feed-data-container"
+      >
         <!-- ! PM -->
         <div
           :class="['product-section-header', name]"
@@ -280,6 +296,8 @@
         pmGroupedItemsArray: [],
         damGroupedItemsArray: [],
         intGroupedItemsArray: [],
+        activeTab: "All",
+        tabs: ["All", "PM", "DAM", "INT"],
         pmBaseURL:
           "https://cloudinary.com/documentation/rss/cloudinary-pm-release-notes.xml",
         damBaseURL:
@@ -292,6 +310,14 @@
       };
     },
     computed: {
+      filteredProductTabs() {
+        if (this.activeTab === "All") {
+          return this.products;
+        }
+        return this.products.filter(
+          (product) => product.toLowerCase() === this.activeTab.toLowerCase()
+        );
+      },
       filteredRssItems() {
         if (!this.searchInputValue) {
           return {
@@ -683,6 +709,34 @@
 
   .feed-content-scroll-container {
     margin-top: 20px;
+  }
+
+  .product-tabs {
+    display: flex;
+    gap: 12px;
+    margin: 1em 0 1.5em;
+    padding: 0 20px;
+    flex-wrap: wrap;
+  }
+
+  .tab-button {
+    padding: 8px 16px;
+    font-weight: bold;
+    background-color: #f4f4f4;
+    color: var(--cldSlate);
+    border: 1px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .tab-button:hover {
+    background-color: #eaeaea;
+  }
+
+  .tab-button.active {
+    background-color: var(--cldBlue);
+    color: white;
   }
 
   .product-section-header {
