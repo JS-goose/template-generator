@@ -83,11 +83,11 @@
         :class="['tab-button', { active: activeTab === tab }]"
       >
         {{ tab.toUpperCase() }}
+        <span class="tab-count">({{ tabItemCount(tab) }})</span>
       </button>
     </div>
 
     <div class="feed-content-scroll-container" id="pm-section">
-      <!-- <div v-for="name in products" :key="name" class="feed-data-container"> -->
       <div
         v-for="name in filteredProductTabs"
         :key="name"
@@ -347,6 +347,17 @@
       },
     },
     methods: {
+      tabItemCount(tab) {
+        if (tab === "All") {
+          return (
+            this.pmGroupedItemsArray.length +
+            this.damGroupedItemsArray.length +
+            this.intGroupedItemsArray.length
+          );
+        }
+        const tabKey = tab.toLowerCase();
+        return this[`${tabKey}GroupedItemsArray`]?.length || 0;
+      },
       async pullAllRSSFeeds() {
         await this.fetchRSSFeed("pm");
         await this.fetchRSSFeed("dam");
@@ -793,6 +804,12 @@
   #all-feeds-display-container {
     width: 100%;
     overflow: visible;
+  }
+  .tab-count {
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 4px;
+    color: var(--cldSlate);
   }
 
   #all-feeds-display-container {
