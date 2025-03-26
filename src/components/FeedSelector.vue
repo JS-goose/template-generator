@@ -78,7 +78,14 @@
     <div class="feed-content-scroll-container" id="pm-section">
       <div v-for="name in products" :key="name" class="feed-data-container">
         <!-- ! PM -->
-        <div :class="['product-section-header', name]">
+        <div
+          :class="['product-section-header', name]"
+          v-if="
+            this.pmGroupedItemsArray.length ||
+            this.damGroupedItemsArray.length ||
+            this.intGroupedItemsArray.length
+          "
+        >
           <h2>{{ name.toUpperCase() }} Feed</h2>
           <p class="section-subtitle">
             Below are the most recent updates for {{ name.toUpperCase() }}.
@@ -783,7 +790,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 1em;
+    padding: 1em 1em 1em 0;
   }
 
   .selected {
