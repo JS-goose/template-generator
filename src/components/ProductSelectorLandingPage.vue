@@ -1,39 +1,9 @@
 <template>
   <section id="all-feeds-wrapper">
-    <div id="all-feeds-control-container">
-      <button @click="pullAllRSSFeeds()" class="all-feeds-buttons">
-        Pull All RSS Feeds
-      </button>
-      <button
-        @click="fetchTemplateData"
-        class="all-feeds-buttons"
-        v-if="templateUpdated"
-      >
-        Generate Template
-      </button>
-      <label for="all-rss-feeds-tag-search">
-        Search
-        <input
-          type="text"
-          name="all-rss-feeds-tag-search"
-          id="all-rss-feeds-tag-search"
-          placeholder="Comma separated tags, keywords, or date"
-          title="Format = yyyy-mm-dd/mm-dd-yyyy/dd-mm-yyyy"
-          v-model="searchInputValue"
-          maxlength="250"
-      /></label>
-      <button
-        v-if="this.displayClearBtn"
-        @click="clearAllFeedsData()"
-        class="all-feeds-buttons"
-      >
-        Clear All RSS Feed Data
-      </button>
-    </div>
     <FeedSelector
-      :searchInputValue="searchInputValue"
       ref="feedSelectorRef"
-      @templateObjsUpdated="handleTemplateUpdate"
+      @generateTemplate="fetchTemplateData"
+      @clearEmailTemplateData="onClearEmailTemplateData"
     />
     <EmailTemplate
       v-if="showTemplateModal"
@@ -56,8 +26,6 @@
 
     data() {
       return {
-        searchInputValue: "",
-        displayClearBtn: false,
         rssDataFromFeedSelector: [],
         emailTemplates: [],
         showTemplateModal: false,
@@ -71,26 +39,16 @@
       },
     },
     methods: {
-      handleTemplateUpdate(count) {
-        this.templateObjsUpdated = true;
-        this.templateObjsLength = count;
-      },
       // * Emit events to child component
       pullAllRSSFeeds() {
         this.$refs.feedSelectorRef.fetchRSSFeed("pm");
         this.$refs.feedSelectorRef.fetchRSSFeed("dam");
         this.$refs.feedSelectorRef.fetchRSSFeed("int");
-        this.displayClearBtn = true;
       },
       // * Emit events to feedSelectorRef component
-      clearAllFeedsData() {
-        this.$refs.feedSelectorRef.clearRSSFeedData("pm");
-        this.$refs.feedSelectorRef.clearRSSFeedData("dam");
-        this.$refs.feedSelectorRef.clearRSSFeedData("int");
-        this.searchInputValue = "";
+      onClearEmailTemplateData() {
         this.emailTemplates = [];
-        this.displayClearBtn = false;
-        this.showTemplateModal = false;
+        // this.showTemplateModal = false;
       },
       fetchTemplateData() {
         // * Pull data from child component

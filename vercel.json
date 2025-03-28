@@ -1,6 +1,6 @@
 {
   "git": {
-    "deploymentEnables": false
+    "deploymentEnabled": false
   },
   "routes": [
     {
