@@ -3,23 +3,33 @@
     <div id="footer-top"></div>
     <div id="footer-bottom">
       <p>
-        Built with &hearts; and &#9749; by Jonathan Sexton -
-        <a href="https://github.com/JS-goose" rel="noopener noreferrer"
+        Built with &hearts; and &#9749; by the Scaled Team & Jonathan Sexton -
+        <a
+          href="https://github.com/JS-goose"
+          rel="noopener noreferrer"
+          target="_blank"
           >GitHub</a
         >&nbsp;|
         <a
           href="https://www.linkedin.com/in/jj-goose/"
           rel="noopener noreferrer"
+          target="_blank"
           >LinkedIn</a
         >
       </p>
       <p>
-        <a href="https://cloudinary.com/tou" rel="noopener noreferrer"
+        <a
+          href="https://cloudinary.com/tou"
+          rel="noopener noreferrer"
+          target="_blank"
           >Terms of Use</a
         >
       </p>
       <p>
-        <a href="https://cloudinary.com/privacy" rel="noopener noreferrer"
+        <a
+          href="https://cloudinary.com/privacy"
+          rel="noopener noreferrer"
+          target="_blank"
           >Privacy Policy</a
         >
       </p>
@@ -27,12 +37,18 @@
         <a
           href="https://cloudinary.com/product_updates"
           rel="noopener noreferrer"
+          target="_blank"
           >Product Updates</a
         >
       </p>
       <p>
-        &copy; {{ new Date().getUTCFullYear() }} Cloudinary. All rights
-        reserved.
+        &copy; {{ new Date().getUTCFullYear() }}
+        <a
+          href="https://cloudinary.com/"
+          rel="noopener noreferrer"
+          target="_blank"
+          >Cloudinary</a
+        >. All rights reserved.
       </p>
     </div>
   </footer>
@@ -73,10 +89,6 @@
 
   a:hover {
     color: white;
-  }
-
-  a:visited {
-    color: var(--cldLightBlue);
   }
 
   #footer-top,
