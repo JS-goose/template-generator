@@ -28,6 +28,8 @@
 </template>
 
 <script>
+  import { generateMimeEmail } from "@/utils/encodeEmail";
+
   export default {
     name: "EmailTemplate",
     props: {
@@ -54,15 +56,15 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                    <div class="rss-item-container">
-                      <h4>
-                        <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                          ${email.title}
-                        </a>
-                      </h4>
-                      <p>${email.desc}</p>
-                    </div>
-                  `
+                <div class="rss-item-container">
+                  <h4>
+                    <a href="${email.link}" target="_blank" rel="noopener noreferrer">
+                      ${email.title}
+                    </a>
+                  </h4>
+                  <p>${email.desc}</p>
+                </div>
+              `
           )
           .join("");
 
@@ -73,8 +75,17 @@
         this.editorContent = this.$refs.editor.innerHTML;
       },
       finalizeEmail() {
-        console.log("Finalized Email Content:", this.editorContent);
-        alert("Email has been finalized!");
+        this.updateEditorContent();
+
+        const emailData = {
+          from: "example@email.com",
+          to: "customer@email.com",
+          subject: "Recent Cloudinary Release Notes",
+          html: this.editorContent,
+        };
+
+        const encodedEmail = generateMimeEmail(emailData);
+        console.log("Encoded Email for Gmail API:", encodedEmail);
         this.closeTemplateModal();
       },
       closeModal() {
