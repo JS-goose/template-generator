@@ -56,19 +56,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                <div class="rss-item-container">
-                  <h4>
-                    <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                      ${email.title}
-                    </a>
-                  </h4>
-                  <p>${email.desc}</p>
-                </div>
-              `
+                <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif;">
+              <div style="margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #ddd;">
+                <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+                  <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                    ${email.title}
+                  </a>
+                </h4>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+              </div>
+              </div>
+            `
           )
           .join("");
 
-        this.editorContent = `<p>Write your email content here...</p>${rssHTML}`;
+        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>${rssHTML}`;
         this.$refs.editor.innerHTML = this.editorContent;
       },
       updateEditorContent() {
