@@ -54,15 +54,15 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                  <div class="rss-item-container">
-                    <h4>
-                      <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                        ${email.title}
-                      </a>
-                    </h4>
-                    <p>${email.desc}</p>
-                  </div>
-                `
+                    <div class="rss-item-container">
+                      <h4>
+                        <a href="${email.link}" target="_blank" rel="noopener noreferrer">
+                          ${email.title}
+                        </a>
+                      </h4>
+                      <p>${email.desc}</p>
+                    </div>
+                  `
           )
           .join("");
 
@@ -97,7 +97,7 @@
   };
 </script>
 
-<style>
+<style lang="css" scoped>
   .modal-overlay {
     position: fixed;
     top: 0;

@@ -921,10 +921,6 @@
     color: var(--cldSlate);
   }
 
-  a:visited {
-    color: inherit;
-  }
-
   .rss-list-item-title-container > p {
     text-align: center;
   }
