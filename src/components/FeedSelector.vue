@@ -33,16 +33,19 @@
         </button>
       </div>
 
-      <div class="toolbar-center-group">
-        <p>Click to jump to section:</p>
-        <button class="toolbar-btn" :disabled="!pmGroupedItemsArray.length">
-          <a href="#pm-section">PM</a>
-        </button>
-        <button class="toolbar-btn" :disabled="!damGroupedItemsArray.length">
-          <a href="#dam-section">DAM</a>
-        </button>
-        <button class="toolbar-btn" :disabled="!intGroupedItemsArray.length">
-          <a href="#int-section">INT</a>
+      <div class="product-tabs">
+        <button
+          v-for="tab in tabs"
+          :key="tab"
+          @click="activeTab = tab"
+          :class="[
+            'tab-button',
+            tab.toLowerCase(),
+            { active: activeTab === tab },
+          ]"
+        >
+          {{ tab.toUpperCase() }}
+          <span class="tab-count">({{ tabItemCount(tab) }})</span>
         </button>
       </div>
 
@@ -75,7 +78,7 @@
       </div>
     </div>
 
-    <div class="product-tabs">
+    <!-- <div class="product-tabs">
       <button
         v-for="tab in tabs"
         :key="tab"
@@ -89,7 +92,7 @@
         {{ tab.toUpperCase() }}
         <span class="tab-count">({{ tabItemCount(tab) }})</span>
       </button>
-    </div>
+    </div> -->
 
     <div class="feed-content-scroll-container" id="pm-section">
       <div
