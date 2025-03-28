@@ -77,15 +77,30 @@
       finalizeEmail() {
         this.updateEditorContent();
 
-        const emailData = {
-          from: "example@email.com",
-          to: "customer@email.com",
-          subject: "Recent Cloudinary Release Notes",
-          html: this.editorContent,
-        };
+        const subject = "Cloudinary's Latest Release Notes";
+        const htmlContent = this.editorContent;
 
-        const encodedEmail = generateMimeEmail(emailData);
-        console.log("Encoded Email for Gmail API:", encodedEmail);
+        navigator.clipboard.writeText(htmlContent).then(() => {
+          // ! Opens Gmail Compose in a new tab
+          const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(
+            subject
+          )}&tf=1`;
+          window.open(gmailUrl, "_blank");
+
+          alert(
+            "Email HTML copied to clipboard. Paste it into the Gmail compose window!"
+          );
+        });
+        // *Encoding necessary for the eventual Google API implementation
+        // const emailData = {
+        //   from: "jonathan.sexton@cloudinary.com",
+        //   to: "jonathan.sexton@cloudinary.com",
+        //   subject: "Recent Cloudinary Release Notes",
+        //   html: this.editorContent,
+        // };
+
+        // const encodedEmail = generateMimeEmail(emailData);
+        // console.log("Encoded Email for Gmail API:", encodedEmail);
         this.closeTemplateModal();
       },
       closeModal() {
