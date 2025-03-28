@@ -6,7 +6,7 @@
         alt="Cloudinary"
       />
     </a>
-    <h1>RSS Feed to Email Template Generator</h1>
+    <h1>RSS Mailer - Template Generator</h1>
     <ul>
       <li>
         <a
@@ -21,7 +21,7 @@
           href="https://github.com/JS-goose/template-generator"
           target="_blank"
           rel="noreferrer noopener"
-          >Template Builder Documentation</a
+          >RSS Mailer Documentation</a
         >
       </li>
       <li>
