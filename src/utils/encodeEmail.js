@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 
-function generateMimeEmail({from, to, subject, html}) {
+export function generateMimeEmail({from, to, subject, html}) {
     const mime = [
         `From: ${from}`,
         `To: ${to}`,
