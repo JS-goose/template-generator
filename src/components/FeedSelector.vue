@@ -403,6 +403,7 @@
         jsonResults: null,
         timesUpdated: { pm: "", dam: "", int: "" },
         rssObjsForTemplate: [],
+        showAllItems: {},
       };
     },
     created() {
