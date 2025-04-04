@@ -4,7 +4,13 @@
     <div class="feed-global-toolbar">
       <div class="toolbar-left-group">
         <button @click="pullAllRSSFeeds" class="toolbar-btn">
-          Pull All RSS Feeds
+          {{
+            this.pmGroupedItemsArray.length &&
+            this.damGroupedItemsArray.length &&
+            this.intGroupedItemsArray.length
+              ? "Refresh"
+              : "Pull All RSS Feeds"
+          }}
         </button>
 
         <input
@@ -52,7 +58,9 @@
       <div class="toolbar-right-group">
         <div class="control-group">
           <strong>PM:</strong>
-          <button @click="fetchRSSFeed('pm')" class="toolbar-btn">Fetch</button>
+          <button @click="fetchRSSFeed('pm')" class="toolbar-btn">
+            {{ this.pmGroupedItemsArray.length ? "Refresh" : "Fetch" }}
+          </button>
           <button @click="clearRSSFeedData('pm')" class="toolbar-btn danger">
             Clear
           </button>
@@ -60,7 +68,7 @@
         <div class="control-group">
           <strong>DAM:</strong>
           <button @click="fetchRSSFeed('dam')" class="toolbar-btn">
-            Fetch
+            {{ this.damGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
           <button @click="clearRSSFeedData('dam')" class="toolbar-btn danger">
             Clear
@@ -69,7 +77,7 @@
         <div class="control-group">
           <strong>INT:</strong>
           <button @click="fetchRSSFeed('int')" class="toolbar-btn">
-            Fetch
+            {{ this.intGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
           <button @click="clearRSSFeedData('int')" class="toolbar-btn danger">
             Clear
