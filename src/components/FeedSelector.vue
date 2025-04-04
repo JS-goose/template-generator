@@ -500,26 +500,21 @@
         )}_${month}_${day}_${year}`;
       },
       async fetchRSSFeed(productType = "pm") {
-        // * Depending on the product type, choose the correct url
-        const productString = productType.includes("pm")
-          ? this.pmBaseURL
-          : productType.includes("dam")
-          ? this.damBaseURL
-          : productType.includes("int")
-          ? this.intBaseURL
-          : "";
-
-        // * Proxy due to CORS
-        const proxy = "https://thingproxy.freeboard.io/fetch/";
-        this.jsonResults = null;
-        this.fetchError = null;
         try {
-          const response = await axios.get(proxy + productString);
-          console.log("request sent", proxy + productString);
-          await this.convertRssToJson(response.data, productString);
-          console.log("RESPONSE DATA", response);
+          const vercelApiEndpoint = `/api/rss?feed=${productType}`;
+
+          console.log("Fetching RSS from:", vercelApiEndpoint);
+
+          const response = await fetch(vercelApiEndpoint);
+          if (!response.ok) throw new Error("Failed to fetch RSS");
+
+          const xmlData = await response.text();
+          console.log("Received XML Data:", xmlData.substring(0, 100));
+
+          await this.convertRssToJson(xmlData, productType);
         } catch (error) {
-          this.fetchError = `Error fetching the ${productString} feed - check URL for accuracy`;
+          console.error(`Error fetching RSS for ${productType}:`, error);
+          this.fetchError = `Error fetching ${productType} feed. Please try again later.`;
         }
       },
       convertRssToJson(xml, productString) {
@@ -527,13 +522,24 @@
         // * Set the date to let the user know when the last time data was updated
         const now = new Date().toLocaleTimeString();
         return new Promise((resolve, reject) => {
+          if (!xml || typeof xml !== "object") {
+            if (!xml || typeof xml !== "string" || !xml.trim().startsWith("<")) {
+              console.error("Invalid or empty XML string:", xml);
+              this.fetchError =
+                "Problem parsing/converting the XML: invalid or empty content.";
+              return reject("Problem parsing the XML: invalid or empty content.");
+            }
+          }
+
           parseString(xml, { explicitArray: true }, (error, result) => {
             if (error) {
-              this.error = "Problem parsing the XML";
+              this.fetchError = "Problem parsing the XML";
               reject("Problem parsing the XML");
               return;
             }
-            const items = result.rss.channel[0].item;
+
+            const items = result?.rss?.channel[0]?.item;
+
             const grouped = {};
             let rssNum = 0;
             console.log("ITEMS AFTER PARSING", items);
@@ -612,7 +618,7 @@
                 tags: grouped[key][0].tags,
               }));
             }
-            resolve();
+            resolve(items);
           });
         });
       },
