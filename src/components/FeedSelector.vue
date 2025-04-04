@@ -752,7 +752,7 @@
     font-weight: 500;
     border: none;
     border-bottom: 3px solid transparent;
-    border-radius: 6px 6px 0 0;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.95em;
@@ -789,8 +789,26 @@
 
   .tab-button.active {
     font-weight: 700;
-    border-bottom: 3px solid white;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1) inset;
+    background-image: linear-gradient(to bottom, white 30%, #f0f0f0 100%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--cldSlate);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.03);
+    font-size: 1.01em;
+    border-bottom: 3px solid var(--cldSlate);
+    transition: all 0.2s ease;
+  }
+
+  .tab-button.active.pm {
+    border-bottom: 3px solid var(--cldBlue);
+  }
+
+  .tab-button.active.dam {
+    border-bottom: 3px solid var(--cldTurquoiseBlue);
+  }
+
+  .tab-button.active.int {
+    border-bottom: 3px solid var(--cldCoral);
   }
 
   .tab-button:hover {
