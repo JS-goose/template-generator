@@ -98,22 +98,6 @@
       </div>
     </div>
 
-    <!-- <div class="product-tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab"
-        @click="activeTab = tab"
-        :class="[
-          'tab-button',
-          tab.toLowerCase(),
-          { active: activeTab === tab },
-        ]"
-      >
-        {{ tab.toUpperCase() }}
-        <span class="tab-count">({{ tabItemCount(tab) }})</span>
-      </button>
-    </div> -->
-
     <div class="feed-content-scroll-container" id="pm-section">
       <div
         v-for="name in filteredProductTabs"
