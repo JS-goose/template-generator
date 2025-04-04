@@ -173,13 +173,17 @@
         </li>
       </ul>
 
-      <button
-        class="toolbar-btn"
-        @click="showAllItems[name] = !showAllItems[name]"
+      <div
+        class="rss-toggle-container"
         v-if="filteredRssItems[name].length > 10"
       >
-        {{ showAllItems[name] ? "Show Less" : "Show More" }}
-      </button>
+        <button
+          class="toolbar-btn rss-toggle-button"
+          @click="showAllItems[name] = !showAllItems[name]"
+        >
+          {{ showAllItems[name] ? "Show Less" : "Show More" }}
+        </button>
+      </div>
     </div>
 
     <!-- <div class="feed-content-scroll-container" id="pm-section">
@@ -1076,5 +1080,27 @@
 
   #rss-list-item-include-checkbox:hover {
     cursor: pointer;
+  }
+  .rss-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1em 1em 2em;
+  }
+
+  .rss-toggle-button {
+    font-size: 0.95em;
+    font-weight: 600;
+    background-color: var(--cldSlate);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .rss-toggle-button:hover {
+    background-color: var(--cldBlue);
   }
 </style>
