@@ -767,6 +767,14 @@
     background-color: var(--cldSlate);
   }
 
+  .tab-button.all > span {
+    color: white;
+  }
+
+  .tab-button.all.active > span {
+    color: var(--cldSlate);
+  }
+
   .tab-button.pm {
     background-color: var(--cldBlue);
   }
