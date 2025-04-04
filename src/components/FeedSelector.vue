@@ -523,16 +523,12 @@
         const now = new Date().toLocaleTimeString();
         return new Promise((resolve, reject) => {
           if (!xml || typeof xml !== "object") {
-            console.error(
-              "XML data is not available or is the wrong data type: ",
-              typeof xml,
-              xml
-            );
-            this.fetchError =
-              "Problem parsing the XML - no data exists or is of wrong type";
-            reject(
-              "Problem parsing the XML - no data exists or is of wrong type"
-            );
+            if (!xml || typeof xml !== "string" || !xml.trim().startsWith("<")) {
+              console.error("Invalid or empty XML string:", xml);
+              this.fetchError =
+                "Problem parsing/converting the XML: invalid or empty content.";
+              return reject("Problem parsing the XML: invalid or empty content.");
+            }
           }
 
           parseString(xml, { explicitArray: true }, (error, result) => {
