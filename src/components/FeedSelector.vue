@@ -98,13 +98,96 @@
       </div>
     </div>
 
-    <div class="feed-content-scroll-container" id="pm-section">
+    <div
+      v-for="name in filteredProductTabs"
+      :key="name"
+      class="feed-data-container"
+    >
+      <div
+        :class="['product-section-header', name]"
+        v-if="
+          this.pmGroupedItemsArray.length ||
+          this.damGroupedItemsArray.length ||
+          this.intGroupedItemsArray.length
+        "
+      >
+        <h2>{{ name.toUpperCase() }} Feed</h2>
+        <p class="section-subtitle">
+          Below are the most recent updates for {{ name.toUpperCase() }}.
+        </p>
+      </div>
+
+      <ul class="feed-selector-rss-list-container">
+        <li
+          v-for="key in showAllItems[name]
+            ? filteredRssItems[name]
+            : filteredRssItems[name].slice(0, 10)"
+          :key="key.title"
+          class="feed-selector-rss-list-item"
+          :class="{
+            selected: rssObjsForTemplate.some(
+              (item) => item.index === key.index
+            ),
+          }"
+        >
+          <div class="feed-selector-rss-list-item-header">
+            <div>
+              <label for="rss-list-item-include-checkbox">
+                Include
+                <input
+                  type="checkbox"
+                  name="rss-list-item-include-checkbox"
+                  id="rss-list-item-include-checkbox"
+                  @click="includeInTemplate(key, name)"
+              /></label>
+            </div>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
+            </div>
+          </div>
+          <div class="rss-list-item-title-container">
+            <p>{{ key.title.toUpperCase() }}</p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Publish Date:</span>
+              {{ key.pubDate }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Description:</span> {{ key.desc }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <a
+                :href="key.directLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </p>
+          </div>
+        </li>
+      </ul>
+
+      <button
+        class="toolbar-btn"
+        @click="showAllItems[name] = !showAllItems[name]"
+        v-if="filteredRssItems[name].length > 10"
+      >
+        {{ showAllItems[name] ? "Show Less" : "Show More" }}
+      </button>
+    </div>
+
+    <!-- <div class="feed-content-scroll-container" id="pm-section">
       <div
         v-for="name in filteredProductTabs"
         :key="name"
         class="feed-data-container"
       >
-        <!-- ! PM -->
         <div
           :class="['product-section-header', name]"
           v-if="
@@ -172,7 +255,6 @@
             </div>
           </li>
         </ul>
-        <!-- ! DAM -->
         <ul
           class="feed-selector-rss-list-container"
           v-if="name === 'dam'"
@@ -230,7 +312,6 @@
             </div>
           </li>
         </ul>
-        <!-- ! INT -->
         <ul
           class="feed-selector-rss-list-container"
           v-if="name === 'int'"
@@ -289,7 +370,7 @@
           </li>
         </ul>
       </div>
-    </div>
+    </div> -->
   </article>
 </template>
 <script>
@@ -319,6 +400,12 @@
         timesUpdated: { pm: "", dam: "", int: "" },
         rssObjsForTemplate: [],
       };
+    },
+    created() {
+      this.showAllItems = this.products.reduce((acc, name) => {
+        acc[name] = false;
+        return acc;
+      }, {});
     },
     computed: {
       filteredProductTabs() {
