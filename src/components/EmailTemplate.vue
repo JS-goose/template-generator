@@ -28,6 +28,8 @@
 </template>
 
 <script>
+  import { generateMimeEmail } from "@/utils/encodeEmail";
+
   export default {
     name: "EmailTemplate",
     props: {
@@ -54,27 +56,64 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                    <div class="rss-item-container">
-                      <h4>
-                        <a href="${email.link}" target="_blank" rel="noopener noreferrer">
-                          ${email.title}
-                        </a>
-                      </h4>
-                      <p>${email.desc}</p>
-                    </div>
-                  `
+                <div style="max-width: 600px; font-family: Arial, sans-serif;">
+              <div style="margin-bottom: 20px; padding: 10px;">
+                <ul>
+                  <li>
+                    <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+                  <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                    ${email.title}
+                  </a>
+                </h4>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                    </li>
+                  </ul>
+              </div>
+              </div>
+            `
           )
           .join("");
 
-        this.editorContent = `<p>Write your email content here...</p>${rssHTML}`;
+        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>${rssHTML}`;
         this.$refs.editor.innerHTML = this.editorContent;
+      },
+      copyHtmlToClipboard() {
+        const htmlContent = this.editorContent;
+
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const data = [new ClipboardItem({ "text/html": blob })];
+
+        navigator.clipboard.write(data).then(() => {
+          console.log("HTML copied as rich content!");
+        });
       },
       updateEditorContent() {
         this.editorContent = this.$refs.editor.innerHTML;
       },
       finalizeEmail() {
-        console.log("Finalized Email Content:", this.editorContent);
-        alert("Email has been finalized!");
+        this.updateEditorContent();
+
+        const subject = "Cloudinary's Latest Release Notes";
+        const htmlContent = this.editorContent;
+
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const data = [new ClipboardItem({ "text/html": blob })];
+
+        navigator.clipboard.write(data).then(() => {
+          const subject = encodeURIComponent("Cloudinary Release Notes");
+          const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&tf=1`;
+          window.open(gmailUrl, "_blank");
+        });
+        // *Encoding necessary for the eventual Google API implementation
+        // const emailData = {
+        //   from: "jonathan.sexton@cloudinary.com",
+        //   to: "jonathan.sexton@cloudinary.com",
+        //   subject: "Recent Cloudinary Release Notes",
+        //   html: this.editorContent,
+        // };
+
+        // const encodedEmail = generateMimeEmail(emailData);
+        // console.log("Encoded Email for Gmail API:", encodedEmail);
         this.closeTemplateModal();
       },
       closeModal() {
