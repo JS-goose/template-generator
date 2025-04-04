@@ -61,7 +61,11 @@
           <button @click="fetchRSSFeed('pm')" class="toolbar-btn">
             {{ this.pmGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
-          <button @click="clearRSSFeedData('pm')" class="toolbar-btn danger">
+          <button
+            @click="clearRSSFeedData('pm')"
+            class="toolbar-btn danger"
+            :disabled="!pmGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
@@ -70,7 +74,11 @@
           <button @click="fetchRSSFeed('dam')" class="toolbar-btn">
             {{ this.damGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
-          <button @click="clearRSSFeedData('dam')" class="toolbar-btn danger">
+          <button
+            @click="clearRSSFeedData('dam')"
+            class="toolbar-btn danger"
+            :disabled="!damGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
@@ -79,7 +87,11 @@
           <button @click="fetchRSSFeed('int')" class="toolbar-btn">
             {{ this.intGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
-          <button @click="clearRSSFeedData('int')" class="toolbar-btn danger">
+          <button
+            @click="clearRSSFeedData('int')"
+            class="toolbar-btn danger"
+            :disabled="!intGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
