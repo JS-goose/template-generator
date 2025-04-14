@@ -21,11 +21,6 @@
       <h2>🖥️ Step-by-Step Instructions</h2>
       <ol>
         <li>
-          <strong>Open the Application</strong><br />
-          Visit the Template Generator web app (your team will provide the
-          link).
-        </li>
-        <li>
           <strong>Pull the Latest Release Notes</strong><br />
           Click <code>Pull All RSS Feeds</code> to load updates for:
           <ul>
