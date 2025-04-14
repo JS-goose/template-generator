@@ -10,21 +10,31 @@
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
     />
-    <GettingStarted />
+    <div>
+      <h1>Getting Started</h1>
+      <ol>
+        <li>
+          Pull individual feeds using the action buttons on the top right or all
+          feeds using the "Pull All RSS Feeds" button on the left
+        </li>
+        <li>
+          Once feeds are pulled, you can clear individual feeds with the "Clear"
+          button beside each product or use the
+        </li>
+      </ol>
+    </div>
   </section>
 </template>
 
 <script>
   import FeedSelector from "./FeedSelector.vue";
   import EmailTemplate from "./EmailTemplate.vue";
-  import GettingStarted from "./GettingStarted.vue";
 
   export default {
     name: "ProductSelectorLandingPage",
     components: {
       FeedSelector,
       EmailTemplate,
-      GettingStarted,
     },
 
     data() {
