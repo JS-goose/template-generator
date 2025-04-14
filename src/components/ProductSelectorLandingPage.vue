@@ -10,18 +10,21 @@
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
     />
+    <GettingStarted />
   </section>
 </template>
 
 <script>
   import FeedSelector from "./FeedSelector.vue";
   import EmailTemplate from "./EmailTemplate.vue";
+  import GettingStarted from "./GettingStarted.vue";
 
   export default {
     name: "ProductSelectorLandingPage",
     components: {
       FeedSelector,
       EmailTemplate,
+      GettingStarted,
     },
 
     data() {
