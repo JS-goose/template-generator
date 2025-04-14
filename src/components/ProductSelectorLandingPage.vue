@@ -10,18 +10,69 @@
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
     />
-    <div>
-      <h1>Getting Started</h1>
+    <div class="instructions">
+      <h2>💡 How to Use the Cloudinary Template Generator</h2>
+      <p>
+        This tool helps you quickly generate professional email content from
+        Cloudinary's latest updates — perfect for sharing new features or
+        integrations with customers.
+      </p>
+
+      <h2>🖥️ Step-by-Step Instructions</h2>
       <ol>
         <li>
-          Pull individual feeds using the action buttons on the top right or all
-          feeds using the "Pull All RSS Feeds" button on the left
+          <strong>Open the Application</strong><br />
+          Visit the Template Generator web app (your team will provide the
+          link).
         </li>
         <li>
-          Once feeds are pulled, you can clear individual feeds with the "Clear"
-          button beside each product or use the
+          <strong>Pull the Latest Release Notes</strong><br />
+          Click <code>Pull All RSS Feeds</code> to load updates for:
+          <ul>
+            <li><strong>PM</strong> – Programmable Media</li>
+            <li><strong>DAM</strong> – Digital Asset Management</li>
+            <li><strong>INT</strong> – Integrations</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Browse the Updates</strong><br />
+          Use the tabs (PM, DAM, INT) to view updates. Each item shows:
+          <ul>
+            <li>🗓 Publish Date</li>
+            <li>📝 Description</li>
+            <li>🔗 Link to Learn More</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Select Items to Include</strong><br />
+          Check the box labeled <code>Include</code> next to each update you
+          want in your email.
+        </li>
+        <li>
+          <strong>Generate the Email</strong><br />
+          Click <code>Generate Template</code>. A formatted preview of your
+          email will appear.
+        </li>
+        <li>
+          <strong>Copy the Content</strong><br />
+          Copy the template and paste it into Gmail, Outlook, or Zendesk.
+        </li>
+        <li>
+          <strong>Clear or Refresh Feeds (Optional)</strong><br />
+          Use <code>Clear All</code> or product-specific buttons to refresh or
+          reset feed data.
         </li>
       </ol>
+
+      <h2>✅ Pro Tips</h2>
+      <div class="tip">
+        🔍 Use the search bar to quickly filter updates by keyword or date
+        (e.g., "video", "Feb 2025").
+      </div>
+      <div class="tip">
+        💬 Ideal for customer check-ins, renewal outreach, or showcasing new
+        product features.
+      </div>
     </div>
   </section>
 </template>
@@ -121,5 +172,36 @@
 
   button {
     max-width: 20em;
+  }
+
+  .instructions {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    color: #333;
+    text-align: left;
+  }
+  .instructions > h1,
+  .instructions > h2 {
+    color: #2c3e50;
+  }
+  .instructions > .tip {
+    background-color: #eef8ff;
+    padding: 10px;
+    border-left: 4px solid #3498db;
+    margin: 1em 0;
+  }
+  .instructions > ol {
+    padding-left: 1.2em;
+  }
+  li {
+    margin-bottom: 0.75em;
+  }
+  code {
+    background-color: #eaeaea;
+    padding: 2px 4px;
+    border-radius: 3px;
   }
 </style>
