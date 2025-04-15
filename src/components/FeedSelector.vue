@@ -450,6 +450,15 @@
       },
     },
     methods: {
+      emitFeedStatus() {
+        // * Emit feed status to the parent (ProductSelectorLandingPage) for conditional rendering of instructions
+        const isEmpty =
+          this.pmGroupedItemsArray.length === 0 &&
+          this.damGroupedItemsArray.length === 0 &&
+          this.intGroupedItemsArray.length === 0;
+
+        this.$emit("feedStatusChanged", isEmpty);
+      },
       tabItemCount(tab) {
         if (tab === "All") {
           return (
@@ -475,6 +484,7 @@
         this.$emit("clearEmailTemplateData");
         this.rssObjsForTemplate = [];
         this.searchInputValue = "";
+        this.emitFeedStatus();
       },
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
@@ -680,6 +690,7 @@
                 ),
                 tags: grouped[key][0].tags,
               }));
+              this.emitFeedStatus();
             } else if (productString.includes("dam")) {
               this.timesUpdated.dam = now;
               this.damGroupedItemsArray = Object.keys(grouped).map((key) => ({
@@ -696,6 +707,7 @@
                 ),
                 tags: grouped[key][0].tags,
               }));
+              this.emitFeedStatus();
             } else {
               this.timesUpdated.int = now;
               this.intGroupedItemsArray = Object.keys(grouped).map((key) => ({
@@ -713,6 +725,7 @@
                 ),
                 tags: grouped[key][0].tags,
               }));
+              this.emitFeedStatus();
             }
             resolve(items);
           });
@@ -724,6 +737,7 @@
         if (name == "int") return this.intGroupedItemsArray;
       },
       clearRSSFeedData(productName) {
+        this.emitFeedStatus();
         if (productName == "pm") return (this.pmGroupedItemsArray = []);
         if (productName == "dam") return (this.damGroupedItemsArray = []);
         if (productName == "int") return (this.intGroupedItemsArray = []);

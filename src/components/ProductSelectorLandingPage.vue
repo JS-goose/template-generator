@@ -4,6 +4,7 @@
       ref="feedSelectorRef"
       @generateTemplate="fetchTemplateData"
       @clearEmailTemplateData="onClearEmailTemplateData"
+      @feedStatusChanged="onFeedStatusChanged"
     />
     <EmailTemplate
       v-if="showTemplateModal"
@@ -13,16 +14,18 @@
     <div class="instructions" v-if="displayInstructions">
       <h2>💡 How to Use the Cloudinary Template Generator</h2>
       <p>
-        This tool helps you quickly generate professional email content from
-        Cloudinary's latest updates — perfect for sharing new features or
-        integrations with customers.
+        This tool helps you quickly generate professional template content from
+        Cloudinary's latest updates — perfect for sharing new features,
+        functionality or integrations with customers.
       </p>
 
       <h2>🖥️ Step-by-Step Instructions</h2>
       <ol>
         <li>
           <strong>Pull the Latest Release Notes</strong><br />
-          Click <code>Pull All RSS Feeds</code> to load updates for:
+          Click <code>Pull All RSS Feeds</code> or use the
+          <code>Fetch</code> buttons to pull individual feeds and load updates
+          for:
           <ul>
             <li><strong>PM</strong> – Programmable Media</li>
             <li><strong>DAM</strong> – Digital Asset Management</li>
@@ -31,7 +34,8 @@
         </li>
         <li>
           <strong>Browse the Updates</strong><br />
-          Use the tabs (PM, DAM, INT) to view updates. Each item shows:
+          Use the tabs (PM, DAM, INT) to view updates by product or all
+          together. Items are also tagged for clarity. Each item shows:
           <ul>
             <li>🗓 Publish Date</li>
             <li>📝 Description</li>
@@ -41,16 +45,17 @@
         <li>
           <strong>Select Items to Include</strong><br />
           Check the box labeled <code>Include</code> next to each update you
-          want in your email.
+          want in your template.
         </li>
         <li>
-          <strong>Generate the Email</strong><br />
-          Click <code>Generate Template</code>. A formatted preview of your
-          email will appear.
+          <strong>Generate the Template</strong><br />
+          Click <code>Generate Template</code> and a formatted preview of your
+          template will appear in a new window with fully editable text.
         </li>
         <li>
           <strong>Copy the Content</strong><br />
-          Copy the template and paste it into Gmail, Outlook, or Zendesk.
+          Click <code>Finalize Template</code> to copy the template to your
+          clipboard automatically and paste it into Gmail, Outlook, Zendesk etc.
         </li>
         <li>
           <strong>Clear or Refresh Feeds (Optional)</strong><br />
@@ -90,26 +95,19 @@
         showTemplateModal: false,
         templateObjsUpdated: false,
         templateObjsLength: 0,
+        displayInstructions: true,
       };
     },
     computed: {
       templateUpdated() {
         return this.templateObjsUpdated && this.templateObjsLength;
       },
-      displayInstructions() {
-        const ref = this.$refs.feedSelectorRef;
-        return (
-          ref &&
-          Array.isArray(ref.pmGroupedItemsArray) &&
-          Array.isArray(ref.damGroupedItemsArray) &&
-          Array.isArray(ref.intGroupedItemsArray) &&
-          ref.pmGroupedItemsArray.length === 0 &&
-          ref.damGroupedItemsArray.length === 0 &&
-          ref.intGroupedItemsArray.length === 0
-        );
-      },
     },
     methods: {
+      onFeedStatusChanged(isEmpty) {
+        // * Keeps the display instructions variable reactive to show instructions if no RSS data exists in arrays
+        this.displayInstructions = isEmpty;
+      },
       // * Emit events to child component
       pullAllRSSFeeds() {
         // TODO this needs a check to see if the cached data exists, and if so, pull that instead of doing API calls
