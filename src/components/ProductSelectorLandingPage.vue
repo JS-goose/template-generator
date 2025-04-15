@@ -10,7 +10,7 @@
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
     />
-    <div class="instructions">
+    <div class="instructions" v-if="displayInstructions">
       <h2>💡 How to Use the Cloudinary Template Generator</h2>
       <p>
         This tool helps you quickly generate professional email content from
@@ -95,6 +95,18 @@
     computed: {
       templateUpdated() {
         return this.templateObjsUpdated && this.templateObjsLength;
+      },
+      displayInstructions() {
+        const ref = this.$refs.feedSelectorRef;
+        return (
+          ref &&
+          Array.isArray(ref.pmGroupedItemsArray) &&
+          Array.isArray(ref.damGroupedItemsArray) &&
+          Array.isArray(ref.intGroupedItemsArray) &&
+          ref.pmGroupedItemsArray.length === 0 &&
+          ref.damGroupedItemsArray.length === 0 &&
+          ref.intGroupedItemsArray.length === 0
+        );
       },
     },
     methods: {
