@@ -5,7 +5,7 @@
       <p>
         <small
           >The entire section is editable, including text, links, etc. from RSS
-          items</small
+          items. Hold Cmd (Ctrl on Windows) + Click to open links.</small
         >
       </p>
       <!-- Close Button -->
@@ -62,21 +62,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                  <div style="margin-bottom: 20px; padding: 10px;">
-                                    <ul>
-                                      <li>
-                                        <h4 style="margin: 0 0 10px 0; font-size: 16px;">
-                                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                        ${email.title}
-                                      </a>
-                                    </h4>
-                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                        </li>
-                                      </ul>
-                                  </div>
-                                  </div>
-                                `
+                          <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                        <div style="margin-bottom: 20px; padding: 10px;">
+                          <ul>
+                            <li>
+                              <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                              ${email.title}
+                            </a>
+                          </h4>
+                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                              </li>
+                            </ul>
+                        </div>
+                        </div>
+                        `
           )
           .join("");
 
@@ -129,20 +129,46 @@
       },
       handleLinkClick(event) {
         const target = event.target;
-        // if (target.tagName === "A") {
-        //   event.preventDefault();
-        //   window.open(target.href, "_blank", "noopener,noreferrer");
-        // }
         // * Only open links in window if user holds Ctrl or Cmd
         if ((event.metaKey || event.ctrlKey) && target.tagName === "A") {
           window.open(target.href, "_blank", "noopener,noreferrer");
+        }
+
+        // * Allow users to edit link by double-click
+        if (event.detail === 2 && target.tagName === "A") {
+          event.preventDefault();
+
+          const href = target.getAttribute("href");
+          const text = target.innerText;
+
+          const wrapper = document.createElement("span");
+          wrapper.innerHTML = `
+                                        Text: <input type="text" value="${text}" class="edit-link-text" />
+                                        URL: <input type="text" value="${href}" class="edit-link-href" />
+                                        <button class="save-link">Save</button>
+                                      `;
+
+          target.replaceWith(wrapper);
+
+          wrapper.querySelector(".save-link").addEventListener("click", () => {
+            const newText = wrapper.querySelector(".edit-link-text").value;
+            const newHref = wrapper.querySelector(".edit-link-href").value;
+
+            const newAnchor = document.createElement("a");
+            newAnchor.href = newHref;
+            newAnchor.innerText = newText;
+            newAnchor.target = "_blank";
+            newAnchor.rel = "noopener noreferrer";
+
+            wrapper.replaceWith(newAnchor);
+          });
         }
       },
     },
   };
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -196,7 +222,7 @@
     background: #fff;
     margin-top: 10px;
   }
-
+  /* TODO adjust styling */
   .finalize-buttons-container {
     display: flex;
     flex-direction: row;
@@ -218,12 +244,35 @@
     border: 1px solid var(--cldBlue);
     transition: all 0.25s;
   }
-
+  /* TODO Add wrapper classes here as this is bleeding over into the nav styling */
   a {
     cursor: pointer;
+    color: var(--cldBlue);
   }
 
   a:visited {
     color: var(--cldBlue);
+  }
+
+  .edit-link-text,
+  .edit-link-href {
+    margin: 4px;
+    padding: 4px;
+    font-size: 0.85em;
+  }
+
+  .save-link {
+    margin-left: 6px;
+    background-color: var(--cldBlue);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .save-link:hover {
+    background-color: var(--cldSlate);
   }
 </style>
