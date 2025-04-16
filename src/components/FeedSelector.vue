@@ -490,55 +490,61 @@
             // * Depending on the product, organize data in a readable manner and add to the correct array
             if (productString.includes("pm")) {
               this.timesUpdated.pm = now;
-              this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "pm",
-                index: `pm${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "pm"
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.pmGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "pm",
+                  index: `pm${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "pm"
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
             } else if (productString.includes("dam")) {
               this.timesUpdated.dam = now;
-              this.damGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "dam",
-                index: `dam${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "dam"
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.damGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "dam",
+                  index: `dam${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "dam"
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
             } else {
               this.timesUpdated.int = now;
-              this.intGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "int",
-                index: `int${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "int",
-                  grouped[key][0].tags
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.intGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "int",
+                  index: `int${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "int",
+                    grouped[key][0].tags
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
             }
             resolve(items);
