@@ -24,11 +24,11 @@
         <li>
           <strong>Pull the Latest Release Notes</strong><br />
           Click <code>Pull All RSS Feeds</code> or use the
-          <code>Fetch</code> buttons to pull individual feeds and load updates
-          for:
+          <code>Fetch</code> buttons to pull individual feeds (independent of
+          one another) and load updates for:
           <ul>
             <li><strong>PM</strong> – Programmable Media</li>
-            <li><strong>DAM</strong> – Digital Asset Management</li>
+            <li><strong>DAM</strong> – Assets</li>
             <li><strong>INT</strong> – Integrations</li>
           </ul>
         </li>
