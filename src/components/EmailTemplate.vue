@@ -1,7 +1,7 @@
 <template>
   <div class="modal-overlay" aria-modal="true" role="dialog">
     <div class="modal-content">
-      <h2>Email Template</h2>
+      <h2>Template</h2>
       <p>
         <small
           >The entire section is editable, including text, links, etc. from RSS
@@ -19,10 +19,16 @@
         @input="updateEditorContent"
       ></div>
 
-      <!-- Finalize Button -->
-      <button class="finalize-button" @click="finalizeEmail">
-        Finalize Email
-      </button>
+      <!-- * Finalize Buttons -->
+      <div class="finalize-buttons-container">
+        <button class="finalize-button" @click="finalizeEmail">
+          Finalize Email
+        </button>
+        <button class="finalize-button">Copy Plain Text</button>
+        <button class="finalize-button">Copy Markdown Text</button>
+        <!-- * Future Release -->
+        <!-- <button>Push to Vitally</button> -->
+      </div>
     </div>
   </div>
 </template>
@@ -56,21 +62,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                <div style="max-width: 600px; font-family: Arial, sans-serif;">
-              <div style="margin-bottom: 20px; padding: 10px;">
-                <ul>
-                  <li>
-                    <h4 style="margin: 0 0 10px 0; font-size: 16px;">
-                  <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                    ${email.title}
-                  </a>
-                </h4>
-                <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                    </li>
-                  </ul>
-              </div>
-              </div>
-            `
+                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                  <div style="margin-bottom: 20px; padding: 10px;">
+                                    <ul>
+                                      <li>
+                                        <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+                                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                        ${email.title}
+                                      </a>
+                                    </h4>
+                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                        </li>
+                                      </ul>
+                                  </div>
+                                  </div>
+                                `
           )
           .join("");
 
@@ -191,10 +197,16 @@
     margin-top: 10px;
   }
 
+  .finalize-buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+
   .finalize-button {
     color: white;
     padding: 10px;
-    border: none;
+    border: 1px solid white;
     margin-top: 10px;
     cursor: pointer;
     font-size: 1.01em;
@@ -203,6 +215,8 @@
   .finalize-button:hover {
     color: var(--cldBlue);
     background: white;
+    border: 1px solid var(--cldBlue);
+    transition: all 0.25s;
   }
 
   a {
