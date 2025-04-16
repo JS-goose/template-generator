@@ -62,21 +62,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                  <div style="margin-bottom: 20px; padding: 10px;">
-                                    <ul>
-                                      <li>
-                                        <h4 style="margin: 0 0 10px 0; font-size: 16px;">
-                                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                        ${email.title}
-                                      </a>
-                                    </h4>
-                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                        </li>
-                                      </ul>
-                                  </div>
-                                  </div>
-                                  `
+    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+  <div style="margin-bottom: 20px; padding: 10px;">
+    <ul>
+      <li>
+        <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+        ${email.title}
+      </a>
+    </h4>
+    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+        </li>
+      </ul>
+  </div>
+  </div>
+  `
           )
           .join("");
 
@@ -143,10 +143,10 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                  Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                  URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                  <button class="save-link">Save</button>
-                                                `;
+                                                        Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                        URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                        <button class="save-link">Save</button>
+                                                      `;
 
           target.replaceWith(wrapper);
 
@@ -222,7 +222,7 @@
     background: #fff;
     margin-top: 10px;
   }
-  /* TODO adjust styling */
+
   .finalize-buttons-container {
     display: flex;
     flex-direction: row;
@@ -248,7 +248,7 @@
     border: 1px solid var(--cldBlue);
     transition: all 0.25s;
   }
-  /* TODO Add wrapper classes here as this is bleeding over into the nav styling */
+
   a {
     cursor: pointer;
     color: var(--cldBlue);
