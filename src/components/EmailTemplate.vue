@@ -62,21 +62,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-                          <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                        <div style="margin-bottom: 20px; padding: 10px;">
-                          <ul>
-                            <li>
-                              <h4 style="margin: 0 0 10px 0; font-size: 16px;">
-                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                              ${email.title}
-                            </a>
-                          </h4>
-                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                              </li>
-                            </ul>
-                        </div>
-                        </div>
-                        `
+                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                  <div style="margin-bottom: 20px; padding: 10px;">
+                                    <ul>
+                                      <li>
+                                        <h4 style="margin: 0 0 10px 0; font-size: 16px;">
+                                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                        ${email.title}
+                                      </a>
+                                    </h4>
+                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                        </li>
+                                      </ul>
+                                  </div>
+                                  </div>
+                                  `
           )
           .join("");
 
@@ -143,10 +143,10 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                        Text: <input type="text" value="${text}" class="edit-link-text" />
-                                        URL: <input type="text" value="${href}" class="edit-link-href" />
-                                        <button class="save-link">Save</button>
-                                      `;
+                                                  Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                  URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                  <button class="save-link">Save</button>
+                                                `;
 
           target.replaceWith(wrapper);
 
@@ -227,6 +227,9 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    padding: 1em 0;
+    margin-top: 1em;
+    align-items: center;
   }
 
   .finalize-button {
@@ -236,6 +239,7 @@
     margin-top: 10px;
     cursor: pointer;
     font-size: 1.01em;
+    background-color: var(--cldBlue);
   }
 
   .finalize-button:hover {
