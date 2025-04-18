@@ -49,6 +49,7 @@
             tab.toLowerCase(),
             { active: activeTab === tab },
           ]"
+          :disabled="disableTab(tab)"
         >
           {{ tab.toUpperCase() }}
           <span class="tab-count">({{ tabItemCount(tab) }})</span>
@@ -264,6 +265,13 @@
       },
     },
     methods: {
+      disableTab(tab) {
+        const tabKey = tab.toLowerCase();
+        if (tabKey === "pm") return this.pmGroupedItemsArray.length === 0;
+        if (tabKey === "dam") return this.damGroupedItemsArray.length === 0;
+        if (tabKey === "int") return this.intGroupedItemsArray.length === 0;
+        // return false;
+      },
       emitFeedStatus() {
         // * Emit feed status to the parent (ProductSelectorLandingPage) for conditional rendering of instructions
         const isEmpty =
@@ -601,12 +609,11 @@
     top: 0;
     z-index: 500;
     background: white;
-    padding: 10px 10px;
+    padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.9rem;
     transition: box-shadow 0.2s ease-in-out;
   }
 
@@ -661,6 +668,7 @@
     opacity: 0.5;
     cursor: not-allowed;
     background-color: var(--cldSlate);
+    color: gray;
   }
 
   .generate-template-btn.toolbar-btn {
@@ -676,8 +684,6 @@
   .product-tabs {
     display: flex;
     gap: 12px;
-    margin: 1.5em 0 1em;
-    padding: 0 20px;
     flex-wrap: wrap;
   }
 
@@ -756,6 +762,12 @@
   .tab-button:hover {
     filter: brightness(1.3);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .tab-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .tab-count {
