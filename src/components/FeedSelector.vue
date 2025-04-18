@@ -29,7 +29,7 @@
         </button>
         <button
           @click="$emit('generateTemplate')"
-          class="toolbar-btn"
+          class="generate-template-btn toolbar-btn"
           :disabled="!rssObjsForTemplate.length"
         >
           Generate Template
@@ -601,12 +601,12 @@
     top: 0;
     z-index: 500;
     background: white;
-    padding: 10px 20px;
+    padding: 10px 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.9rem;
     transition: box-shadow 0.2s ease-in-out;
   }
 
@@ -656,9 +656,17 @@
     background-color: #b02a37;
   }
 
-  .toolbar-btn:disabled {
+  .toolbar-btn:disabled,
+  .generate-template-btn.toolbar-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background-color: var(--cldSlate);
+  }
+
+  .generate-template-btn.toolbar-btn {
+    background-color: var(--cldYellow);
+    border: 2px solid var(--cldSlate);
+    font-size: 1.01em;
   }
 
   .feed-content-scroll-container {
