@@ -18,6 +18,13 @@
         contenteditable="true"
         @input="updateEditorContent"
       ></div>
+      <div class="template-psa">
+        <small
+          >When you click “Finalize Email,” the content is automatically copied
+          to your clipboard, and a new Gmail window opens so you can quickly
+          paste and send.
+        </small>
+      </div>
 
       <!-- * Finalize Buttons -->
       <div class="finalize-buttons-container">
@@ -147,10 +154,10 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-              Text: <input type="text" value="${text}" class="edit-link-text" />
-              URL: <input type="text" value="${href}" class="edit-link-href" />
-              <button class="save-link">Save</button>
-        `;
+                            Text: <input type="text" value="${text}" class="edit-link-text" />
+                            URL: <input type="text" value="${href}" class="edit-link-href" />
+                            <button class="save-link">Save</button>
+                      `;
 
           target.replaceWith(wrapper);
 
@@ -220,6 +227,17 @@
     border-radius: 5px;
     text-align: left;
     overflow: auto;
+  }
+
+  .template-psa {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .template-psa small {
+    width: 50%;
   }
 
   .rss-item-container {
