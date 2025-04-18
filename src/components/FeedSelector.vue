@@ -4,7 +4,13 @@
     <div class="feed-global-toolbar">
       <div class="toolbar-left-group">
         <button @click="pullAllRSSFeeds" class="toolbar-btn">
-          Pull All RSS Feeds
+          {{
+            this.pmGroupedItemsArray.length &&
+            this.damGroupedItemsArray.length &&
+            this.intGroupedItemsArray.length
+              ? "Refresh"
+              : "Pull All RSS Feeds"
+          }}
         </button>
 
         <input
@@ -23,7 +29,7 @@
         </button>
         <button
           @click="$emit('generateTemplate')"
-          class="toolbar-btn"
+          class="generate-template-btn toolbar-btn"
           :disabled="!rssObjsForTemplate.length"
         >
           Generate Template
@@ -43,6 +49,7 @@
             tab.toLowerCase(),
             { active: activeTab === tab },
           ]"
+          :disabled="disableTab(tab)"
         >
           {{ tab.toUpperCase() }}
           <span class="tab-count">({{ tabItemCount(tab) }})</span>
@@ -52,238 +59,135 @@
       <div class="toolbar-right-group">
         <div class="control-group">
           <strong>PM:</strong>
-          <button @click="fetchRSSFeed('pm')" class="toolbar-btn">Fetch</button>
-          <button @click="clearRSSFeedData('pm')" class="toolbar-btn danger">
+          <button @click="fetchRSSFeed('pm')" class="toolbar-btn">
+            {{ this.pmGroupedItemsArray.length ? "Refresh" : "Fetch" }}
+          </button>
+          <button
+            @click="clearRSSFeedData('pm')"
+            class="toolbar-btn danger"
+            :disabled="!pmGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
         <div class="control-group">
           <strong>DAM:</strong>
           <button @click="fetchRSSFeed('dam')" class="toolbar-btn">
-            Fetch
+            {{ this.damGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
-          <button @click="clearRSSFeedData('dam')" class="toolbar-btn danger">
+          <button
+            @click="clearRSSFeedData('dam')"
+            class="toolbar-btn danger"
+            :disabled="!damGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
         <div class="control-group">
           <strong>INT:</strong>
           <button @click="fetchRSSFeed('int')" class="toolbar-btn">
-            Fetch
+            {{ this.intGroupedItemsArray.length ? "Refresh" : "Fetch" }}
           </button>
-          <button @click="clearRSSFeedData('int')" class="toolbar-btn danger">
+          <button
+            @click="clearRSSFeedData('int')"
+            class="toolbar-btn danger"
+            :disabled="!intGroupedItemsArray.length"
+          >
             Clear
           </button>
         </div>
       </div>
     </div>
 
-    <!-- <div class="product-tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab"
-        @click="activeTab = tab"
-        :class="[
-          'tab-button',
-          tab.toLowerCase(),
-          { active: activeTab === tab },
-        ]"
-      >
-        {{ tab.toUpperCase() }}
-        <span class="tab-count">({{ tabItemCount(tab) }})</span>
-      </button>
-    </div> -->
-
-    <div class="feed-content-scroll-container" id="pm-section">
+    <div
+      v-for="name in filteredProductTabs"
+      :key="name"
+      class="feed-data-container"
+    >
       <div
-        v-for="name in filteredProductTabs"
-        :key="name"
-        class="feed-data-container"
+        :class="['product-section-header', name]"
+        v-if="
+          this.pmGroupedItemsArray.length ||
+          this.damGroupedItemsArray.length ||
+          this.intGroupedItemsArray.length
+        "
       >
-        <!-- ! PM -->
-        <div
-          :class="['product-section-header', name]"
-          v-if="
-            this.pmGroupedItemsArray.length ||
-            this.damGroupedItemsArray.length ||
-            this.intGroupedItemsArray.length
-          "
-        >
-          <h2>{{ name.toUpperCase() }} Feed</h2>
-          <p class="section-subtitle">
-            Below are the most recent updates for {{ name.toUpperCase() }}.
-          </p>
-        </div>
+        <h2>{{ name.toUpperCase() }} Feed</h2>
+        <p class="section-subtitle">
+          Below are the most recent updates for {{ name.toUpperCase() }}.
+        </p>
+      </div>
 
-        <ul class="feed-selector-rss-list-container" v-if="name === 'pm'">
-          <li
-            v-for="key in filteredRssItems.pm"
-            :key="key.title"
-            class="feed-selector-rss-list-item"
-            :class="{
-              selected: rssObjsForTemplate.some(
-                (item) => item.index === key.index
-              ),
-            }"
-          >
-            <div class="feed-selector-rss-list-item-header">
-              <div>
-                <label for="rss-list-item-include-checkbox">
-                  Include
-                  <input
-                    type="checkbox"
-                    name="rss-list-item-include-checkbox"
-                    id="rss-list-item-include-checkbox"
-                    @click="includeInTemplate(key, name)"
-                /></label>
-              </div>
-              <div class="product-tag" :class="name">
-                {{ name.toUpperCase() }}
-              </div>
-            </div>
-            <div class="rss-list-item-title-container">
-              <p>{{ key.title.toUpperCase() }}</p>
-            </div>
-            <div>
-              <p>
-                <span class="feed-item-label">Publish Date:</span>
-                {{ key.pubDate }}
-              </p>
-            </div>
-            <div>
-              <p>
-                <span class="feed-item-label">Description:</span> {{ key.desc }}
-              </p>
-            </div>
-            <div>
-              <p>
-                <a
-                  :href="key.directLink"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn More
-                </a>
-              </p>
-            </div>
-          </li>
-        </ul>
-        <!-- ! DAM -->
-        <ul
-          class="feed-selector-rss-list-container"
-          v-if="name === 'dam'"
-          id="dam-section"
+      <ul class="feed-selector-rss-list-container">
+        <li
+          v-for="key in showAllItems[name]
+            ? filteredRssItems[name]
+            : filteredRssItems[name].slice(0, 10)"
+          :key="key.title"
+          class="feed-selector-rss-list-item"
+          :class="{
+            selected: rssObjsForTemplate.some(
+              (item) => item.index === key.index
+            ),
+          }"
         >
-          <li
-            v-for="key in filteredRssItems.dam"
-            :key="key.title"
-            class="feed-selector-rss-list-item"
-            :class="{
-              selected: rssObjsForTemplate.some(
-                (item) => item.index === key.index
-              ),
-            }"
-          >
-            <div class="feed-selector-rss-list-item-header">
-              <div>
-                <label for="rss-list-item-include-checkbox">
-                  Include
-                  <input
-                    type="checkbox"
-                    name="rss-list-item-include-checkbox"
-                    id="rss-list-item-include-checkbox"
-                    @click="includeInTemplate(key, name)"
-                /></label>
-              </div>
-              <div class="product-tag" :class="name">
-                {{ name.toUpperCase() }}
-              </div>
-            </div>
-            <div class="rss-list-item-title-container">
-              <p>{{ key.title.toUpperCase() }}</p>
-            </div>
+          <div class="feed-selector-rss-list-item-header">
             <div>
-              <p>
-                <span class="feed-item-label">Publish Date:</span>
-                {{ key.pubDate }}
-              </p>
+              <label for="rss-list-item-include-checkbox">
+                Include
+                <input
+                  type="checkbox"
+                  name="rss-list-item-include-checkbox"
+                  id="rss-list-item-include-checkbox"
+                  @click="includeInTemplate(key, name)"
+              /></label>
             </div>
-            <div>
-              <p>
-                <span class="feed-item-label">Description:</span> {{ key.desc }}
-              </p>
+            <div class="product-tag" :class="name">
+              {{ name.toUpperCase() }}
             </div>
-            <div>
-              <p>
-                <a
-                  :href="key.directLink"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn More
-                </a>
-              </p>
-            </div>
-          </li>
-        </ul>
-        <!-- ! INT -->
-        <ul
-          class="feed-selector-rss-list-container"
-          v-if="name === 'int'"
-          id="int-section"
+          </div>
+          <div class="rss-list-item-title-container">
+            <p>{{ key.title.toUpperCase() }}</p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Publish Date:</span>
+              {{ key.pubDate }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <span class="feed-item-label">Description:</span> {{ key.desc }}
+            </p>
+          </div>
+          <div>
+            <p>
+              <a
+                :href="key.directLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </p>
+          </div>
+        </li>
+      </ul>
+
+      <div
+        class="rss-toggle-container"
+        v-if="filteredRssItems[name].length > 10"
+      >
+        <button
+          class="toolbar-btn rss-toggle-button"
+          @click="showAllItems[name] = !showAllItems[name]"
         >
-          <li
-            v-for="key in filteredRssItems.int"
-            :key="key.title"
-            class="feed-selector-rss-list-item"
-            :class="{
-              selected: rssObjsForTemplate.some(
-                (item) => item.index === key.index
-              ),
-            }"
-          >
-            <div class="feed-selector-rss-list-item-header">
-              <div>
-                <label for="rss-list-item-include-checkbox">
-                  Include
-                  <input
-                    type="checkbox"
-                    name="rss-list-item-include-checkbox"
-                    id="rss-list-item-include-checkbox"
-                    @click="includeInTemplate(key, name)"
-                /></label>
-              </div>
-              <div class="product-tag" :class="name">
-                {{ name.toUpperCase() }}
-              </div>
-            </div>
-            <div class="rss-list-item-title-container">
-              <p>{{ key.title.toUpperCase() }}</p>
-            </div>
-            <div>
-              <p>
-                <span class="feed-item-label">Publish Date:</span>
-                {{ key.pubDate }}
-              </p>
-            </div>
-            <div>
-              <p>
-                <span class="feed-item-label">Description:</span> {{ key.desc }}
-              </p>
-            </div>
-            <div>
-              <p>
-                <a
-                  :href="key.directLink"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn More
-                </a>
-              </p>
-            </div>
-          </li>
-        </ul>
+          {{
+            showAllItems[name]
+              ? `Show Less ${name.toLocaleUpperCase()} Items`
+              : `Load More ${name.toLocaleUpperCase()} Items`
+          }}
+        </button>
       </div>
     </div>
   </article>
@@ -314,7 +218,14 @@
         jsonResults: null,
         timesUpdated: { pm: "", dam: "", int: "" },
         rssObjsForTemplate: [],
+        showAllItems: {},
       };
+    },
+    created() {
+      this.showAllItems = this.products.reduce((acc, name) => {
+        acc[name] = false;
+        return acc;
+      }, {});
     },
     computed: {
       filteredProductTabs() {
@@ -354,6 +265,22 @@
       },
     },
     methods: {
+      disableTab(tab) {
+        const tabKey = tab.toLowerCase();
+        if (tabKey === "pm") return this.pmGroupedItemsArray.length === 0;
+        if (tabKey === "dam") return this.damGroupedItemsArray.length === 0;
+        if (tabKey === "int") return this.intGroupedItemsArray.length === 0;
+        // return false;
+      },
+      emitFeedStatus() {
+        // * Emit feed status to the parent (ProductSelectorLandingPage) for conditional rendering of instructions
+        const isEmpty =
+          this.pmGroupedItemsArray.length === 0 &&
+          this.damGroupedItemsArray.length === 0 &&
+          this.intGroupedItemsArray.length === 0;
+
+        this.$emit("feedStatusChanged", isEmpty);
+      },
       tabItemCount(tab) {
         if (tab === "All") {
           return (
@@ -379,6 +306,7 @@
         this.$emit("clearEmailTemplateData");
         this.rssObjsForTemplate = [];
         this.searchInputValue = "";
+        this.emitFeedStatus();
       },
       rssItemFilterHelper(rssItems, searchText) {
         return rssItems.filter((rss) => {
@@ -570,53 +498,62 @@
             // * Depending on the product, organize data in a readable manner and add to the correct array
             if (productString.includes("pm")) {
               this.timesUpdated.pm = now;
-              this.pmGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "pm",
-                index: `pm${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "pm"
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.pmGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "pm",
+                  index: `pm${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "pm"
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+              this.emitFeedStatus();
             } else if (productString.includes("dam")) {
               this.timesUpdated.dam = now;
-              this.damGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "dam",
-                index: `dam${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "dam"
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.damGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "dam",
+                  index: `dam${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "dam"
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+              this.emitFeedStatus();
             } else {
               this.timesUpdated.int = now;
-              this.intGroupedItemsArray = Object.keys(grouped).map((key) => ({
-                pubDate: grouped[key][0].pubDate,
-                desc: grouped[key][0].desc,
-                link: grouped[key][0].link,
-                title: grouped[key][0].title,
-                rssKey: key,
-                product: "int",
-                index: `int${key}`,
-                directLink: this.getDynamicReleaseNotesURL(
-                  grouped[key][0].pubDate,
-                  "int",
-                  grouped[key][0].tags
-                ),
-                tags: grouped[key][0].tags,
-              }));
+              this.intGroupedItemsArray = Object.keys(grouped)
+                .map((key) => ({
+                  pubDate: grouped[key][0].pubDate,
+                  desc: grouped[key][0].desc,
+                  link: grouped[key][0].link,
+                  title: grouped[key][0].title,
+                  rssKey: key,
+                  product: "int",
+                  index: `int${key}`,
+                  directLink: this.getDynamicReleaseNotesURL(
+                    grouped[key][0].pubDate,
+                    "int",
+                    grouped[key][0].tags
+                  ),
+                  tags: grouped[key][0].tags,
+                }))
+                .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+              this.emitFeedStatus();
             }
             resolve(items);
           });
@@ -628,6 +565,7 @@
         if (name == "int") return this.intGroupedItemsArray;
       },
       clearRSSFeedData(productName) {
+        this.emitFeedStatus();
         if (productName == "pm") return (this.pmGroupedItemsArray = []);
         if (productName == "dam") return (this.damGroupedItemsArray = []);
         if (productName == "int") return (this.intGroupedItemsArray = []);
@@ -671,12 +609,11 @@
     top: 0;
     z-index: 500;
     background: white;
-    padding: 10px 20px;
+    padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
     transition: box-shadow 0.2s ease-in-out;
   }
 
@@ -726,9 +663,18 @@
     background-color: #b02a37;
   }
 
-  .toolbar-btn:disabled {
+  .toolbar-btn:disabled,
+  .generate-template-btn.toolbar-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background-color: var(--cldSlate);
+    color: gray;
+  }
+
+  .generate-template-btn.toolbar-btn {
+    background-color: var(--cldYellow);
+    border: 2px solid var(--cldSlate);
+    font-size: 1.01em;
   }
 
   .feed-content-scroll-container {
@@ -738,8 +684,6 @@
   .product-tabs {
     display: flex;
     gap: 12px;
-    margin: 1.5em 0 1em;
-    padding: 0 20px;
     flex-wrap: wrap;
   }
 
@@ -748,7 +692,7 @@
     font-weight: 500;
     border: none;
     border-bottom: 3px solid transparent;
-    border-radius: 6px 6px 0 0;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.95em;
@@ -761,6 +705,14 @@
 
   .tab-button.all {
     background-color: var(--cldSlate);
+  }
+
+  .tab-button.all > span {
+    color: white;
+  }
+
+  .tab-button.all.active > span {
+    color: var(--cldSlate);
   }
 
   .tab-button.pm {
@@ -785,13 +737,37 @@
 
   .tab-button.active {
     font-weight: 700;
-    border-bottom: 3px solid white;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1) inset;
+    background-image: linear-gradient(to bottom, white 30%, #f0f0f0 100%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--cldSlate);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.03);
+    font-size: 1.01em;
+    border-bottom: 3px solid var(--cldSlate);
+    transition: all 0.2s ease;
+  }
+
+  .tab-button.active.pm {
+    border-bottom: 3px solid var(--cldBlue);
+  }
+
+  .tab-button.active.dam {
+    border-bottom: 3px solid var(--cldTurquoiseBlue);
+  }
+
+  .tab-button.active.int {
+    border-bottom: 3px solid var(--cldCoral);
   }
 
   .tab-button:hover {
     filter: brightness(1.3);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .tab-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .tab-count {
@@ -959,5 +935,27 @@
 
   #rss-list-item-include-checkbox:hover {
     cursor: pointer;
+  }
+  .rss-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1em 1em 2em;
+  }
+
+  .rss-toggle-button {
+    font-size: 0.95em;
+    font-weight: 600;
+    background-color: var(--cldSlate);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .rss-toggle-button:hover {
+    background-color: var(--cldBlue);
   }
 </style>
