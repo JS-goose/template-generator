@@ -2,12 +2,17 @@
   <div class="modal-overlay" aria-modal="true" role="dialog">
     <div class="modal-content">
       <h2>Template</h2>
-      <p>
-        <small
-          >The entire section is editable, including text, links, etc. from RSS
-          items. Hold Cmd (Ctrl on Windows) + Click to open links.</small
-        >
-      </p>
+      <div class="instructions-block">
+        <p><strong>How to use:</strong></p>
+        <ul>
+          <li>Edit any part of the template directly in the area below.</li>
+          <li>
+            <kbd>Cmd</kbd> (or <kbd>Ctrl</kbd>) + Click a link to open it in a
+            new tab.
+          </li>
+          <li>Double-click a link to edit its text or URL inline.</li>
+        </ul>
+      </div>
       <!-- Close Button -->
       <button class="close-button" @click="closeModal">✖ Close</button>
 
@@ -18,12 +23,12 @@
         contenteditable="true"
         @input="updateEditorContent"
       ></div>
-      <div class="template-psa">
-        <small
-          >When you click “Finalize Email,” the content is automatically copied
-          to your clipboard, and a new Gmail window opens so you can quickly
-          paste and send.
-        </small>
+      <div class="final-instructions">
+        <p>
+          When you're ready, click <strong>“Finalize Email”</strong> below. This
+          will copy the formatted content to your clipboard and open a new Gmail
+          draft so you can paste and send it quickly.
+        </p>
       </div>
 
       <!-- * Finalize Buttons -->
@@ -73,21 +78,21 @@
         const rssHTML = this.emailTemplates
           .map(
             (email) => `
-              <div style="max-width: 600px; font-family: Arial, sans-serif;">
-            <div style="margin-bottom: 20px; padding: 10px;">
-              <ul>
-                <li>
-                  <h4 style="margin: 0 0 10px 0; font-size: 16px;">
-                <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                  ${email.title}
-                </a>
-              </h4>
-              <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                  </li>
-                </ul>
-            </div>
-            </div>
-            `
+        <div style="max-width: 600px; font-family: Arial, sans-serif;">
+      <div style="margin-bottom: 20px; padding: 10px;">
+        <ul>
+          <li>
+            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+          <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+            ${email.title}
+          </a>
+        </h4>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+            </li>
+          </ul>
+      </div>
+      </div>
+      `
           )
           .join("");
 
@@ -154,10 +159,10 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                            Text: <input type="text" value="${text}" class="edit-link-text" />
-                            URL: <input type="text" value="${href}" class="edit-link-href" />
-                            <button class="save-link">Save</button>
-                      `;
+                    Text: <input type="text" value="${text}" class="edit-link-text" />
+                    URL: <input type="text" value="${href}" class="edit-link-href" />
+                    <button class="save-link">Save</button>
+              `;
 
           target.replaceWith(wrapper);
 
@@ -229,17 +234,61 @@
     overflow: auto;
   }
 
-  .template-psa {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  /* .template-psa {
+                                                  display: flex;
+                                                  flex-direction: row;
+                                                  justify-content: center;
+                                                  width: 100%;
+                                                  margin-top: 1em;
+                                                }
+
+                                                .template-psa small {
+                                                  width: 60%;
+                                                } */
+
+  .instructions-block {
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--cldSlate);
+    border-right: 4px solid var(--cldSlate);
+    padding: 12px 16px;
+    margin: 16px 0;
+    text-align: left;
+    font-size: 0.9em;
+    border-radius: 6px;
+    max-width: 693px;
     width: 100%;
   }
 
-  .template-psa small {
-    width: 50%;
+  .instructions-block ul {
+    padding-left: 1.2em;
+    margin: 0;
   }
 
+  .instructions-block ul li {
+    padding-bottom: 0.5em;
+  }
+
+  .instructions-block kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    font-size: 0.85em;
+    padding: 2px 6px;
+  }
+
+  .final-instructions {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 16px;
+    background: #fffbe6;
+    padding: 12px 16px;
+    border-left: 4px solid var(--cldYellow);
+    border-right: 4px solid var(--cldYellow);
+    border-radius: 6px;
+    text-align: left;
+    max-width: 693px;
+    width: 100%;
+  }
   .rss-item-container {
     background: #fff;
     margin-top: 10px;
@@ -258,6 +307,7 @@
     color: white;
     padding: 10px;
     border: 1px solid white;
+    border-radius: 4px;
     margin-top: 10px;
     cursor: pointer;
     font-size: 1.01em;
@@ -292,6 +342,7 @@
     margin: 4px;
     padding: 4px;
     font-size: 0.85em;
+    width: 100%;
   }
 
   .save-link {
