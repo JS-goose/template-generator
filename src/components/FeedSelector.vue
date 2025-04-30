@@ -160,7 +160,7 @@
               <span class="feed-item-label">Description:</span> {{ key.desc }}
             </p>
           </div>
-          <div>
+          <div class="feed-selector-rss-list-item-action-container">
             <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
               Full Release Notes
             </a>
@@ -886,6 +886,11 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 1em 1em 1em 0;
+  }
+
+  .feed-selector-rss-list-item-action-container {
+    display: flex;
+    justify-content: space-between;
   }
 
   .selected {
