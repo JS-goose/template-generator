@@ -161,15 +161,11 @@
             </p>
           </div>
           <div>
-            <p>
-              <a
-                :href="key.directLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn More
-              </a>
-            </p>
+            <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
+              Full Release Notes
+            </a>
+            <!-- * Placeholder for data enrich function -->
+            <button>Enrich</button>
           </div>
         </li>
       </ul>
