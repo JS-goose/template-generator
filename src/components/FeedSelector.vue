@@ -272,26 +272,9 @@
         } catch (error) {
           console.warn("error with the fetching endpoint for enrichment", error);
         }
-        // try {
-        //   const url = rssItem.link;
-        //   const response = await fetch("/api/enrich-rss-data", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ url: rssItem.link }),
-        //   });
-
-        //   if (!response.ok) throw new Error("Failed to enrich RSS data");
-
-        //   const enrichedData = await response.json();
-        //   console.log("Enriched RSS data:", enrichedData);
-
-        //   // TODO Attach enriched data to item or display in UI
-        //   // * rssItem.enriched = enrichedData.features;
-        // } catch (error) {
-        //   console.error("Error enriching RSS data:", error);
-        // }
+        // TODO Pass the dynamic URL (e.g. rn_pm_08_12_2024) portion with the base URL
+        // TODO Attach enriched data to item or display in UI
+        // * rssItem.enriched = enrichedData.features;
       },
       disableTab(tab) {
         const tabKey = tab.toLowerCase();
