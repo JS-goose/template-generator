@@ -263,27 +263,35 @@
     methods: {
       async enrichRSSData(rssItem) {
         try {
-          const url = rssItem.link;
-          const response = await fetch(
-            `/api/enrich-rss-data?url=${encodeURIComponent(url)}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const vercelApiEndpoint = `/api/enrich-rss-data?url=${rssItem.link}`;
 
-          if (!response.ok) throw new Error("Failed to enrich RSS data");
+          console.log("fetching from: ", vercelApiEndpoint);
+          const response = await fetch(vercelApiEndpoint);
 
-          const enrichedData = await response.json();
-          console.log("Enriched RSS data:", enrichedData);
-
-          // TODO Attach enriched data to item or display in UI
-          // * rssItem.enriched = enrichedData.features;
+          if (!response.ok) throw new Error("FAILED IN RESPONSE");
         } catch (error) {
-          console.error("Error enriching RSS data:", error);
+          console.warn("error with the fetching endpoint for enrichment", error);
         }
+        // try {
+        //   const url = rssItem.link;
+        //   const response = await fetch("/api/enrich-rss-data", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ url: rssItem.link }),
+        //   });
+
+        //   if (!response.ok) throw new Error("Failed to enrich RSS data");
+
+        //   const enrichedData = await response.json();
+        //   console.log("Enriched RSS data:", enrichedData);
+
+        //   // TODO Attach enriched data to item or display in UI
+        //   // * rssItem.enriched = enrichedData.features;
+        // } catch (error) {
+        //   console.error("Error enriching RSS data:", error);
+        // }
       },
       disableTab(tab) {
         const tabKey = tab.toLowerCase();
