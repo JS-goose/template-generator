@@ -165,7 +165,7 @@
               Full Release Notes
             </a>
             <!-- * Placeholder for data enrich function -->
-            <button>Enrich</button>
+            <button @click="enrichRSSData(key)">Enrich</button>
           </div>
         </li>
       </ul>
@@ -261,6 +261,30 @@
       },
     },
     methods: {
+      async enrichRSSData(rssItem) {
+        try {
+          const url = rssItem.link;
+          const response = await fetch(
+            `/api/enrich-rss-data?url=${encodeURIComponent(url)}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) throw new Error("Failed to enrich RSS data");
+
+          const enrichedData = await response.json();
+          console.log("Enriched RSS data:", enrichedData);
+
+          // TODO Attach enriched data to item or display in UI
+          // * rssItem.enriched = enrichedData.features;
+        } catch (error) {
+          console.error("Error enriching RSS data:", error);
+        }
+      },
       disableTab(tab) {
         const tabKey = tab.toLowerCase();
         if (tabKey === "pm") return this.pmGroupedItemsArray.length === 0;
