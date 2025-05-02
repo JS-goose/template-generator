@@ -263,9 +263,29 @@
     methods: {
       async enrichRSSData(rssItem) {
         try {
+          const date = new Date(rssItem.pubDate);
+          // TODO Add robust error handling here to let the user know this date string is invalid
+          if (isNaN(date.getTime())) {
+            console.error(
+              "Invalid date format for normalized date in enrichRSSData:",
+              rssItem.pubDate
+            );
+            return [];
+          }
+
+          const utcYear = date.getUTCFullYear();
+          const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+          const utcDay = String(date.getUTCDate()).padStart(2, "0");
+          const urlDate = `${utcMonth}_${utcDay}_${utcYear}`;
+          const completeURL = `https://cloudinary.com/documentation/rn_${rssItem.product}_${urlDate}`;
           const vercelApiEndpoint = `/api/enrich-rss-data?url=${rssItem.link}`;
 
-          console.log("fetching from: ", vercelApiEndpoint);
+          console.log(
+            "fetching from: ",
+            vercelApiEndpoint,
+            "pubDate Normalized: ",
+            completeURL
+          );
           const response = await fetch(vercelApiEndpoint);
 
           if (!response.ok) throw new Error("FAILED IN RESPONSE");
@@ -352,6 +372,7 @@
               .toLowerCase(), // * "sat feb 01 2025"
             `${utcYear}-${utcMonth}-${utcDay}`, // * "2025-02-01" yyyy-mm-dd
             `${utcMonth}-${utcDay}-${utcYear}`, // * "02-01-2025" mm-dd-yyyy
+            `${utcMonth}_${utcDay}_${utcYear}`, // * "02_01_2025" mm_dd_yyyy
             `${utcDay}-${utcMonth}-${utcYear}`, // * "01-02-2025" dd-mm-yyyy
             `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm/dd/yyyy
             `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd/mm/yyyy
