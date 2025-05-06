@@ -278,7 +278,9 @@
           const utcDay = String(date.getUTCDate()).padStart(2, "0");
           const urlDate = `${utcMonth}_${utcDay}_${utcYear}`;
           const completeURL = `https://cloudinary.com/documentation/rn_${rssItem.product}_${urlDate}`;
-          const vercelApiEndpoint = `/api/enrich-rss-data?url=${rssItem.link}`;
+          const vercelApiEndpoint = `/api/enrich-rss-data?url=${encodeURIComponent(
+            completeURL
+          )}`;
 
           console.log(
             "fetching from: ",
