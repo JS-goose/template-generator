@@ -14,7 +14,10 @@ export default async function handler(req, res) {
   try {
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
+    // ?I think the issue lies with the server rendered HTML from the cloudinary pages and the amount of time I'm waiting
+    // await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
+    await page.goto(url, {waitUntil: 'networkidle2', timeout: 0})
+    await page.waitForSelector('h2[id]', {timeout: 5000});
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     const html = await page.content();
@@ -50,16 +53,21 @@ export default async function handler(req, res) {
       });
     } else {
       console.warn('No TOC section found, falling back to scanning headings');
-      // Fallback: extract each main section (h2) plus its subheadings (h3), excluding cookie headers
-      $('h2[id]').filter((i, el) => {
+      const allHeadings = $('h2[id]');
+      console.log('Total h2[id] on page:', allHeadings.length);
+
+      const mainSections = allHeadings.filter((i, el) => {
         const id = $(el).attr('id');
         return !id.startsWith('ot-');
-      }).each((i, h2el) => {
+      });
+      console.log('Release-note sections identified:', mainSections.length);
+
+      // Iterate each main release-note section
+      mainSections.each((i, h2el) => {
         const $h2 = $(h2el);
         const title = $h2.text().trim();
         const anchor = `#${$h2.attr('id')}`;
         const fullUrl = `${url}${anchor}`;
-        // Collect all content up to the next h2
         const sectionContent = $h2.nextUntil('h2');
         const preview = sectionContent.text().trim().slice(0, 300);
         // Gather links in this section
@@ -76,7 +84,7 @@ export default async function handler(req, res) {
         console.log('Extracted features:', feature);
         newFeatures.push(feature);
 
-        // Now extract subheadings (h3) within this section
+        // Extract subheadings (h3) within this section
         sectionContent.find('h3[id]').each((j, h3el) => {
           const $h3 = $(h3el);
           const subTitle = $h3.text().trim();
