@@ -50,23 +50,53 @@ export default async function handler(req, res) {
       });
     } else {
       console.warn('No TOC section found, falling back to scanning headings');
-      // Fallback: find all headings with id attributes and treat as sections
-      $('h2[id], h3[id]').each((i, el) => {
-        const $el = $(el);
-        const title = $el.text().trim();
-        const anchor = `#${$el.attr('id')}`;
+      // Fallback: extract each main section (h2) plus its subheadings (h3), excluding cookie headers
+      $('h2[id]').filter((i, el) => {
+        const id = $(el).attr('id');
+        return !id.startsWith('ot-');
+      }).each((i, h2el) => {
+        const $h2 = $(h2el);
+        const title = $h2.text().trim();
+        const anchor = `#${$h2.attr('id')}`;
         const fullUrl = `${url}${anchor}`;
-        const sectionEl = $el;
-        let preview = '';
-        if (sectionEl.length) {
-          preview = sectionEl.nextUntil('h2, h3').text().trim().slice(0, 300);
-        }
+        // Collect all content up to the next h2
+        const sectionContent = $h2.nextUntil('h2');
+        const preview = sectionContent.text().trim().slice(0, 300);
+        // Gather links in this section
+        const links = [];
+        sectionContent.find('a').each((j, alink) => {
+          const $a = $(alink);
+          const linkText = $a.text().trim();
+          const href = $a.attr('href');
+          if (linkText && href) {
+            links.push({ text: linkText, href });
+          }
+        });
+        const feature = { title, anchor, url: fullUrl, preview, links };
+        console.log('Extracted features:', feature);
+        newFeatures.push(feature);
 
-        if (title && anchor) {
-          console.log('Extracted features: ', {title, anchor, preview, fullUrl});
-        }
-
-        newFeatures.push({ title, anchor, url: fullUrl, preview });
+        // Now extract subheadings (h3) within this section
+        sectionContent.find('h3[id]').each((j, h3el) => {
+          const $h3 = $(h3el);
+          const subTitle = $h3.text().trim();
+          const subAnchor = `#${$h3.attr('id')}`;
+          const subFullUrl = `${url}${subAnchor}`;
+          const subContent = $h3.nextUntil('h2, h3');
+          const subPreview = subContent.text().trim().slice(0, 300);
+          const subLinks = [];
+          subContent.find('a').each((k, link) => {
+            const $a = $(link);
+            const linkText = $a.text().trim();
+            const href = $a.attr('href');
+            if (linkText && href) {
+              subLinks.push({ text: linkText, href });
+            }
+          });
+          const subFeature = { title: subTitle, anchor: subAnchor, url: subFullUrl, preview: subPreview, links: subLinks };
+          console.log('Extracted features:', subFeature);
+          newFeatures.push(subFeature);
+        });
       });
       if (!newFeatures.length) {
         return res.status(404).json({ error: 'No "New Features" section or headings found on this page.' });
