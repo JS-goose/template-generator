@@ -34,6 +34,9 @@ $('a.anchor').each((i, el) => {
   const anchor = `#${anchorName}`;
   const fullUrl = `${url}${anchor}`;
 
+  // !Ignores the section to register for RSS notifications
+  if (title.toLowerCase().includes('register for notifications')) return;
+
   // *Gets the paragraphs between current heading and next h2/h3 to be used as the preview
   const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 300);
 
