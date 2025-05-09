@@ -290,13 +290,18 @@
           );
           const response = await fetch(vercelApiEndpoint);
 
+          const data = await response.json();
+          if (data.features && Array.isArray(data.features)) {
+            rssItem.enrichedFeatures = data.features;
+            console.log("Enriched features added to RSS item:", rssItem);
+          } else {
+            console.warn("No features returned from enrichment API");
+          }
+
           if (!response.ok) throw new Error("FAILED IN RESPONSE");
         } catch (error) {
           console.warn("error with the fetching endpoint for enrichment", error);
         }
-        // TODO Pass the dynamic URL (e.g. rn_pm_08_12_2024) portion with the base URL
-        // TODO Attach enriched data to item or display in UI
-        // * rssItem.enriched = enrichedData.features;
       },
       disableTab(tab) {
         const tabKey = tab.toLowerCase();
