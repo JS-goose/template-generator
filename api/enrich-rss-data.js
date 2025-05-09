@@ -45,7 +45,15 @@ $('a.anchor').each((i, el) => {
     const $link = $(linkEl);
     const text = $link.text().trim();
     const href = $link.attr('href');
-    if (text && href) links.push({ text, href });
+    
+    // !Ignores support links
+    if (
+      text &&
+      href &&
+      href !== 'https://support.cloudinary.com/hc/en-us/requests/new'
+    ) {
+      links.push({ text, href });
+    }
   });
 
   const feature = { title, anchor, url: fullUrl, preview, links };
