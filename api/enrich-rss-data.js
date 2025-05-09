@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Always use Puppeteer to fully render the page
+    // * Always use Puppeteer to fully render the page
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 0 });
@@ -19,39 +19,39 @@ export default async function handler(req, res) {
     console.log('Fetched dynamic HTML length:', html.length);
     const $ = cheerio.load(html);
 
-    // Unified release-notes extraction: grab all h2 and h3 under the main "Assets release notes" header
-    const releaseH1 = $('h1').filter((i, el) =>
-      $(el).text().trim().toLowerCase().endsWith('release notes')
-    );
-    if (!releaseH1.length) {
-      return res.status(404).json({ error: 'Release notes header not found.' });
-    }
-    const headings = releaseH1.nextAll().filter('h2[id], h3[id]');
-    console.log('Found release-note headings count:', headings.length);
-
     const newFeatures = [];
-    headings.each((i, el) => {
-      const $el = $(el);
-      const title = $el.text().trim();
-      const anchor = `#${$el.attr('id')}`;
-      const fullUrl = `${url}${anchor}`;
-      const tag = el.tagName.toLowerCase();
-      // preview is content until next same-level or higher heading
-      const preview = $el.nextUntil('h2, h3').text().trim().slice(0, 300);
-      // collect any links in this section
-      const links = [];
-      $el.nextUntil('h2, h3').find('a').each((j, a) => {
-        const $a = $(a);
-        const text = $a.text().trim();
-        const href = $a.attr('href');
-        if (text && href) links.push({ text, href });
-      });
-      const feature = { title, anchor, url: fullUrl, preview, links };
-      console.log('Extracted feature:', feature);
-      newFeatures.push(feature);
-    });
+
+$('a.anchor').each((i, el) => {
+  const $a = $(el);
+  const anchorName = $a.attr('name');
+
+  // *Looks for the next heading (h2 or h3) in the HTML
+  const nextHeading = $a.next('h2, h3');
+  if (!nextHeading.length) return;
+
+  const tag = nextHeading[0].tagName.toLowerCase();
+  const title = nextHeading.text().trim();
+  const anchor = `#${anchorName}`;
+  const fullUrl = `${url}${anchor}`;
+
+  // *Gets the paragraphs between current heading and next h2/h3 to be used as the preview
+  const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 300);
+
+  const links = [];
+  nextHeading.nextUntil('h2, h3').find('a[href]').each((j, linkEl) => {
+    const $link = $(linkEl);
+    const text = $link.text().trim();
+    const href = $link.attr('href');
+    if (text && href) links.push({ text, href });
+  });
+
+  const feature = { title, anchor, url: fullUrl, preview, links };
+  console.log('[EXTRACTED FEATURE]', feature);
+  newFeatures.push(feature);
+});
+
     if (!newFeatures.length) {
-      return res.status(404).json({ error: 'No headings found in release notes.' });
+      return res.status(404).json({ error: 'No section headings found.' });
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
