@@ -164,8 +164,21 @@
             <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
               Full Release Notes
             </a>
-            <!-- * Placeholder for data enrich function -->
             <button @click="enrichRSSData(key)">Enrich</button>
+            <!-- * This works well for what it is but is obsiously a placeholder -->
+            <!-- ! Placeholder - needs removal after testing -->
+            <div v-if="key.enrichedFeatures">
+              <strong>Features:</strong>
+              <ul>
+                <li
+                  v-for="feature in key.enrichedFeatures"
+                  :key="feature.title"
+                >
+                  <p>{{ feature.title }}</p>
+                  <small>{{ feature.preview }}</small>
+                </li>
+              </ul>
+            </div>
           </div>
         </li>
       </ul>
