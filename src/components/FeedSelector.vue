@@ -164,8 +164,16 @@
             <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
               Full Release Notes
             </a>
-            <button @click="enrichRSSData(key)" v-if="!key.enrichedFeatures">
-              {{ key.fetchingEnrichData ? "Enriching..." : "Enrich" }}
+            <button
+              @click="enrichRSSData(key)"
+              :disabled="key.fetchingEnrichData"
+              v-if="!key.enrichedFeatures"
+            >
+              <span
+                v-if="key.fetchingEnrichData"
+                class="feed-selector-rss-list-item-enrichment-spinner"
+              ></span>
+              <span v-else>Enrich</span>
             </button>
             <button disabled v-if="key.enrichedFeatures">Data Enriched</button>
             <!-- * This works well for what it is but is obsiously a placeholder -->
@@ -953,6 +961,28 @@
   .feed-selector-rss-list-item-action-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .feed-selector-rss-list-item-enrichment-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top: 2px solid var(--cldSlate);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .selected {
