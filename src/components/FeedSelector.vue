@@ -178,31 +178,31 @@
             </button>
             <button disabled v-if="key.enrichedFeatures">Data Enriched</button>
             <!-- * This works well for what it is but is obsiously a placeholder -->
-            <div
-              v-if="key.enrichedFeatures"
-              class="feed-selector-rss-list-item-enrichment-preview"
-            >
-              <strong>Features:</strong>
-              <ul>
-                <li
-                  v-for="feature in key.enrichedFeatures"
-                  :key="feature.title"
-                  class="feed-selector-rss-list-item-feature-item"
+          </div>
+          <div
+            v-if="key.enrichedFeatures"
+            class="feed-selector-rss-list-item-enrichment-preview"
+          >
+            <strong>Features:</strong>
+            <ul>
+              <li
+                v-for="feature in key.enrichedFeatures"
+                :key="feature.title"
+                class="feed-selector-rss-list-item-feature-item"
+              >
+                <a
+                  :href="feature.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="feed-selector-rss-list-item-feature-title"
                 >
-                  <a
-                    :href="feature.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="feed-selector-rss-list-item-feature-title"
-                  >
-                    {{ feature.title }}
-                  </a>
-                  <small class="feed-selector-rss-list-item-feature-preview">{{
-                    feature.preview
-                  }}</small>
-                </li>
-              </ul>
-            </div>
+                  {{ feature.title }}
+                </a>
+                <p class="feed-selector-rss-list-item-feature-preview">
+                  {{ feature.preview }}
+                </p>
+              </li>
+            </ul>
           </div>
         </li>
       </ul>
