@@ -164,9 +164,11 @@
             <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
               Full Release Notes
             </a>
-            <button @click="enrichRSSData(key)">Enrich</button>
+            <button @click="enrichRSSData(key)" v-if="!key.enrichedFeatures">
+              {{ key.fetchingEnrichData ? "Enriching..." : "Enrich" }}
+            </button>
+            <button disabled v-if="key.enrichedFeatures">Data Enriched</button>
             <!-- * This works well for what it is but is obsiously a placeholder -->
-            <!-- ! Placeholder - needs removal after testing -->
             <div v-if="key.enrichedFeatures">
               <strong>Features:</strong>
               <ul>
@@ -276,6 +278,7 @@
     methods: {
       async enrichRSSData(rssItem) {
         try {
+          rssItem.fetchingEnrichData = true;
           const date = new Date(rssItem.pubDate);
           // TODO Add robust error handling here to let the user know this date string is invalid
           if (isNaN(date.getTime())) {
@@ -564,6 +567,7 @@
                     "pm"
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
@@ -583,6 +587,7 @@
                     "dam"
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
@@ -603,6 +608,7 @@
                     grouped[key][0].tags
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
