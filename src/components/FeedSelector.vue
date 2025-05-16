@@ -168,6 +168,7 @@
               @click="enrichRSSData(key)"
               :disabled="key.fetchingEnrichData"
               v-if="!key.enrichedFeatures"
+              class="feed-selector-rss-list-item-enrichment-button"
             >
               <span
                 v-if="key.fetchingEnrichData"
@@ -970,6 +971,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .feed-selector-rss-list-item-enrichment-button {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--cldLightBlue);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .feed-selector-rss-list-item-enrichment-button:hover {
+    color: white;
   }
 
   .feed-selector-rss-list-item-enrichment-spinner {
