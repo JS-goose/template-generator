@@ -177,15 +177,23 @@
             </button>
             <button disabled v-if="key.enrichedFeatures">Data Enriched</button>
             <!-- * This works well for what it is but is obsiously a placeholder -->
-            <div v-if="key.enrichedFeatures">
+            <div
+              v-if="key.enrichedFeatures"
+              class="feed-selector-rss-list-item-enrichment-preview"
+            >
               <strong>Features:</strong>
               <ul>
                 <li
                   v-for="feature in key.enrichedFeatures"
                   :key="feature.title"
+                  class="feed-selector-rss-list-item-feature-item"
                 >
-                  <p>{{ feature.title }}</p>
-                  <small>{{ feature.preview }}</small>
+                  <p class="feed-selector-rss-list-item-feature-title">
+                    {{ feature.title }}
+                  </p>
+                  <small class="feed-selector-rss-list-item-feature-preview">{{
+                    feature.preview
+                  }}</small>
                 </li>
               </ul>
             </div>
@@ -984,6 +992,32 @@
       transform: rotate(360deg);
     }
   }
+  /* ! Placeholder styling */
+  .feed-selector-rss-list-item-enrichment-preview {
+    margin-top: 0.5em;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+  }
+
+  .feed-selector-rss-list-item-feature-item {
+    margin-bottom: 1em;
+  }
+
+  .feed-selector-rss-list-item-enrichment-feature-title {
+    font-weight: 600;
+    margin-bottom: 0.25em;
+  }
+
+  .feed-selector-rss-list-item-enrichment-feature-preview {
+    font-size: 0.85em;
+    color: #555;
+    display: block;
+  }
+  /* ! Placeholder styling */
 
   .selected {
     background-color: var(--cldLightBlue);
