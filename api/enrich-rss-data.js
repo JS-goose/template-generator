@@ -38,7 +38,7 @@ $('a.anchor').each((i, el) => {
   if (title.toLowerCase().includes('register for notifications')) return;
 
   // *Gets the paragraphs between current heading and next h2/h3 to be used as the preview
-  const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 300);
+  const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 350);
 
   const links = [];
   nextHeading.nextUntil('h2, h3').find('a[href]').each((j, linkEl) => {
