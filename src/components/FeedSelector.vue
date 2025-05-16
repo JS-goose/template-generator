@@ -189,9 +189,14 @@
                   :key="feature.title"
                   class="feed-selector-rss-list-item-feature-item"
                 >
-                  <p class="feed-selector-rss-list-item-feature-title">
+                  <a
+                    :href="feature.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="feed-selector-rss-list-item-feature-title"
+                  >
                     {{ feature.title }}
-                  </p>
+                  </a>
                   <small class="feed-selector-rss-list-item-feature-preview">{{
                     feature.preview
                   }}</small>
