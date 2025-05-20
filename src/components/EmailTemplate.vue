@@ -73,40 +73,6 @@
         gptPrompt: "",
       };
     },
-    async generateEmailWithGPT() {
-      const apiKey = "my_api-key";
-      const systemPrompt =
-        "You are a helpful assistant that writes clear, professional customer email updates using provided release note data.";
-      const userContent = `Prompt: ${this.gptPrompt}\n\nRelease Notes:\n${this.editorContent}`;
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userContent },
-          ],
-          temperature: 0.7,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.choices && data.choices.length) {
-        const gptOutput = `<div style="border-top:1px solid #ccc; margin-top:1em; padding-top:1em;">
-                  <h4>GPT Generated Email:</h4>
-                  <p>${data.choices[0].message.content.replace(/\n/g, "<br>")}</p>
-                </div>`;
-        this.editorContent += gptOutput;
-        this.$refs.editor.innerHTML = this.editorContent;
-      } else {
-        console.error("GPT response error", data);
-        alert("GPT failed to generate a response. Check API key or logs.");
-      }
-    },
     mounted() {
       this.initializeEditorContent();
       document.body.style.overflow = "hidden";
@@ -137,36 +103,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                      ${email.enrichedFeatures
-                        .map(
-                          (feature) => `
-                          <li style="margin-bottom: 8px;">
-                            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                          </li>
-                        `
-                        )
-                        .join("")}
-                    </ul>`
+                              ${email.enrichedFeatures
+                                .map(
+                                  (feature) => `
+                                  <li style="margin-bottom: 8px;">
+                                    <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                    <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                  </li>
+                                `
+                                )
+                                .join("")}
+                            </ul>`
               : "";
 
             return `
-                  <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                    <div style="margin-bottom: 20px; padding: 10px;">
-                      <ul>
-                        <li>
-                          <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                              ${email.title}
-                            </a>
-                          </h4>
-                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                          ${enrichedHTML}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                `;
+                          <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                            <div style="margin-bottom: 20px; padding: 10px;">
+                              <ul>
+                                <li>
+                                  <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                    <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                      ${email.title}
+                                    </a>
+                                  </h4>
+                                  <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                  ${enrichedHTML}
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        `;
           })
           .join("");
 
@@ -233,10 +199,10 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                  Text: <input type="text" value="${text}" class="edit-link-text" />
-                                  URL: <input type="text" value="${href}" class="edit-link-href" />
-                                  <button class="save-link">Save</button>
-                            `;
+                                          Text: <input type="text" value="${text}" class="edit-link-text" />
+                                          URL: <input type="text" value="${href}" class="edit-link-href" />
+                                          <button class="save-link">Save</button>
+                                    `;
 
           target.replaceWith(wrapper);
 
@@ -252,6 +218,36 @@
 
             wrapper.replaceWith(newAnchor);
           });
+        }
+      },
+      async generateEmailWithGPT() {
+        const apiKey = process.env.LLM_API_KEY;
+        const systemPrompt =
+          "You are a helpful assistant that writes clear, professional customer email updates using provided release note data.";
+        const userContent = `Prompt: ${this.gptPrompt}\n\nRelease Notes:\n${this.editorContent}`;
+        const response = await fetch("/api/gpt-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: this.editorContent,
+            prompt: this.gptPrompt,
+          }),
+        });
+
+        const data = await response.json();
+        if (data.choices && data.choices.length) {
+          const gptOutput = `<div style="border-top:1px solid #ccc; margin-top:1em; padding-top:1em;">
+                          <h4>GPT Generated Email:</h4>
+                          <p>${data.choices[0].message.content.replace(
+                            /\n/g,
+                            "<br>"
+                          )}</p>
+                        </div>`;
+          this.editorContent += gptOutput;
+          this.$refs.editor.innerHTML = this.editorContent;
+        } else {
+          console.error("GPT response error", data);
+          alert("GPT failed to generate a response. Check API key or logs.");
         }
       },
     },
@@ -309,16 +305,16 @@
   }
 
   /* .template-psa {
-                                                                display: flex;
-                                                                flex-direction: row;
-                                                                justify-content: center;
-                                                                width: 100%;
-                                                                margin-top: 1em;
-                                                              }
+                                                                        display: flex;
+                                                                        flex-direction: row;
+                                                                        justify-content: center;
+                                                                        width: 100%;
+                                                                        margin-top: 1em;
+                                                                      }
 
-                                                              .template-psa small {
-                                                                width: 60%;
-                                                              } */
+                                                                      .template-psa small {
+                                                                        width: 60%;
+                                                                      } */
 
   .instructions-block {
     background-color: #f9f9f9;
