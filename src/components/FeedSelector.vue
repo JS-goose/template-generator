@@ -160,16 +160,51 @@
               <span class="feed-item-label">Description:</span> {{ key.desc }}
             </p>
           </div>
-          <div>
-            <p>
-              <a
-                :href="key.directLink"
-                target="_blank"
-                rel="noopener noreferrer"
+          <div class="feed-selector-rss-list-item-action-container">
+            <a :href="key.directLink" target="_blank" rel="noopener noreferrer">
+              Full Release Notes
+            </a>
+            <button
+              @click="enrichRSSData(key)"
+              :disabled="key.fetchingEnrichData"
+              v-if="
+                !key.enrichedFeatures && key.product.toLowerCase() !== 'int'
+              "
+              class="feed-selector-rss-list-item-enrichment-button"
+            >
+              <span
+                v-if="key.fetchingEnrichData"
+                class="feed-selector-rss-list-item-enrichment-spinner"
+              ></span>
+              <span v-else>Enrich</span>
+            </button>
+            <button disabled v-if="key.enrichedFeatures">Data Enriched</button>
+            <!-- * This works well for what it is but is obsiously a placeholder -->
+          </div>
+          <div
+            v-if="key.enrichedFeatures"
+            class="feed-selector-rss-list-item-enrichment-preview"
+          >
+            <strong>Features:</strong>
+            <ul>
+              <li
+                v-for="feature in key.enrichedFeatures"
+                :key="feature.title"
+                class="feed-selector-rss-list-item-feature-item"
               >
-                Learn More
-              </a>
-            </p>
+                <a
+                  :href="feature.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="feed-selector-rss-list-item-feature-title"
+                >
+                  {{ feature.title }}
+                </a>
+                <p class="feed-selector-rss-list-item-feature-preview">
+                  {{ feature.preview }}
+                </p>
+              </li>
+            </ul>
           </div>
         </li>
       </ul>
@@ -265,6 +300,49 @@
       },
     },
     methods: {
+      async enrichRSSData(rssItem) {
+        try {
+          rssItem.fetchingEnrichData = true;
+          const date = new Date(rssItem.pubDate);
+          // TODO Add robust error handling here to let the user know this date string is invalid
+          if (isNaN(date.getTime())) {
+            console.error(
+              "Invalid date format for normalized date in enrichRSSData:",
+              rssItem.pubDate
+            );
+            return [];
+          }
+
+          const utcYear = date.getUTCFullYear();
+          const utcMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+          const utcDay = String(date.getUTCDate()).padStart(2, "0");
+          const urlDate = `${utcMonth}_${utcDay}_${utcYear}`;
+          const completeURL = `https://cloudinary.com/documentation/rn_${rssItem.product}_${urlDate}`;
+          const vercelApiEndpoint = `/api/enrich-rss-data?url=${encodeURIComponent(
+            completeURL
+          )}`;
+
+          console.log(
+            "fetching from: ",
+            vercelApiEndpoint,
+            "pubDate Normalized: ",
+            completeURL
+          );
+          const response = await fetch(vercelApiEndpoint);
+
+          const data = await response.json();
+          if (data.features && Array.isArray(data.features)) {
+            rssItem.enrichedFeatures = data.features;
+            console.log("Enriched features added to RSS item:", rssItem);
+          } else {
+            console.warn("No features returned from enrichment API");
+          }
+
+          if (!response.ok) throw new Error("FAILED IN RESPONSE");
+        } catch (error) {
+          console.warn("error with the fetching endpoint for enrichment", error);
+        }
+      },
       disableTab(tab) {
         const tabKey = tab.toLowerCase();
         if (tabKey === "pm") return this.pmGroupedItemsArray.length === 0;
@@ -341,6 +419,7 @@
               .toLowerCase(), // * "sat feb 01 2025"
             `${utcYear}-${utcMonth}-${utcDay}`, // * "2025-02-01" yyyy-mm-dd
             `${utcMonth}-${utcDay}-${utcYear}`, // * "02-01-2025" mm-dd-yyyy
+            `${utcMonth}_${utcDay}_${utcYear}`, // * "02_01_2025" mm_dd_yyyy
             `${utcDay}-${utcMonth}-${utcYear}`, // * "01-02-2025" dd-mm-yyyy
             `${utcMonth}/${utcDay}/${utcYear}`, // * "02/01/2025" mm/dd/yyyy
             `${utcDay}/${utcMonth}/${utcYear}`, // * "01/02/2025" dd/mm/yyyy
@@ -512,6 +591,7 @@
                     "pm"
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
@@ -531,6 +611,7 @@
                     "dam"
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
@@ -551,6 +632,7 @@
                     grouped[key][0].tags
                   ),
                   tags: grouped[key][0].tags,
+                  fetchingEnrichData: false,
                 }))
                 .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
               this.emitFeedStatus();
@@ -891,6 +973,72 @@
     justify-content: space-between;
     padding: 1em 1em 1em 0;
   }
+
+  .feed-selector-rss-list-item-action-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .feed-selector-rss-list-item-enrichment-button {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--cldLightBlue);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .feed-selector-rss-list-item-enrichment-button:hover {
+    color: white;
+  }
+
+  .feed-selector-rss-list-item-enrichment-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top: 2px solid var(--cldSlate);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  /* ! Placeholder styling */
+  .feed-selector-rss-list-item-enrichment-preview {
+    margin-top: 0.5em;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+  }
+
+  .feed-selector-rss-list-item-feature-item {
+    margin-bottom: 1em;
+  }
+
+  .feed-selector-rss-list-item-enrichment-feature-title {
+    font-weight: 600;
+    margin-bottom: 0.25em;
+  }
+
+  .feed-selector-rss-list-item-enrichment-feature-preview {
+    font-size: 0.85em;
+    color: #555;
+    display: block;
+  }
+  /* ! Placeholder styling */
 
   .selected {
     background-color: var(--cldLightBlue);
