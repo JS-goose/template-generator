@@ -167,7 +167,9 @@
             <button
               @click="enrichRSSData(key)"
               :disabled="key.fetchingEnrichData"
-              v-if="!key.enrichedFeatures"
+              v-if="
+                !key.enrichedFeatures && key.product.toLowerCase() !== 'int'
+              "
               class="feed-selector-rss-list-item-enrichment-button"
             >
               <span
