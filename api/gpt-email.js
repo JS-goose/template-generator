@@ -1,6 +1,7 @@
 // /api/gpt-email.js
 
 export default async function handler(req, res) {
+    console.log("LLM_API_KEY exists:", process.env.LLM_API_KEY);
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method Not Allowed" });
     }
