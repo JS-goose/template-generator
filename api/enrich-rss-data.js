@@ -1,5 +1,5 @@
 import chromium from 'chrome-aws-lambda';
-import puppeteer from 'puppeteer-core';
+import puppeteerCore from 'puppeteer-core';
 import * as cheerio from 'cheerio';
 
 export default async function handler(req, res) {
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
           headless: chromium.headless,
         };
 
-    const puppeteerLib = isDev ? await import('puppeteer') : puppeteer;
+    const puppeteerLib = isDev ? await import('puppeteer') : puppeteerCore;
     browser = await puppeteerLib.launch(launchOptions);
 
     const page = await browser.newPage();
