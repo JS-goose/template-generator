@@ -147,6 +147,7 @@
             : "No description available.",
           link: item.link || "#",
           pubDate: item.pubDate || "Unknown date",
+          enrichedFeatures: item.enrichedFeatures || null,
         }));
         this.showTemplateModal = true;
         console.log("Generated Templates:", this.emailTemplates);

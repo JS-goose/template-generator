@@ -661,6 +661,14 @@
         // * If RSS item isn't in array, push item to array
         if (!uniques) {
           this.rssObjsForTemplate.push(rssItem);
+          // ! Ensures the enrichedFeatures are deep-copied into template array for reactivity
+          if (rssItem.enrichedFeatures) {
+            this.rssObjsForTemplate[
+              this.rssObjsForTemplate.length - 1
+            ].enrichedFeatures = JSON.parse(
+              JSON.stringify(rssItem.enrichedFeatures)
+            );
+          }
           console.log(this.rssObjsForTemplate);
         }
         // * If RSS item is in the array, remove it on another click
