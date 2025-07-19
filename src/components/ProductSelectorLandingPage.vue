@@ -4,12 +4,76 @@
       ref="feedSelectorRef"
       @generateTemplate="fetchTemplateData"
       @clearEmailTemplateData="onClearEmailTemplateData"
+      @feedStatusChanged="onFeedStatusChanged"
     />
     <EmailTemplate
       v-if="showTemplateModal"
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
     />
+    <div class="instructions" v-if="displayInstructions">
+      <h2>💡 How to Use the Cloudinary Template Generator</h2>
+      <p>
+        This tool helps you quickly generate professional template content from
+        Cloudinary's latest updates — perfect for sharing new features,
+        functionality or integrations with customers.
+      </p>
+
+      <h2>🖥️ Step-by-Step Instructions</h2>
+      <ol>
+        <li>
+          <strong>Pull the Latest Release Notes</strong><br />
+          Click <code>Pull All RSS Feeds</code> or use the
+          <code>Fetch</code> buttons to pull individual feeds (independent of
+          one another) and load updates for:
+          <ul>
+            <li><strong>PM</strong> – Programmable Media</li>
+            <li><strong>DAM</strong> – Assets</li>
+            <li><strong>INT</strong> – Integrations</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Browse the Updates</strong><br />
+          Use the tabs (PM, DAM, INT) to view updates by product or all
+          together. Items are also tagged for clarity. Each item shows:
+          <ul>
+            <li>🗓 Publish Date</li>
+            <li>📝 Description</li>
+            <li>🔗 Link to Learn More</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Select Items to Include</strong><br />
+          Check the box labeled <code>Include</code> next to each update you
+          want in your template.
+        </li>
+        <li>
+          <strong>Generate the Template</strong><br />
+          Click <code>Generate Template</code> and a formatted preview of your
+          template will appear in a new window with fully editable text.
+        </li>
+        <li>
+          <strong>Copy the Content</strong><br />
+          Click <code>Finalize Template</code> to copy the template to your
+          clipboard automatically and paste it into Gmail, Outlook, Zendesk etc.
+        </li>
+        <li>
+          <strong>Clear or Refresh Feeds (Optional)</strong><br />
+          Use <code>Clear All</code> or product-specific buttons to refresh or
+          reset feed data.
+        </li>
+      </ol>
+
+      <h2>✅ Pro Tips</h2>
+      <div class="tip">
+        🔍 Use the search bar to quickly filter updates by keyword or date
+        (e.g., "video", "Feb 2025").
+      </div>
+      <div class="tip">
+        💬 Ideal for customer check-ins, renewal outreach, or showcasing new
+        product features.
+      </div>
+    </div>
   </section>
 </template>
 
@@ -31,6 +95,7 @@
         showTemplateModal: false,
         templateObjsUpdated: false,
         templateObjsLength: 0,
+        displayInstructions: true,
       };
     },
     computed: {
@@ -39,6 +104,10 @@
       },
     },
     methods: {
+      onFeedStatusChanged(isEmpty) {
+        // * Keeps the display instructions variable reactive to show instructions if no RSS data exists in arrays
+        this.displayInstructions = isEmpty;
+      },
       // * Emit events to child component
       pullAllRSSFeeds() {
         // TODO this needs a check to see if the cached data exists, and if so, pull that instead of doing API calls
@@ -108,5 +177,36 @@
 
   button {
     max-width: 20em;
+  }
+
+  .instructions {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    color: #333;
+    text-align: left;
+  }
+  .instructions > h1,
+  .instructions > h2 {
+    color: #2c3e50;
+  }
+  .instructions > .tip {
+    background-color: #eef8ff;
+    padding: 10px;
+    border-left: 4px solid #3498db;
+    margin: 1em 0;
+  }
+  .instructions > ol {
+    padding-left: 1.2em;
+  }
+  li {
+    margin-bottom: 0.75em;
+  }
+  code {
+    background-color: #eaeaea;
+    padding: 2px 4px;
+    border-radius: 3px;
   }
 </style>

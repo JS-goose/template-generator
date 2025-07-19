@@ -26,7 +26,7 @@
   };
 </script>
 
-<style>
+<style lang="css">
   body {
     margin: 0;
   }
@@ -64,14 +64,5 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  }
-
-  button {
-    padding: 3px;
-    background-color: var(--cldBlue);
-    color: white;
-    border: 5px solid transparent;
-    border-radius: 3px;
-    cursor: pointer;
   }
 </style>
