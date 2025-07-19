@@ -19,15 +19,15 @@ export default async function handler(req, res) {
 
     const launchOptions = isDev
       ? {
-          headless: true,
-          executablePath,
-        }
+        headless: true,
+        executablePath,
+      }
       : {
-          args: chromium.args,
-          defaultViewport: chromium.defaultViewport,
-          executablePath,
-          headless: chromium.headless,
-        };
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath,
+        headless: chromium.headless,
+      };
 
     const puppeteerLib = isDev ? await import('puppeteer') : puppeteerCore;
     browser = await puppeteerLib.launch(launchOptions);
