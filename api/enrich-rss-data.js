@@ -91,6 +91,13 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error in enrich-features with Puppeteer:', error);
-    return res.status(500).json({ error: 'Failed to enrich features', details: error.message });
+    return res.status(500).json({
+      error: 'Failed to enrich features',
+      message: error.message,
+      stack: error.stack,
+      executablePath: executablePath || 'undefined',
+      isRunningLocally,
+    });
   }
 }
+
