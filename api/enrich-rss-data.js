@@ -13,13 +13,18 @@ export default async function handler(req, res) {
     const cheerio = await import('cheerio');
     const isRunningLocally = !process.env.AWS_EXECUTION_ENV;
 
-    const executablePath = isRunningLocally
-      ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' // ✅ M1–M4 native path
+    let executablePath = isRunningLocally
+      ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : await chromium.executablePath;
 
-      if (isRunningLocally && !fs.existsSync(executablePath)) {
-        throw new Error('Chrome not found locally.  Please install Chrome.');
-      }
+    if (isRunningLocally && !fs.existsSync(executablePath)) {
+      throw new Error('Chrome not found locally.  Please install Chrome.');
+    }
+
+    if (!isRunningLocally && !executablePath) {
+      console.error("chrome-aws-lambda executablePath is undefined. Fallback required.");
+      return res.status(500).json({ error: "Chromium binary not found in Vercel production environment." });
+    }
 
     // * Always use Puppeteer to fully render the page
     const browser = await puppeteer.default.launch({
