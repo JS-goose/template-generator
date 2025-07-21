@@ -1,90 +1,64 @@
-// import axios from 'axios';
-// import * as cheerio from 'cheerio';
-
-// export default async function handler(req, res) {
-//   const { url } = req.query;
-//   if (!url || !url.startsWith('https://cloudinary.com/documentation/')) {
-//     return res.status(400).json({ error: 'Missing or invalid `url` query param' });
-//   }
-
-//   try {
-//     const response = await axios.get("https://example.com/", { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
-//     console.log("Fetched HTML length:", response.data.length);
-//     if (!response?.data || typeof response.data !== 'string') {
-//       console.error("Unexpected HTML structure:", response.data);
-//       return res.status(500).json({ error: 'Unexpected HTML format or empty body' });
-//     }
-//     const $ = cheerio.load(response.data);
-
-//     const newFeatures = [];
-
-//     $('a.anchor').each((i, el) => {
-//       const $a = $(el);
-//       const anchorName = $a.attr('name');
-//       const nextHeading = $a.next('h2, h3');
-//       if (!nextHeading.length) return;
-
-//       const title = nextHeading.text().trim();
-//       const anchor = `#${anchorName}`;
-//       const fullUrl = `${url}${anchor}`;
-//       if (title.toLowerCase().includes('register for notifications')) return;
-
-//       const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 350);
-
-//       const links = [];
-//       nextHeading.nextUntil('h2, h3').find('a[href]').each((_, linkEl) => {
-//         const $link = $(linkEl);
-//         const text = $link.text().trim();
-//         const href = $link.attr('href');
-//         if (text && href && href !== 'https://support.cloudinary.com/hc/en-us/requests/new') {
-//           links.push({ text, href });
-//         }
-//       });
-
-//       newFeatures.push({ title, anchor, url: fullUrl, preview, links });
-//     });
-
-//     if (!newFeatures.length) {
-//       return res.status(404).json({ error: 'No section headings found.' });
-//     }
-
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     return res.status(200).json({ features: newFeatures });
-//   } catch (error) {
-//     console.error('Error enriching data:', error);
-//     console.error("Axios fetch error:", error.message);
-//     res.setHeader('Content-Type', 'application/json');
-//     return res.status(500).json({
-//       error: 'Axios fetch failed',
-//       message: error.message,
-//       stack: error.stack,
-//     });
-//   }
-// }
-console.log("⚡ [API] enrich-rss-data hit: ignoring URL param, using example.com");
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 
+console.log("📦 axios resolved version:", require('axios/package.json').version);
 export default async function handler(req, res) {
-  console.log("📦 Enrichment API hit with query:", req.query);
+  const { url } = req.query;
+  if (!url || !url.startsWith('https://cloudinary.com/documentation/')) {
+    return res.status(400).json({ error: 'Missing or invalid `url` query param' });
+  }
 
   try {
-    const targetUrl = "https://example.com/";
-    console.log("Using hardcoded URL:", targetUrl);
-
-    const response = await axios.get(targetUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' }
-    });
-
+    const response = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
     console.log("Fetched HTML length:", response.data.length);
+    if (!response?.data || typeof response.data !== 'string') {
+      console.error("Unexpected HTML structure:", response.data);
+      return res.status(500).json({ error: 'Unexpected HTML format or empty body' });
+    }
+    const $ = cheerio.load(response.data);
 
-    return res.status(200).json({
-      success: true,
-      overrideUsed: true,
-      fetchedFrom: targetUrl,
-      htmlSnippet: response.data.slice(0, 150)
+    const newFeatures = [];
+
+    $('a.anchor').each((i, el) => {
+      const $a = $(el);
+      const anchorName = $a.attr('name');
+      const nextHeading = $a.next('h2, h3');
+      if (!nextHeading.length) return;
+
+      const title = nextHeading.text().trim();
+      const anchor = `#${anchorName}`;
+      const fullUrl = `${url}${anchor}`;
+      if (title.toLowerCase().includes('register for notifications')) return;
+
+      const preview = nextHeading.nextUntil('h2, h3').text().trim().slice(0, 350);
+
+      const links = [];
+      nextHeading.nextUntil('h2, h3').find('a[href]').each((_, linkEl) => {
+        const $link = $(linkEl);
+        const text = $link.text().trim();
+        const href = $link.attr('href');
+        if (text && href && href !== 'https://support.cloudinary.com/hc/en-us/requests/new') {
+          links.push({ text, href });
+        }
+      });
+
+      newFeatures.push({ title, anchor, url: fullUrl, preview, links });
     });
+
+    if (!newFeatures.length) {
+      return res.status(404).json({ error: 'No section headings found.' });
+    }
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(200).json({ features: newFeatures });
   } catch (error) {
-    console.error("Enrichment API error:", error.message);
-    return res.status(500).json({ error: error.message });
+    console.error('Error enriching data:', error);
+    console.error("Axios fetch error:", error.message);
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).json({
+      error: 'Axios fetch failed',
+      message: error.message,
+      stack: error.stack,
+    });
   }
 }
