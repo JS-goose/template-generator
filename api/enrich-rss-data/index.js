@@ -1,4 +1,7 @@
 import fs from 'fs';
+// ! Explicit top-level import to ensure Vercel includes this in bundle
+import * as chromeLambda from 'chrome-aws-lambda';
+console.log("chrome-aws-lambda path check:", chromeLambda.executablePath);
 
 export default async function handler(req, res) {
   console.log('*********** ENRICH API ROUTE HIT ***********');
@@ -13,9 +16,27 @@ export default async function handler(req, res) {
     const cheerio = await import('cheerio');
     const isRunningLocally = !process.env.AWS_EXECUTION_ENV;
 
-    let executablePath = isRunningLocally
-      ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-      : await chromium.executablePath;
+    // let executablePath = isRunningLocally
+    //   ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    //   : await chromium.executablePath;
+
+    let executablePath;
+    if (isRunningLocally) {
+      executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+      if (!fs.existsSync(executablePath)) {
+        throw new Error('Chrome not found locally. Please install Chrome.');
+      }
+    } else {
+      // Force bundling and path reference in Vercel
+      executablePath = chromeLambda.executablePath || '/tmp/chromium';
+      if (!fs.existsSync(executablePath)) {
+        console.error("Chromium executable not found at:", executablePath);
+        return res.status(500).json({
+          error: "Chromium binary not found in Vercel production environment.",
+          executablePath
+        });
+      }
+    }
 
     if (isRunningLocally && !fs.existsSync(executablePath)) {
       throw new Error('Chrome not found locally.  Please install Chrome.');
