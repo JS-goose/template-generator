@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
     console.log("Fetched HTML length:", response.data.length);
     if (!response?.data || typeof response.data !== 'string') {
       console.error("Unexpected HTML structure:", response.data);
@@ -53,6 +53,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error enriching data:', error);
     console.error("Axios fetch error:", error.message);
+    res.setHeader('Content-Type', 'application/json');
     return res.status(500).json({
       error: 'Axios fetch failed',
       message: error.message,
