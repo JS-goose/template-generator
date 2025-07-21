@@ -1,0 +1,5 @@
+{
+  "runtime": "nodejs18.x",
+  "launcherType": "Nodejs",
+  "handler": "enrich-rss-data.js"
+}
