@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-console.log("📦 axios resolved version:", require('axios/package.json').version);
 export default async function handler(req, res) {
   const { url } = req.query;
   if (!url || !url.startsWith('https://cloudinary.com/documentation/')) {
