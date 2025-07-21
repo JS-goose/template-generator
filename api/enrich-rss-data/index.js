@@ -61,7 +61,7 @@
 //     });
 //   }
 // }
-
+console.log("⚡ [API] enrich-rss-data hit: ignoring URL param, using example.com");
 import axios from 'axios';
 
 export default async function handler(req, res) {
@@ -78,9 +78,10 @@ export default async function handler(req, res) {
     console.log("Fetched HTML length:", response.data.length);
 
     return res.status(200).json({
-      overrideActive: true,
-      usedUrl: targetUrl,
-      preview: response.data.slice(0, 120)
+      success: true,
+      overrideUsed: true,
+      fetchedFrom: targetUrl,
+      htmlSnippet: response.data.slice(0, 150)
     });
   } catch (error) {
     console.error("Enrichment API error:", error.message);
