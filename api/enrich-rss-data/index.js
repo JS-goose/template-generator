@@ -9,6 +9,9 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(url);
+    if (!response?.data || typeof response.data !== 'string') {
+      return res.status(500).json({ error: 'Unexpected HTML format or empty body' });
+    }
     const $ = cheerio.load(response.data);
 
     const newFeatures = [];
