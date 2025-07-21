@@ -9,7 +9,9 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(url);
+    console.log("Fetched HTML length:", response.data.length);
     if (!response?.data || typeof response.data !== 'string') {
+      console.error("Unexpected HTML structure:", response.data);
       return res.status(500).json({ error: 'Unexpected HTML format or empty body' });
     }
     const $ = cheerio.load(response.data);
@@ -50,8 +52,9 @@ export default async function handler(req, res) {
     return res.status(200).json({ features: newFeatures });
   } catch (error) {
     console.error('Error enriching data:', error);
+    console.error("Axios fetch error:", error.message);
     return res.status(500).json({
-      error: 'Failed to enrich features',
+      error: 'Axios fetch failed',
       message: error.message,
       stack: error.stack,
     });
