@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
+    const response = await axios.get("https://example.com/", { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
     console.log("Fetched HTML length:", response.data.length);
     if (!response?.data || typeof response.data !== 'string') {
       console.error("Unexpected HTML structure:", response.data);
