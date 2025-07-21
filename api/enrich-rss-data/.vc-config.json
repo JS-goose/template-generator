@@ -1,6 +1,0 @@
-{
-  "runtime": "nodejs18.x",
-  "launcherType": "Nodejs",
-  "handler": "index.js",
-  "files": ["node_modules/chrome-aws-lambda/**"]
-}
