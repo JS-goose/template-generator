@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-console.log("Using axios from:", require.resolve('axios'));
+
 export default async function handler(req, res) {
   const { url } = req.query;
   if (!url || !url.startsWith('https://cloudinary.com/documentation/')) {
