@@ -5,9 +5,6 @@ set -e
 
 echo "🔍 Scanning branch for exposed secrets..."
 
-# Switch to the branch to scan
-git checkout llm
-
 # List of suspicious patterns to scan for
 PATTERNS=(
   "sk-[a-zA-Z0-9]{32,}"              
