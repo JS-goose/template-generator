@@ -4,6 +4,11 @@
       "NODE_VERSION": "18"
     }
   },
+  "functions": {
+    "api/gpt-email.js": {
+      "maxDuration": 10
+    }
+  },
   "routes": [
     {
       "src": "/api/rss",
