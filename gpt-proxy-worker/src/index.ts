@@ -1,26 +1,55 @@
-import { fromHono } from "chanfana";
-import { Hono } from "hono";
-import { TaskCreate } from "./endpoints/taskCreate";
-import { TaskDelete } from "./endpoints/taskDelete";
-import { TaskFetch } from "./endpoints/taskFetch";
-import { TaskList } from "./endpoints/taskList";
+// src/index.ts
 
-// Start a Hono app
-const app = new Hono<{ Bindings: Env }>();
+export interface Env {
+  LLM_API_KEY: string;
+}
 
-// Setup OpenAPI registry
-const openapi = fromHono(app, {
-	docs_url: "/",
-});
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method !== 'POST') {
+      return new Response('Method Not Allowed', { status: 405 });
+    }
 
-// Register OpenAPI endpoints
-openapi.get("/api/tasks", TaskList);
-openapi.post("/api/tasks", TaskCreate);
-openapi.get("/api/tasks/:taskSlug", TaskFetch);
-openapi.delete("/api/tasks/:taskSlug", TaskDelete);
+    try {
+      const { content, prompt } = await request.json();
 
-// You may also register routes for non OpenAPI directly on Hono
-// app.get('/test', (c) => c.text('Hono!'))
+      if (!content || !prompt) {
+        return new Response("Missing 'content' or 'prompt'", { status: 400 });
+      }
 
-// Export the Hono app
-export default app;
+      const start = Date.now();
+
+      const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${env.LLM_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful assistant that writes clear, professional customer email updates using provided release note data.',
+            },
+            {
+              role: 'user',
+              content: `Prompt: ${prompt}\n\nRelease Notes:\n${content}`,
+            },
+          ],
+          temperature: 0.7,
+        }),
+      });
+
+      const data = await openaiRes.json();
+      const elapsed = Date.now() - start;
+
+      return new Response(JSON.stringify({ data, elapsed }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    } catch (err) {
+      return new Response('Error during GPT call', { status: 500 });
+    }
+  },
+};
