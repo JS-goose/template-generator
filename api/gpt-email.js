@@ -21,32 +21,14 @@ export default async function handler(req, res) {
     content = content.substring(0, 5000) + "\n\n[...truncated]";
   }
 
-  // * Setup timeout using AbortController (9s)
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 9000);
-
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://gpt-email-worker.jonathansexton.workers.dev", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "x-api-key": apiKey,
       },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful assistant that writes clear, professional customer email updates using provided release note data.",
-          },
-          {
-            role: "user",
-            content: `Prompt: ${prompt}\n\nRelease Notes:\n${content}`,
-          },
-        ],
-        temperature: 0.7,
-      }),
+      body: JSON.stringify({ content, prompt }),
       signal: controller.signal,
     });
 
