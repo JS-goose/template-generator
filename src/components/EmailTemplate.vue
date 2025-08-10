@@ -115,36 +115,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-      ${email.enrichedFeatures
-        .map(
-          (feature) => `
-          <li style="margin-bottom: 8px;">
-            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-          </li>
-        `
-        )
-        .join("")}
-    </ul>`
+          ${email.enrichedFeatures
+            .map(
+              (feature) => `
+              <li style="margin-bottom: 8px;">
+                <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+              </li>
+            `
+            )
+            .join("")}
+        </ul>`
               : "";
 
             return `
-      <div style="max-width: 600px; font-family: Arial, sans-serif;">
-        <div style="margin-bottom: 20px; padding: 10px;">
-          <ul>
-            <li>
-              <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                  ${email.title}
-                </a>
-              </h4>
-              <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-              ${enrichedHTML}
-            </li>
-          </ul>
-        </div>
-      </div>
-    `;
+          <div style="max-width: 600px; font-family: Arial, sans-serif;">
+            <div style="margin-bottom: 20px; padding: 10px;">
+              <ul>
+                <li>
+                  <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                    <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                      ${email.title}
+                    </a>
+                  </h4>
+                  <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                  ${enrichedHTML}
+                </li>
+              </ul>
+            </div>
+          </div>
+        `;
           })
           .join("");
 
@@ -211,9 +211,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                      Text: <input type="text" value="${text}" class="edit-link-text" />
-                      URL: <input type="text" value="${href}" class="edit-link-href" />
-                      <button class="save-link">Save</button>`;
+                          Text: <input type="text" value="${text}" class="edit-link-text" />
+                          URL: <input type="text" value="${href}" class="edit-link-href" />
+                          <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -234,13 +234,12 @@
       async generateEmailWithGPT() {
         this.isGeneratingWithPrompt = true;
         try {
-          const endpoint = this.cloudflareWorkerUrl
-            ? this.cloudflareWorkerUrl
-            : window.location.hostname === "localhost"
-            ? "http://localhost:3001/api/gpt-email"
-            : "/api/gpt-email";
+          const endpoint =
+            window.location.hostname === "localhost"
+              ? "http://localhost:8787"
+              : "/api/gpt-email";
 
-          const response = await fetch(endpoint, {
+          const kickoff = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -249,19 +248,45 @@
             }),
           });
 
-          const data = await response.json();
-          if (data.choices && data.choices.length) {
-            const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
-                  <h4>GPT Generated Email:</h4>
-                  <p>${data.choices[0].message.content.replace(/\n/g, "<br>")}</p>
-                </div>`;
-            this.editorContent += gptOutput;
-            this.$refs.editor.innerHTML = this.editorContent;
-          } else {
-            alert("GPT failed to generate a response. Check API key or logs.");
+          const kickoffData = await kickoff.json();
+          const requestId = kickoffData.id;
+
+          if (!requestId) {
+            throw new Error("Failed to start GPT generation.");
           }
+
+          const pollInterval = 3000;
+          const maxAttempts = 10;
+          let attempt = 0;
+          let result;
+
+          while (attempt < maxAttempts) {
+            const poll = await fetch(`${endpoint}?id=${requestId}`);
+            if (poll.status === 200) {
+              result = await poll.json();
+              break;
+            }
+            await new Promise((res) => setTimeout(res, pollInterval));
+            attempt++;
+          }
+
+          if (!result || !result.data?.choices?.length) {
+            alert("GPT response not ready. Try again.");
+            return;
+          }
+
+          const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
+              <h4>GPT Generated Email:</h4>
+              <p>${result.data.choices[0].message.content.replace(
+                /\n/g,
+                "<br>"
+              )}</p>
+            </div>`;
+
+          this.editorContent += gptOutput;
+          this.$refs.editor.innerHTML = this.editorContent;
         } catch (error) {
-          console.error("GPT error:", error);
+          console.error("GPT polling error:", error);
           alert("An error occurred while generating the email.");
         } finally {
           this.isGeneratingWithPrompt = false;
