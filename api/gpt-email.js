@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://gpt-email-worker.jonathansexton.workers.dev", {
+    const response = await fetch("https://gpt-proxy-worker.joncsexton.workers.dev", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
