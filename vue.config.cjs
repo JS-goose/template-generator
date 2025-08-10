@@ -31,22 +31,6 @@ module.exports = defineConfig({
       }),
     ],
   },
-  configureWebpack: {
-    resolve: {
-      fallback: {
-        stream: require.resolve('stream-browserify'),
-        process: require.resolve('process'),
-        buffer: require.resolve('buffer/'),
-        timers: require.resolve('timers-browserify'),
-      },
-    },
-    plugins: [
-      new webpack.ProvidePlugin({
-        process: 'process',
-        Buffer: ['buffer', 'Buffer'],
-      }),
-    ],
-  },
   pages: {
     index: {
       entry: 'src/main.js',
