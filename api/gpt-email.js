@@ -40,6 +40,19 @@ export default async function handler(req, res) {
   }
 
   try {
+    // TODO adjust the worker URL to be in a variable
+//     const workerUrl = process.env.NODE_ENV === "development"
+//   ? "http://localhost:8787"
+//   : process.env.WORKER_URL;
+
+// const response = await fetch(workerUrl, {
+//   method: "POST",
+//   headers: {
+//     "Content-Type": "application/json",
+//     "x-api-key": apiKey,
+//   },
+//   body: JSON.stringify({ content, prompt }),
+// });
     const response = await fetch("https://gpt-proxy-worker.joncsexton.workers.dev", {
       method: "POST",
       headers: {
