@@ -166,12 +166,33 @@ export default {
                 max_tokens: 800,
               }),
             });
+
+            if (!res.ok) {
+              const errorText = await res.text();
+              console.error(`OpenAI API error: ${res.status} ${res.statusText}`, errorText);
+              const elapsed = Date.now();
+              cache[id] = {
+                error: `OpenAI API error: ${res.status} ${res.statusText}`,
+                elapsed,
+                expiresAt: elapsed + 10 * 60 * 1000,
+                token,
+              };
+              return;
+            }
+
             const data = await res.json();
             const elapsed = Date.now();
             cache[id] = { data, elapsed, expiresAt: elapsed + 10 * 60 * 1000, token };
           } catch (err) {
+            console.error('Worker GPT request error:', err);
             const elapsed = Date.now();
-            cache[id] = { error: 'Failed to generate GPT response', elapsed, expiresAt: elapsed + 10 * 60 * 1000, token };
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            cache[id] = {
+              error: `Failed to generate GPT response: ${errorMessage}`,
+              elapsed,
+              expiresAt: elapsed + 10 * 60 * 1000,
+              token,
+            };
           }
         })()
       );

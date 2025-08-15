@@ -42,7 +42,7 @@
           :disabled="isGeneratingWithPrompt"
         >
           <span v-if="isGeneratingWithPrompt">
-            <span class="spinner"></span> Generating...
+            <span class="spinner"></span> Generating... {{ pollingProgress }}
           </span>
           <span v-else> Generate Email with ChatGPT </span>
         </button>
@@ -83,6 +83,7 @@
         editorContent: "",
         gptPrompt: "",
         isGeneratingWithPrompt: false,
+        pollingProgress: "",
       };
     },
     mounted() {
@@ -115,36 +116,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-            ${email.enrichedFeatures
-              .map(
-                (feature) => `
-                <li style="margin-bottom: 8px;">
-                  <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                  <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                </li>
-              `
-              )
-              .join("")}
-          </ul>`
+                ${email.enrichedFeatures
+                  .map(
+                    (feature) => `
+                    <li style="margin-bottom: 8px;">
+                      <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                      <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                    </li>
+                  `
+                  )
+                  .join("")}
+              </ul>`
               : "";
 
             return `
-            <div style="max-width: 600px; font-family: Arial, sans-serif;">
-              <div style="margin-bottom: 20px; padding: 10px;">
-                <ul>
-                  <li>
-                    <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                        ${email.title}
-                      </a>
-                    </h4>
-                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                    ${enrichedHTML}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          `;
+                <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                  <div style="margin-bottom: 20px; padding: 10px;">
+                    <ul>
+                      <li>
+                        <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                          <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                            ${email.title}
+                          </a>
+                        </h4>
+                        <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                        ${enrichedHTML}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              `;
           })
           .join("");
 
@@ -211,9 +212,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                            Text: <input type="text" value="${text}" class="edit-link-text" />
-                            URL: <input type="text" value="${href}" class="edit-link-href" />
-                            <button class="save-link">Save</button>`;
+                                Text: <input type="text" value="${text}" class="edit-link-text" />
+                                URL: <input type="text" value="${href}" class="edit-link-href" />
+                                <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -233,6 +234,7 @@
       },
       async generateEmailWithGPT() {
         this.isGeneratingWithPrompt = true;
+        this.pollingProgress = "";
         try {
           const isLocal = window.location.hostname === "localhost";
           const kickoffEndpoint = isLocal
@@ -264,7 +266,7 @@
           }
 
           const pollInterval = 3000;
-          const maxAttempts = 10;
+          const maxAttempts = 20; // Increased from 10 to 20 (60 seconds total)
           let attempt = 0;
           let result;
 
@@ -285,22 +287,37 @@
             if (poll.status === 401) {
               throw new Error("Unauthorized polling. Please retry generation.");
             }
+            if (poll.status === 202) {
+              // Still processing, continue polling
+              console.log(
+                `GPT still processing... attempt ${attempt + 1}/${maxAttempts}`
+              );
+              this.pollingProgress = `(${attempt + 1}/${maxAttempts})`;
+            }
             await new Promise((res) => setTimeout(res, pollInterval));
             attempt++;
           }
 
+          if (attempt >= maxAttempts) {
+            throw new Error(
+              "GPT request timed out after 60 seconds. Please try again with a shorter prompt or content."
+            );
+          }
+
           if (!result || !result.data?.choices?.length) {
-            alert("GPT response not ready. Try again.");
-            return;
+            if (result?.error) {
+              throw new Error(`GPT Error: ${result.error}`);
+            }
+            throw new Error("GPT response not ready. Try again.");
           }
 
           const text = result.data.choices[0]?.message?.content || "";
           const safe = String(text).replace(/\n/g, "<br>");
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
-                <h4>GPT Generated Email:</h4>
-                <p>${safe}</p>
-              </div>`;
+                    <h4>GPT Generated Email:</h4>
+                    <p>${safe}</p>
+                  </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;
@@ -311,6 +328,7 @@
           );
         } finally {
           this.isGeneratingWithPrompt = false;
+          this.pollingProgress = "";
         }
       },
     },
