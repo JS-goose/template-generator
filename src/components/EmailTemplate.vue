@@ -116,36 +116,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                ${email.enrichedFeatures
-                  .map(
-                    (feature) => `
-                    <li style="margin-bottom: 8px;">
-                      <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                      <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                    </li>
-                  `
-                  )
-                  .join("")}
-              </ul>`
+                  ${email.enrichedFeatures
+                    .map(
+                      (feature) => `
+                      <li style="margin-bottom: 8px;">
+                        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                      </li>
+                    `
+                    )
+                    .join("")}
+                </ul>`
               : "";
 
             return `
-                <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                  <div style="margin-bottom: 20px; padding: 10px;">
-                    <ul>
-                      <li>
-                        <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                          <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                            ${email.title}
-                          </a>
-                        </h4>
-                        <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                        ${enrichedHTML}
-                      </li>
-                    </ul>
+                  <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                    <div style="margin-bottom: 20px; padding: 10px;">
+                      <ul>
+                        <li>
+                          <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                              ${email.title}
+                            </a>
+                          </h4>
+                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                          ${enrichedHTML}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              `;
+                `;
           })
           .join("");
 
@@ -212,9 +212,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                Text: <input type="text" value="${text}" class="edit-link-text" />
-                                URL: <input type="text" value="${href}" class="edit-link-href" />
-                                <button class="save-link">Save</button>`;
+                                  Text: <input type="text" value="${text}" class="edit-link-text" />
+                                  URL: <input type="text" value="${href}" class="edit-link-href" />
+                                  <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -279,6 +279,7 @@
             );
             if (poll.status === 200) {
               result = await poll.json();
+              console.log("GPT response received:", result);
               break;
             }
             if (poll.status === 410) {
@@ -304,20 +305,30 @@
             );
           }
 
-          if (!result || !result.data?.choices?.length) {
-            if (result?.error) {
-              throw new Error(`GPT Error: ${result.error}`);
-            }
-            throw new Error("GPT response not ready. Try again.");
+          console.log("Final result:", result);
+
+          if (!result) {
+            throw new Error("No result received from GPT.");
+          }
+
+          if (result.error) {
+            throw new Error(`GPT Error: ${result.error}`);
+          }
+
+          if (!result.data?.choices?.length) {
+            console.error("Unexpected result structure:", result);
+            throw new Error(
+              "GPT response structure is invalid. Please try again."
+            );
           }
 
           const text = result.data.choices[0]?.message?.content || "";
           const safe = String(text).replace(/\n/g, "<br>");
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
-                    <h4>GPT Generated Email:</h4>
-                    <p>${safe}</p>
-                  </div>`;
+                      <h4>GPT Generated Email:</h4>
+                      <p>${safe}</p>
+                    </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;

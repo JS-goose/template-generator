@@ -93,10 +93,19 @@ export default {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      return new Response(JSON.stringify(record), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+
+      console.log('Returning result for id:', id, 'data:', record.data, 'error:', record.error);
+
+      return new Response(
+        JSON.stringify({
+          data: record.data,
+          error: record.error,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     if (method === 'POST') {
