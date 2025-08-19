@@ -68,12 +68,47 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
+    // Debug endpoint: GET /debug
+    if (method === 'GET' && url.pathname === '/debug') {
+      const cacheKeys = Object.keys(cache);
+      const cacheEntries = cacheKeys.map((key) => ({
+        id: key,
+        hasData: !!cache[key].data,
+        hasError: !!cache[key].error,
+        elapsed: cache[key].elapsed,
+        expiresAt: cache[key].expiresAt,
+      }));
+
+      return new Response(
+        JSON.stringify({
+          cacheSize: cacheKeys.length,
+          entries: cacheEntries,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     // Polling endpoint: GET /?id=xyz with Authorization: Bearer <token>
     if (method === 'GET' && url.searchParams.has('id')) {
       const id = url.searchParams.get('id');
       const auth = request.headers.get('Authorization') || '';
       const bearer = auth.startsWith('Bearer ') ? auth.slice(7) : '';
       const record = cache[id];
+
+      console.log('GET request for id:', id, 'bearer:', bearer ? 'present' : 'missing');
+      console.log('Cache record found:', !!record);
+      if (record) {
+        console.log('Record structure:', Object.keys(record));
+        console.log('Record data:', record.data);
+        console.log('Record error:', record.error);
+        console.log('Record data type:', typeof record.data);
+        console.log('Record data is null:', record.data === null);
+        console.log('Record data is undefined:', record.data === undefined);
+      }
+
       if (!record) {
         return new Response(JSON.stringify({ status: 'pending' }), {
           status: 202,
@@ -95,17 +130,19 @@ export default {
       }
 
       console.log('Returning result for id:', id, 'data:', record.data, 'error:', record.error);
+      console.log('Full record:', record);
 
-      return new Response(
-        JSON.stringify({
-          data: record.data,
-          error: record.error,
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      // Only return data or error, not both
+      const responseData = record.error ? { error: record.error } : { data: record.data };
+
+      console.log('Response data being sent:', responseData);
+      console.log('Response data JSON:', JSON.stringify(responseData));
+      console.log('Response data keys:', Object.keys(responseData));
+
+      return new Response(JSON.stringify(responseData), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     if (method === 'POST') {
@@ -149,9 +186,11 @@ export default {
       // create stub so GET can validate token during pending period
       const now = Date.now();
       cache[id] = { elapsed: now, expiresAt: now + 10 * 60 * 1000, token };
+      console.log('Created cache entry for id:', id, 'token:', token);
 
       ctx.waitUntil(
         (async () => {
+          console.log('Starting GPT request for id:', id);
           try {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
@@ -192,6 +231,7 @@ export default {
             const data = await res.json();
             const elapsed = Date.now();
             cache[id] = { data, elapsed, expiresAt: elapsed + 10 * 60 * 1000, token };
+            console.log('GPT request completed successfully for id:', id, 'data:', data);
           } catch (err) {
             console.error('Worker GPT request error:', err);
             const elapsed = Date.now();
