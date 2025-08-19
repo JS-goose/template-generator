@@ -115,6 +115,14 @@ export default {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      // If record exists but has no data yet, return pending
+      if (!record.data && !record.error) {
+        return new Response(JSON.stringify({ status: 'pending' }), {
+          status: 202,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
       if (record.expiresAt && record.expiresAt < Date.now()) {
         delete cache[id];
         return new Response(JSON.stringify({ error: 'Result expired' }), {
@@ -219,18 +227,22 @@ export default {
               const errorText = await res.text();
               console.error(`OpenAI API error: ${res.status} ${res.statusText}`, errorText);
               const elapsed = Date.now();
+              console.log('About to update cache for id:', id, 'with error');
               cache[id] = {
                 error: `OpenAI API error: ${res.status} ${res.statusText}`,
                 elapsed,
                 expiresAt: elapsed + 10 * 60 * 1000,
                 token,
               };
+              console.log('Cache updated for id:', id, 'cache entry now has error:', !!cache[id].error);
               return;
             }
 
             const data = await res.json();
             const elapsed = Date.now();
+            console.log('About to update cache for id:', id, 'with data:', !!data);
             cache[id] = { data, elapsed, expiresAt: elapsed + 10 * 60 * 1000, token };
+            console.log('Cache updated for id:', id, 'cache entry now has data:', !!cache[id].data);
             console.log('GPT request completed successfully for id:', id, 'data:', data);
           } catch (err) {
             console.error('Worker GPT request error:', err);
