@@ -3,6 +3,7 @@
 export interface Env {
   LLM_API_KEY: string;
   WORKER_AUTH_KEY?: string;
+  GPT_CACHE: KVNamespace;
 }
 
 function isAllowedOrigin(origin: string | null): boolean {
@@ -37,7 +38,6 @@ type CacheRecord = {
   token?: string;
 };
 
-const cache: Record<string, CacheRecord> = {};
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
 const RATE_LIMIT_MAX_POSTS = 30; // per IP per window
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -70,18 +70,23 @@ export default {
 
     // Debug endpoint: GET /debug
     if (method === 'GET' && url.pathname === '/debug') {
-      const cacheKeys = Object.keys(cache);
-      const cacheEntries = cacheKeys.map((key) => ({
-        id: key,
-        hasData: !!cache[key].data,
-        hasError: !!cache[key].error,
-        elapsed: cache[key].elapsed,
-        expiresAt: cache[key].expiresAt,
-      }));
+      const cacheKeys = await env.GPT_CACHE.list();
+      const cacheEntries = await Promise.all(
+        cacheKeys.keys.map(async (key) => {
+          const record = (await env.GPT_CACHE.get(key.name, 'json')) as CacheRecord;
+          return {
+            id: key.name,
+            hasData: !!record?.data,
+            hasError: !!record?.error,
+            elapsed: record?.elapsed,
+            expiresAt: record?.expiresAt,
+          };
+        })
+      );
 
       return new Response(
         JSON.stringify({
-          cacheSize: cacheKeys.length,
+          cacheSize: cacheKeys.keys.length,
           entries: cacheEntries,
         }),
         {
@@ -96,7 +101,7 @@ export default {
       const id = url.searchParams.get('id');
       const auth = request.headers.get('Authorization') || '';
       const bearer = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-      const record = cache[id];
+      const record = (await env.GPT_CACHE.get(id, 'json')) as CacheRecord;
 
       console.log('GET request for id:', id, 'bearer:', bearer ? 'present' : 'missing');
       console.log('Cache record found:', !!record);
@@ -124,7 +129,7 @@ export default {
         });
       }
       if (record.expiresAt && record.expiresAt < Date.now()) {
-        delete cache[id];
+        await env.GPT_CACHE.delete(id);
         return new Response(JSON.stringify({ error: 'Result expired' }), {
           status: 410,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -193,7 +198,7 @@ export default {
 
       // create stub so GET can validate token during pending period
       const now = Date.now();
-      cache[id] = { elapsed: now, expiresAt: now + 10 * 60 * 1000, token };
+      await env.GPT_CACHE.put(id, JSON.stringify({ elapsed: now, expiresAt: now + 10 * 60 * 1000, token }));
       console.log('Created cache entry for id:', id, 'token:', token);
 
       ctx.waitUntil(
@@ -228,32 +233,38 @@ export default {
               console.error(`OpenAI API error: ${res.status} ${res.statusText}`, errorText);
               const elapsed = Date.now();
               console.log('About to update cache for id:', id, 'with error');
-              cache[id] = {
-                error: `OpenAI API error: ${res.status} ${res.statusText}`,
-                elapsed,
-                expiresAt: elapsed + 10 * 60 * 1000,
-                token,
-              };
-              console.log('Cache updated for id:', id, 'cache entry now has error:', !!cache[id].error);
+              await env.GPT_CACHE.put(
+                id,
+                JSON.stringify({
+                  error: `OpenAI API error: ${res.status} ${res.statusText}`,
+                  elapsed,
+                  expiresAt: elapsed + 10 * 60 * 1000,
+                  token,
+                })
+              );
+              console.log('Cache updated for id:', id, 'with error');
               return;
             }
 
             const data = await res.json();
             const elapsed = Date.now();
             console.log('About to update cache for id:', id, 'with data:', !!data);
-            cache[id] = { data, elapsed, expiresAt: elapsed + 10 * 60 * 1000, token };
-            console.log('Cache updated for id:', id, 'cache entry now has data:', !!cache[id].data);
+            await env.GPT_CACHE.put(id, JSON.stringify({ data, elapsed, expiresAt: elapsed + 10 * 60 * 1000, token }));
+            console.log('Cache updated for id:', id, 'with data');
             console.log('GPT request completed successfully for id:', id, 'data:', data);
           } catch (err) {
             console.error('Worker GPT request error:', err);
             const elapsed = Date.now();
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-            cache[id] = {
-              error: `Failed to generate GPT response: ${errorMessage}`,
-              elapsed,
-              expiresAt: elapsed + 10 * 60 * 1000,
-              token,
-            };
+            await env.GPT_CACHE.put(
+              id,
+              JSON.stringify({
+                error: `Failed to generate GPT response: ${errorMessage}`,
+                elapsed,
+                expiresAt: elapsed + 10 * 60 * 1000,
+                token,
+              })
+            );
           }
         })()
       );
