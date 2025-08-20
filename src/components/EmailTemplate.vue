@@ -116,36 +116,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                      ${email.enrichedFeatures
-                        .map(
-                          (feature) => `
-                          <li style="margin-bottom: 8px;">
-                            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                          </li>
-                        `
-                        )
-                        .join("")}
-                    </ul>`
+                        ${email.enrichedFeatures
+                          .map(
+                            (feature) => `
+                            <li style="margin-bottom: 8px;">
+                              <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                              <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                            </li>
+                          `
+                          )
+                          .join("")}
+                      </ul>`
               : "";
 
             return `
-                      <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                        <div style="margin-bottom: 20px; padding: 10px;">
-                          <ul>
-                            <li>
-                              <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                  ${email.title}
-                                </a>
-                              </h4>
-                              <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                              ${enrichedHTML}
-                            </li>
-                          </ul>
+                        <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                          <div style="margin-bottom: 20px; padding: 10px;">
+                            <ul>
+                              <li>
+                                <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                  <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                    ${email.title}
+                                  </a>
+                                </h4>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                ${enrichedHTML}
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                    `;
+                      `;
           })
           .join("");
 
@@ -212,9 +212,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                      Text: <input type="text" value="${text}" class="edit-link-text" />
-                                      URL: <input type="text" value="${href}" class="edit-link-href" />
-                                      <button class="save-link">Save</button>`;
+                                        Text: <input type="text" value="${text}" class="edit-link-text" />
+                                        URL: <input type="text" value="${href}" class="edit-link-href" />
+                                        <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -244,7 +244,7 @@
             ? "http://localhost:8787"
             : this.cloudflareWorkerUrl || process.env.VUE_APP_WORKER_URL || "";
 
-          console.log('Making request to:', kickoffEndpoint);
+          console.log("Making request to:", kickoffEndpoint);
           const kickoff = await fetch(kickoffEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -253,7 +253,7 @@
               prompt: this.gptPrompt,
             }),
           });
-          console.log('Kickoff response status:', kickoff.status);
+          console.log("Kickoff response status:", kickoff.status);
 
           const kickoffData = await kickoff.json();
           const requestId = kickoffData.id;
@@ -331,9 +331,9 @@
           const safe = String(text).replace(/\n/g, "<br>");
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
-                          <h4>GPT Generated Email:</h4>
-                          <p>${safe}</p>
-                        </div>`;
+                            <h4>GPT Generated Email:</h4>
+                            <p>${safe}</p>
+                          </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;
