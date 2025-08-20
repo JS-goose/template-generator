@@ -55,6 +55,7 @@ export default async function handler(req, res) {
       ? "http://localhost:8787"
       : (process.env.WORKER_URL || "https://gpt-proxy-worker.joncsexton.workers.dev");
 
+    console.log('Making request to Worker:', workerUrl);
     const response = await fetch(workerUrl, {
       method: "POST",
       headers: {
@@ -64,8 +65,11 @@ export default async function handler(req, res) {
       body: JSON.stringify({ content, prompt }),
     });
 
-    // Mirror Worker response (expect 202 and { id })
+    console.log('Worker response status:', response.status);
     const data = await response.json().catch(() => ({}));
+    console.log('Worker response data:', data);
+    
+    // Mirror Worker response (expect 202 and { id })
     return res.status(response.status).json(data);
   } catch (error) {
     console.error("OpenAI API error or timeout:", error);
