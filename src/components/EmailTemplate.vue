@@ -116,36 +116,36 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-  ${email.enrichedFeatures
-    .map(
-      (feature) => `
-      <li style="margin-bottom: 8px;">
-        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-      </li>
-    `
-    )
-    .join("")}
-  </ul>`
+    ${email.enrichedFeatures
+      .map(
+        (feature) => `
+        <li style="margin-bottom: 8px;">
+          <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+          <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+        </li>
+      `
+      )
+      .join("")}
+    </ul>`
               : "";
 
             return `
-  <div style="max-width: 600px; font-family: Arial, sans-serif;">
-    <div style="margin-bottom: 20px; padding: 10px;">
-      <ul>
-        <li>
-          <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-              ${email.title}
-            </a>
-          </h4>
-          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-          ${enrichedHTML}
-        </li>
-      </ul>
+    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+      <div style="margin-bottom: 20px; padding: 10px;">
+        <ul>
+          <li>
+            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+              <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                ${email.title}
+              </a>
+            </h4>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+            ${enrichedHTML}
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-  `;
+    `;
           })
           .join("");
 
@@ -212,9 +212,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-  Text: <input type="text" value="${text}" class="edit-link-text" />
-  URL: <input type="text" value="${href}" class="edit-link-href" />
-  <button class="save-link">Save</button>`;
+    Text: <input type="text" value="${text}" class="edit-link-text" />
+    URL: <input type="text" value="${href}" class="edit-link-href" />
+    <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -276,12 +276,18 @@
           await new Promise((res) => setTimeout(res, 2000));
 
           while (attempt < maxAttempts) {
+            console.log(
+              `Polling attempt ${
+                attempt + 1
+              }: ${workerPollBase}?id=${encodeURIComponent(requestId)}`
+            );
             const poll = await fetch(
               `${workerPollBase}?id=${encodeURIComponent(requestId)}`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               }
             );
+            console.log(`Poll response status: ${poll.status}`);
             if (poll.status === 200) {
               result = await poll.json();
               console.log("GPT response received:", result);
@@ -331,9 +337,9 @@
           const safe = String(text).replace(/\n/g, "<br>");
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
-    <h4>GPT Generated Email:</h4>
-    <p>${safe}</p>
-  </div>`;
+      <h4>GPT Generated Email:</h4>
+      <p>${safe}</p>
+    </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;
