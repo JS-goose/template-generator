@@ -244,6 +244,7 @@
             ? "http://localhost:8787"
             : this.cloudflareWorkerUrl || process.env.VUE_APP_WORKER_URL || "";
 
+          console.log('Making request to:', kickoffEndpoint);
           const kickoff = await fetch(kickoffEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -252,6 +253,7 @@
               prompt: this.gptPrompt,
             }),
           });
+          console.log('Kickoff response status:', kickoff.status);
 
           const kickoffData = await kickoff.json();
           const requestId = kickoffData.id;

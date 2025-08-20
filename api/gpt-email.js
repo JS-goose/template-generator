@@ -36,6 +36,11 @@ export default async function handler(req, res) {
   }
 
   const workerAuthKey = process.env.WORKER_AUTH_KEY;
+  console.log('Environment check:', {
+    NODE_ENV: process.env.NODE_ENV,
+    hasWorkerAuthKey: !!workerAuthKey,
+    workerAuthKeyLength: workerAuthKey ? workerAuthKey.length : 0
+  });
   if (process.env.NODE_ENV !== "development" && !workerAuthKey) {
     return res.status(500).json({ error: "Worker is misconfigured (missing WORKER_AUTH_KEY)." });
   }
