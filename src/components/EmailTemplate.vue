@@ -13,10 +13,10 @@
           <li>Double-click a link to edit its text or URL inline.</li>
         </ul>
       </div>
-      <!-- Close Button -->
+      <!-- * Close Button -->
       <button class="close-button" @click="closeModal">✖ Close</button>
 
-      <!-- Editable Content Area -->
+      <!-- * Editable Content Area -->
       <div
         ref="editor"
         class="editable-area"
@@ -36,13 +36,28 @@
         <button class="finalize-button" @click="finalizeEmail">
           Finalize Email
         </button>
-        <button disabled class="finalize-button" title="Coming soon..">
+        <button
+          class="finalize-button"
+          @click="generateEmailWithGPT"
+          :disabled="isGeneratingWithPrompt"
+        >
+          <span v-if="isGeneratingWithPrompt">
+            <span class="spinner"></span> Generating... {{ pollingProgress }}
+          </span>
+          <span v-else> Generate Email with ChatGPT </span>
+        </button>
+        <textarea
+          v-model="gptPrompt"
+          placeholder="Enter your prompt for ChatGPT..."
+          class="gpt-prompt-area"
+        ></textarea>
+        <!-- * Future Releases -->
+        <!-- <button disabled class="finalize-button" title="Coming soon..">
           Copy Plain Text
         </button>
         <button disabled class="finalize-button" title="Coming soon..">
           Copy Markdown Text
-        </button>
-        <!-- * Future Release -->
+        </button> -->
         <!-- <button>Push to Vitally</button> -->
       </div>
     </div>
@@ -51,16 +66,24 @@
 
 <script>
   import { generateMimeEmail } from "@/utils/encodeEmail";
+  import { nextTick } from "vue";
 
   export default {
     name: "EmailTemplate",
     props: {
       emailTemplates: Array,
       closeTemplateModal: Function,
+      cloudflareWorkerUrl: {
+        type: String,
+        default: null,
+      },
     },
     data() {
       return {
         editorContent: "",
+        gptPrompt: "",
+        isGeneratingWithPrompt: false,
+        pollingProgress: "",
       };
     },
     mounted() {
@@ -73,27 +96,57 @@
       document.body.style.overflow = "";
       this.$refs.editor.removeEventListener("click", this.handleLinkClick);
     },
+    watch: {
+      emailTemplates: {
+        handler() {
+          nextTick(() => this.initializeEditorContent());
+        },
+        deep: true,
+        immediate: true,
+      },
+    },
     methods: {
       initializeEditorContent() {
+        if (!this.$refs.editor) {
+          console.warn("Editor ref not ready yet");
+          return;
+        }
+
         const rssHTML = this.emailTemplates
-          .map(
-            (email) => `
-        <div style="max-width: 600px; font-family: Arial, sans-serif;">
-      <div style="margin-bottom: 20px; padding: 10px;">
-        <ul>
-          <li>
-            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-          <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-            ${email.title}
-          </a>
-        </h4>
-        <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+          .map((email) => {
+            const enrichedHTML = email.enrichedFeatures
+              ? `<ul style="padding-left: 1.5em;">
+      ${email.enrichedFeatures
+        .map(
+          (feature) => `
+          <li style="margin-bottom: 8px;">
+            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+          </li>
+        `
+        )
+        .join("")}
+      </ul>`
+              : "";
+
+            return `
+      <div style="max-width: 600px; font-family: Arial, sans-serif;">
+        <div style="margin-bottom: 20px; padding: 10px;">
+          <ul>
+            <li>
+              <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                  ${email.title}
+                </a>
+              </h4>
+              <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+              ${enrichedHTML}
             </li>
           </ul>
+        </div>
       </div>
-      </div>
-      `
-          )
+      `;
+          })
           .join("");
 
         this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>${rssHTML}`;
@@ -159,10 +212,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                    Text: <input type="text" value="${text}" class="edit-link-text" />
-                    URL: <input type="text" value="${href}" class="edit-link-href" />
-                    <button class="save-link">Save</button>
-              `;
+      Text: <input type="text" value="${text}" class="edit-link-text" />
+      URL: <input type="text" value="${href}" class="edit-link-href" />
+      <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -178,6 +230,127 @@
 
             wrapper.replaceWith(newAnchor);
           });
+        }
+      },
+      async generateEmailWithGPT() {
+        this.isGeneratingWithPrompt = true;
+        this.pollingProgress = "";
+        try {
+          const isLocal = window.location.hostname === "localhost";
+          const kickoffEndpoint = isLocal
+            ? "http://localhost:8787"
+            : "/api/gpt-email";
+          const workerPollBase = isLocal
+            ? "http://localhost:8787"
+            : this.cloudflareWorkerUrl || process.env.VUE_APP_WORKER_URL || "";
+
+          console.log("Making request to:", kickoffEndpoint);
+          const kickoff = await fetch(kickoffEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              content: this.editorContent,
+              prompt: this.gptPrompt,
+            }),
+          });
+          console.log("Kickoff response status:", kickoff.status);
+
+          const kickoffData = await kickoff.json();
+          const requestId = kickoffData.id;
+          const token = kickoffData.token;
+
+          if (!requestId || !token) {
+            throw new Error("Failed to start GPT generation.");
+          }
+
+          if (!workerPollBase) {
+            throw new Error("Worker polling base URL not configured.");
+          }
+
+          const pollInterval = 5000; // Increased from 3000 to 5000ms
+          const maxAttempts = 20; // Increased from 10 to 20 (60 seconds total)
+          let attempt = 0;
+          let result;
+
+          // Add initial delay to give GPT request time to complete
+          await new Promise((res) => setTimeout(res, 2000));
+
+          while (attempt < maxAttempts) {
+            console.log(
+              `Polling attempt ${
+                attempt + 1
+              }: ${workerPollBase}?id=${encodeURIComponent(requestId)}`
+            );
+            const poll = await fetch(
+              `${workerPollBase}?id=${encodeURIComponent(requestId)}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            console.log(`Poll response status: ${poll.status}`);
+            if (poll.status === 200) {
+              result = await poll.json();
+              console.log("GPT response received:", result);
+              break;
+            }
+            if (poll.status === 410) {
+              throw new Error("Result expired. Please retry generation.");
+            }
+            if (poll.status === 401) {
+              throw new Error("Unauthorized polling. Please retry generation.");
+            }
+            if (poll.status === 202) {
+              // Still processing, continue polling
+              console.log(
+                `GPT still processing... attempt ${attempt + 1}/${maxAttempts}`
+              );
+              this.pollingProgress = `(${attempt + 1}/${maxAttempts})`;
+            }
+            await new Promise((res) => setTimeout(res, pollInterval));
+            attempt++;
+          }
+
+          if (attempt >= maxAttempts) {
+            throw new Error(
+              "GPT request timed out after 60 seconds. Please try again with a shorter prompt or content."
+            );
+          }
+
+          console.log("Final result:", result);
+
+          if (!result) {
+            throw new Error("No result received from GPT.");
+          }
+
+          if (result.error) {
+            throw new Error(`GPT Error: ${result.error}`);
+          }
+
+          if (!result.data?.choices?.length) {
+            console.error("Unexpected result structure:", result);
+            throw new Error(
+              "GPT response structure is invalid. Please try again."
+            );
+          }
+
+          const text = result.data.choices[0]?.message?.content || "";
+          const safe = String(text).replace(/\n/g, "<br>");
+
+          const gptOutput = `<div style="margin-top:1em; padding-top:1em;">
+        <h4>GPT Generated Email:</h4>
+        <p>${safe}</p>
+      </div>`;
+
+          this.editorContent += gptOutput;
+          this.$refs.editor.innerHTML = this.editorContent;
+        } catch (error) {
+          console.error("GPT polling error:", error);
+          alert(
+            error?.message || "An error occurred while generating the email."
+          );
+        } finally {
+          this.isGeneratingWithPrompt = false;
+          this.pollingProgress = "";
         }
       },
     },
@@ -233,18 +406,6 @@
     text-align: left;
     overflow: auto;
   }
-
-  /* .template-psa {
-                                                  display: flex;
-                                                  flex-direction: row;
-                                                  justify-content: center;
-                                                  width: 100%;
-                                                  margin-top: 1em;
-                                                }
-
-                                                .template-psa small {
-                                                  width: 60%;
-                                                } */
 
   .instructions-block {
     background-color: #f9f9f9;
@@ -358,5 +519,36 @@
 
   .save-link:hover {
     background-color: var(--cldSlate);
+  }
+  .spinner {
+    border: 2px solid #eee;
+    border-top: 2px solid var(--cldSlate);
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .gpt-prompt-area {
+    width: 100%;
+    margin-top: 1em;
+    padding: 10px;
+    font-size: 0.95em;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    min-height: 80px;
   }
 </style>

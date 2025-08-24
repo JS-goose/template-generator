@@ -10,6 +10,7 @@
       v-if="showTemplateModal"
       :emailTemplates="emailTemplates"
       :closeTemplateModal="toggleTemplateModal"
+      :cloudflareWorkerUrl="workerUrl"
     />
     <div class="instructions" v-if="displayInstructions">
       <h2>💡 How to Use the Cloudinary Template Generator</h2>
@@ -96,6 +97,9 @@
         templateObjsUpdated: false,
         templateObjsLength: 0,
         displayInstructions: true,
+        workerUrl:
+          process.env.VUE_APP_WORKER_URL ||
+          "https://gpt-proxy-worker.joncsexton.workers.dev",
       };
     },
     computed: {
@@ -147,6 +151,7 @@
             : "No description available.",
           link: item.link || "#",
           pubDate: item.pubDate || "Unknown date",
+          enrichedFeatures: item.enrichedFeatures || null,
         }));
         this.showTemplateModal = true;
         console.log("Generated Templates:", this.emailTemplates);
