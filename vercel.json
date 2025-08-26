@@ -1,6 +1,13 @@
 {
-  "git": {
-    "deploymentEnabled": true
+  "build": {
+    "env": {
+      "NODE_VERSION": "18"
+    }
+  },
+  "functions": {
+    "api/gpt-email.js": {
+      "maxDuration": 10
+    }
   },
   "routes": [
     {
@@ -9,11 +16,10 @@
       "headers": {
         "Cache-Control": "s-maxage=3600, stale-while-revalidate"
       }
+    },
+    {
+      "src": "/api/enrich-rss-data",
+      "dest": "/api/enrich-rss-data.js"
     }
-  ],
-  "build": {
-    "env": {
-      "NODE_VERSION": "18"
-    }
-  }
+  ]
 }
