@@ -78,4 +78,3 @@ Would you be available for a 20-minute demo this week or next?
 <function_calls>
 <invoke name="read_file">
 <parameter name="target_file">template-generator/api/gpt-email.js
-
