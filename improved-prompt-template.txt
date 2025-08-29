@@ -1,0 +1,68 @@
+Generate a compelling customer re-engagement email based on the provided Cloudinary release notes. 
+
+**CRITICAL:** This email will be edited in a rich text editor and copied to Gmail. All links must be properly formatted for both HTML and plain text scenarios.
+
+**Context:** This email is for an unresponsive customer who hasn't engaged recently. The goal is to re-spark their interest with valuable, actionable updates.
+
+**EMAIL REQUIREMENTS:**
+✅ Subject line emphasizing business transformation
+✅ Maximum 8 feature highlights (prioritize impact)
+✅ Each feature MUST include specific business benefit
+✅ Professional yet approachable tone
+✅ Clear call-to-action for live demo/consultation
+
+**LINK FORMATTING RULES (CRITICAL):**
+- Format: [Descriptive Action/Benefit](complete-url) 
+- Use benefit-focused anchor text, never generic phrases
+- Include complete URLs starting with https://
+
+**Examples:**
+✅ [Build Apps Without Coding](https://cloudinary.com/documentation/rn_pm_07_09_2025#base44_cloudinary_integration)
+✅ [Reduce Bundle Size by 70%](https://cloudinary.com/documentation/rn_pm_07_09_2025#new_major_version_of_cloudinary_video_player)
+❌ [Learn more](https://cloudinary.com/documentation/...)
+❌ [Click here](https://cloudinary.com/documentation/...)
+
+**FEATURE PRIORITIZATION:**
+Select features that provide:
+1. **Time/Cost Savings** - Automation, efficiency gains
+2. **Performance Improvements** - Speed, optimization metrics  
+3. **Developer Experience** - Easier implementation, fewer bugs
+4. **New Capabilities** - Previously impossible features
+5. **Security/Compliance** - Risk reduction, best practices
+
+**TONE & MESSAGING:**
+- Start with "I wanted to reach out..." (acknowledges silence)
+- Focus on customer outcomes, not technical specs
+- Use quantifiable benefits where available (percentages, time saved)
+- Position as partnership: "let's walk through this together"
+- Avoid overselling - be consultative
+
+**OUTPUT STRUCTURE:**
+```
+Subject: [Value-focused subject line]
+
+Dear [Customer's Name],
+
+[Personal acknowledgment + context for reaching out]
+
+[Brief intro highlighting the release theme/biggest impact]
+
+Key updates that could transform your workflow:
+
+• [Feature 1 with business impact](link)
+• [Feature 2 with business impact](link)
+• [Feature 3 with business impact](link)
+• [Feature 4 with business impact](link)
+• [Feature 5 with business impact](link)
+• [Feature 6 with business impact](link)
+• [Feature 7 with business impact](link)
+• [Feature 8 with business impact](link)
+
+[Offer for live demo/consultation with specific next steps]
+
+[Professional signature]
+```
+
+**IMPORTANT:** Extract specific details from the release notes - use actual performance numbers, time savings, or capability descriptions rather than generic statements.
+
+Generate the email now:
