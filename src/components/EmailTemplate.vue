@@ -25,6 +25,15 @@ Additional Instructions: Focus on business value and practical benefits"
           class="unified-prompt-area"
           rows="8"
         ></textarea>
+
+        <!-- RSS Items Display -->
+        <div
+          v-if="includeRssInGpt && emailTemplates && emailTemplates.length > 0"
+          class="rss-items-section"
+        >
+          <h4>RSS Feed Items (for reference)</h4>
+          <div class="rss-items-container" v-html="formattedRssItems"></div>
+        </div>
       </div>
 
       <!-- * Editor Controls -->
@@ -32,7 +41,7 @@ Additional Instructions: Focus on business value and practical benefits"
         <div class="control-row">
           <label class="include-rss-toggle">
             <input type="checkbox" v-model="includeRssInGpt" />
-            <span>Show RSS items in editor</span>
+            <span>Show RSS items in configuration area</span>
           </label>
 
           <label class="editor-mode-toggle">
@@ -46,8 +55,8 @@ Additional Instructions: Focus on business value and practical benefits"
         </div>
         <div class="control-description" v-if="!includeRssInGpt">
           <small
-            >💡 RSS items are hidden from the editor but will still be included
-            in the GPT prompt for reference.</small
+            >💡 RSS items are hidden from the configuration area but will still
+            be included in the GPT prompt for reference.</small
           >
         </div>
       </div>
@@ -96,17 +105,6 @@ Additional Instructions: Focus on business value and practical benefits"
         contenteditable="true"
         @input="updateEditorContent"
       ></div>
-
-      <!-- RSS Content Toggle Notice -->
-      <div v-if="!includeRssInGpt" class="rss-toggle-notice">
-        <div class="rss-notice-content">
-          <span class="rss-notice-icon">📋</span>
-          <span
-            >RSS items are hidden but will be included in GPT prompts for
-            reference.</span
-          >
-        </div>
-      </div>
 
       <!-- * Streamlined Instructions -->
       <div class="streamlined-instructions">
@@ -183,21 +181,78 @@ Additional Instructions: Focus on business value and practical benefits"
         richTextMode: false,
         includeRssInGpt: true,
         unifiedPrompt: `Customer Name: 
-                          Email Context: This email is for a customer. Focus on business value and practical benefits.
-                          Additional Instructions: `,
+                                  Email Context: This email is for a customer. Focus on business value and practical benefits.
+                                  Additional Instructions: `,
         isGeneratingWithPrompt: false,
         pollingProgress: "",
       };
+    },
+    computed: {
+      formattedRssItems() {
+        if (!this.emailTemplates || this.emailTemplates.length === 0) {
+          return "";
+        }
+
+        return this.emailTemplates
+          .map((email) => {
+            const enrichedHTML = email.enrichedFeatures
+              ? `<ul style="padding-left: 1.5em;">
+                        ${email.enrichedFeatures
+                          .map(
+                            (feature) => `
+                            <li style="margin-bottom: 8px;">
+                              <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                              <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                            </li>
+                          `
+                          )
+                          .join("")}
+                        </ul>`
+              : "";
+
+            return `
+                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                      <div style="margin-bottom: 20px; padding: 10px;">
+                        <ul>
+                          <li>
+                            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                              <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                ${email.title}
+                              </a>
+                            </h4>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                            ${enrichedHTML}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    `;
+          })
+          .join("");
+      },
     },
     mounted() {
       this.initializeEditorContent();
       document.body.style.overflow = "hidden";
       // * Delegate click behavior for links inside editable area
-      this.$refs.editor.addEventListener("click", this.handleLinkClick);
+      // Add listeners to both editors since we don't know which one will be active
+      this.$nextTick(() => {
+        if (this.$refs.editor) {
+          this.$refs.editor.addEventListener("click", this.handleLinkClick);
+        }
+        if (this.$refs.richEditor) {
+          this.$refs.richEditor.addEventListener("click", this.handleLinkClick);
+        }
+      });
     },
     beforeDestroy() {
       document.body.style.overflow = "";
-      this.$refs.editor.removeEventListener("click", this.handleLinkClick);
+      if (this.$refs.editor) {
+        this.$refs.editor.removeEventListener("click", this.handleLinkClick);
+      }
+      if (this.$refs.richEditor) {
+        this.$refs.richEditor.removeEventListener("click", this.handleLinkClick);
+      }
     },
     watch: {
       emailTemplates: {
@@ -207,98 +262,20 @@ Additional Instructions: Focus on business value and practical benefits"
         deep: true,
         immediate: true,
       },
-      includeRssInGpt: {
-        handler() {
-          nextTick(() => this.applyRssVisibility());
-        },
-      },
     },
     methods: {
       initializeEditorContent() {
-        if (!this.$refs.editor) {
-          console.warn("Editor ref not ready yet");
-          return;
-        }
+        // Simplified editor content - just the placeholder since RSS items are now in config area
+        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>`;
 
-        const rssHTML = this.emailTemplates
-          .map((email) => {
-            const enrichedHTML = email.enrichedFeatures
-              ? `<ul style="padding-left: 1.5em;">
-                                            ${email.enrichedFeatures
-                                              .map(
-                                                (feature) => `
-                                                <li style="margin-bottom: 8px;">
-                                                  <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                  <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                </li>
-                                              `
-                                              )
-                                              .join("")}
-                                            </ul>`
-              : "";
-
-            return `
-                                            <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                              <div style="margin-bottom: 20px; padding: 10px;">
-                                                <ul>
-                                                  <li>
-                                                    <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                      <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                        ${email.title}
-                                                      </a>
-                                                    </h4>
-                                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                    ${enrichedHTML}
-                                                  </li>
-                                                </ul>
-                                              </div>
-                                            </div>
-                                            `;
-          })
-          .join("");
-
-        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>${rssHTML}`;
-
-        // Apply the RSS visibility toggle
-        this.applyRssVisibility();
-      },
-      applyRssVisibility() {
-        if (!this.$refs.editor) return;
-
-        if (this.includeRssInGpt) {
-          // Show RSS items - restore full content
+        // Set content in the appropriate editor based on mode
+        if (this.richTextMode && this.$refs.richEditor) {
+          this.$refs.richEditor.innerHTML = this.editorContent;
+        } else if (this.$refs.editor) {
           this.$refs.editor.innerHTML = this.editorContent;
-        } else {
-          // Hide RSS items - show only email content and GPT response
-          const emailContentMatch = this.editorContent.match(
-            /<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here\.\.\.<\/p>/
-          );
-          if (emailContentMatch) {
-            const parts = this.editorContent.split(
-              '<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>'
-            );
-            if (parts.length > 1) {
-              const rssStart = parts[1].indexOf(
-                '<div style="max-width: 600px; font-family: Arial, sans-serif;">'
-              );
-              if (rssStart !== -1) {
-                const visibleContent = parts[1].substring(0, rssStart);
-                // Include any GPT-generated content that might be after the RSS items
-                const gptContent = this.editorContent.includes(
-                  "GPT Generated Email:"
-                )
-                  ? this.editorContent.substring(
-                      this.editorContent.indexOf("GPT Generated Email:")
-                    )
-                  : "";
-                this.$refs.editor.innerHTML = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>${visibleContent}${gptContent}`;
-              } else {
-                this.$refs.editor.innerHTML = this.editorContent;
-              }
-            }
-          }
         }
       },
+
       copyHtmlToClipboard() {
         const htmlContent = this.editorContent;
 
@@ -357,9 +334,9 @@ Additional Instructions: Focus on business value and practical benefits"
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                            Text: <input type="text" value="${text}" class="edit-link-text" />
-                                            URL: <input type="text" value="${href}" class="edit-link-href" />
-                                            <button class="save-link">Save</button>`;
+                                                    Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                    URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                    <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -393,31 +370,40 @@ Additional Instructions: Focus on business value and practical benefits"
 
           // Extract any custom text the user has written in the email editing area
           let userCustomText = "";
-          if (this.$refs.editor) {
-            const editorContent =
+          let editorContent = "";
+
+          // Get content from the appropriate editor based on mode
+          if (this.richTextMode && this.$refs.richEditor) {
+            editorContent =
+              this.$refs.richEditor.innerText ||
+              this.$refs.richEditor.textContent ||
+              "";
+          } else if (this.$refs.editor) {
+            editorContent =
               this.$refs.editor.innerText || this.$refs.editor.textContent || "";
-            // Look for content that's not the placeholder or RSS items
-            if (
-              editorContent &&
-              !editorContent.includes("Write your email content here...")
-            ) {
-              // Extract text before any RSS content markers
-              const lines = editorContent.split("\n");
-              const customLines = [];
-              for (const line of lines) {
-                if (
-                  line.trim() &&
-                  !line.includes("Write your email content here...") &&
-                  !line.includes("July") &&
-                  !line.includes("release notes") &&
-                  !line.includes("Publish Date:")
-                ) {
-                  customLines.push(line.trim());
-                }
+          }
+
+          // Look for content that's not the placeholder
+          if (
+            editorContent &&
+            !editorContent.includes("Write your email content here...")
+          ) {
+            // Extract text before any RSS content markers
+            const lines = editorContent.split("\n");
+            const customLines = [];
+            for (const line of lines) {
+              if (
+                line.trim() &&
+                !line.includes("Write your email content here...") &&
+                !line.includes("July") &&
+                !line.includes("release notes") &&
+                !line.includes("Publish Date:")
+              ) {
+                customLines.push(line.trim());
               }
-              if (customLines.length > 0) {
-                userCustomText = customLines.join("\n");
-              }
+            }
+            if (customLines.length > 0) {
+              userCustomText = customLines.join("\n");
             }
           }
 
@@ -448,38 +434,38 @@ Additional Instructions: Focus on business value and practical benefits"
           // Combine all parts into the final prompt
           enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
 
-              **Context:** ${this.emailContext}
-              ${
-                additionalInstructions
-                  ? `\n**Additional Instructions:** ${additionalInstructions}`
-                  : ""
-              }
-              ${
-                userCustomText
-                  ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-                  : ""
-              }
+                      **Context:** ${this.emailContext}
+                      ${
+                        additionalInstructions
+                          ? `\n**Additional Instructions:** ${additionalInstructions}`
+                          : ""
+                      }
+                      ${
+                        userCustomText
+                          ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+                          : ""
+                      }
 
-              **Requirements:**
-              - Maximum 8 feature highlights (prioritize impact)
-              - Links formatted as: [Specific Benefit Description](complete-url)
-              - Professional but approachable tone
-              - Use quantifiable benefits where available
-              - If customer name is provided, use it; otherwise use [Customer's Name]
-              - Do NOT include a subject line - the user will add their own
-              - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-              - Use proper bullet points (•) for lists, not dashes (-)
-              - Focus on the content provided, do not reference RSS feed items unless specifically included
-              - Incorporate the user's custom text naturally into the email
+                      **Requirements:**
+                      - Maximum 8 feature highlights (prioritize impact)
+                      - Links formatted as: [Specific Benefit Description](complete-url)
+                      - Professional but approachable tone
+                      - Use quantifiable benefits where available
+                      - If customer name is provided, use it; otherwise use [Customer's Name]
+                      - Do NOT include a subject line - the user will add their own
+                      - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
+                      - Use proper bullet points (•) for lists, not dashes (-)
+                      - Focus on the content provided, do not reference RSS feed items unless specifically included
+                      - Incorporate the user's custom text naturally into the email
 
-              **Structure:**
-              1. Personal greeting (use customer name if provided)
-              2. Brief introduction about the update
-              3. 6-8 bulleted features with business impact
-              4. Appropriate call-to-action
-              5. Professional close
+                      **Structure:**
+                      1. Personal greeting (use customer name if provided)
+                      2. Brief introduction about the update
+                      3. 6-8 bulleted features with business impact
+                      4. Appropriate call-to-action
+                      5. Professional close
 
-              Generate the email:`;
+                      Generate the email:`;
 
           if (this.customerName.trim()) {
             // Extract first name only
@@ -487,9 +473,14 @@ Additional Instructions: Focus on business value and practical benefits"
             enhancedPrompt = `${enhancedPrompt}\n\n**IMPORTANT:** The customer's first name is "${firstName}". Use this first name in the greeting instead of [Customer's Name].`;
           }
 
-          // Always send the full content (including RSS items) to GPT for reference
-          // The toggle only controls visibility in the editor, not what's sent to GPT
+          // Always include RSS items in the content sent to GPT for reference
+          // The toggle only controls visibility in the configuration area, not what's sent to GPT
           let contentToSend = this.editorContent;
+
+          // Add RSS items to the content sent to GPT (always included regardless of toggle)
+          if (this.emailTemplates && this.emailTemplates.length > 0) {
+            contentToSend += this.formattedRssItems;
+          }
 
           // If no content was found, send a minimal placeholder
           if (!contentToSend || contentToSend.trim() === "") {
@@ -633,9 +624,9 @@ Additional Instructions: Focus on business value and practical benefits"
           );
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                               <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                               <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                             </div>`;
+                                                       <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                       <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                     </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;
@@ -664,9 +655,9 @@ Additional Instructions: Focus on business value and practical benefits"
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                 target="_blank" 
-                                                 rel="noopener noreferrer" 
-                                                 style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
+                                                         target="_blank" 
+                                                         rel="noopener noreferrer" 
+                                                         style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
@@ -692,6 +683,11 @@ Additional Instructions: Focus on business value and practical benefits"
           this.$nextTick(() => {
             if (this.$refs.richEditor) {
               this.$refs.richEditor.innerHTML = this.editorContent;
+              // Add click listener to rich editor
+              this.$refs.richEditor.addEventListener(
+                "click",
+                this.handleLinkClick
+              );
             }
           });
         } else {
@@ -699,6 +695,8 @@ Additional Instructions: Focus on business value and practical benefits"
           this.$nextTick(() => {
             if (this.$refs.editor) {
               this.$refs.editor.innerHTML = this.editorContent;
+              // Add click listener to simple editor
+              this.$refs.editor.addEventListener("click", this.handleLinkClick);
             }
           });
         }
@@ -1201,5 +1199,46 @@ Additional Instructions: Focus on business value and practical benefits"
   .streamlined-instructions .instruction-icon {
     font-size: 1.1em;
     color: var(--cldBlue);
+  }
+
+  /* RSS Items Section Styles */
+  .rss-items-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e3e3e3;
+  }
+
+  .rss-items-section h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .rss-items-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    background-color: #fff;
+    padding: 10px;
+  }
+
+  .rss-items-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .rss-items-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .rss-items-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  .rss-items-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 </style>
