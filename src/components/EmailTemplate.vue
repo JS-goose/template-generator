@@ -129,6 +129,13 @@ Additional Instructions: Focus on business value and practical benefits"
         </div>
       </div>
 
+      <div class="final-instructions">
+        <p>
+          <strong>Ready to send?</strong> Click "Finalize Email" to copy the
+          content to your clipboard and open a new Gmail draft.
+        </p>
+      </div>
+
       <!-- * Finalize Buttons -->
       <div class="finalize-buttons-container">
         <button class="finalize-button primary" @click="finalizeEmail">
@@ -145,14 +152,6 @@ Additional Instructions: Focus on business value and practical benefits"
           </span>
           <span v-else>Generate with ChatGPT</span>
         </button>
-      </div>
-
-      <!-- * Final Instructions -->
-      <div class="final-instructions">
-        <p>
-          <strong>Ready to send?</strong> Click "Finalize Email" to copy the
-          content to your clipboard and open a new Gmail draft.
-        </p>
       </div>
     </div>
   </div>
@@ -181,8 +180,8 @@ Additional Instructions: Focus on business value and practical benefits"
         richTextMode: false,
         includeRssInGpt: true,
         unifiedPrompt: `Customer Name: 
-                                  Email Context: This email is for a customer. Focus on business value and practical benefits.
-                                  Additional Instructions: `,
+                                        Email Context: This email is for a customer. Focus on business value and practical benefits.
+                                        Additional Instructions: `,
         isGeneratingWithPrompt: false,
         pollingProgress: "",
       };
@@ -197,36 +196,36 @@ Additional Instructions: Focus on business value and practical benefits"
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                        ${email.enrichedFeatures
-                          .map(
-                            (feature) => `
-                            <li style="margin-bottom: 8px;">
-                              <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                              <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                            </li>
-                          `
-                          )
-                          .join("")}
-                        </ul>`
+                              ${email.enrichedFeatures
+                                .map(
+                                  (feature) => `
+                                  <li style="margin-bottom: 8px;">
+                                    <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                    <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                  </li>
+                                `
+                                )
+                                .join("")}
+                              </ul>`
               : "";
 
             return `
-                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                      <div style="margin-bottom: 20px; padding: 10px;">
-                        <ul>
-                          <li>
-                            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                              <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                ${email.title}
-                              </a>
-                            </h4>
-                            <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                            ${enrichedHTML}
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    `;
+                          <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                            <div style="margin-bottom: 20px; padding: 10px;">
+                              <ul>
+                                <li>
+                                  <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                    <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                      ${email.title}
+                                    </a>
+                                  </h4>
+                                  <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                  ${enrichedHTML}
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          `;
           })
           .join("");
       },
@@ -334,9 +333,9 @@ Additional Instructions: Focus on business value and practical benefits"
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                    Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                    URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                    <button class="save-link">Save</button>`;
+                                                          Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                          URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                          <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -434,38 +433,40 @@ Additional Instructions: Focus on business value and practical benefits"
           // Combine all parts into the final prompt
           enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
 
-                      **Context:** ${this.emailContext}
-                      ${
-                        additionalInstructions
-                          ? `\n**Additional Instructions:** ${additionalInstructions}`
-                          : ""
-                      }
-                      ${
-                        userCustomText
-                          ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-                          : ""
-                      }
+                            **Context:** ${this.emailContext}
+                            ${
+                              additionalInstructions
+                                ? `\n**Additional Instructions:** ${additionalInstructions}`
+                                : ""
+                            }
+                            ${
+                              userCustomText
+                                ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+                                : ""
+                            }
 
-                      **Requirements:**
+                                              **Requirements:**
                       - Maximum 8 feature highlights (prioritize impact)
                       - Links formatted as: [Specific Benefit Description](complete-url)
                       - Professional but approachable tone
                       - Use quantifiable benefits where available
                       - If customer name is provided, use it; otherwise use [Customer's Name]
+                      - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
                       - Do NOT include a subject line - the user will add their own
                       - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
                       - Use proper bullet points (•) for lists, not dashes (-)
+                      - Format numbered lists as "1. Content" (no line breaks between number and content)
                       - Focus on the content provided, do not reference RSS feed items unless specifically included
                       - Incorporate the user's custom text naturally into the email
 
-                      **Structure:**
-                      1. Personal greeting (use customer name if provided)
+                                              **Structure:**
+                      1. Personal greeting (use "Hi" or "Hello" with customer name if provided - avoid "Dear" as it's too formal for business emails)
                       2. Brief introduction about the update
                       3. 6-8 bulleted features with business impact
                       4. Appropriate call-to-action
                       5. Professional close
 
-                      Generate the email:`;
+                            Generate the email:`;
 
           if (this.customerName.trim()) {
             // Extract first name only
@@ -584,6 +585,7 @@ Additional Instructions: Focus on business value and practical benefits"
             .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Convert **bold** to <strong>
             .replace(/\*(.*?)\*/g, "<em>$1</em>") // Convert *italic* to <em>
             .replace(/^\d+\.\s+\*\*(.*?)\*\*:/gm, "<strong>$1:</strong>") // Format numbered list headers
+            .replace(/^\d+\.\s*<br>\s*(.*?)$/gm, "<li>$1</li>") // Fix numbered lists with line breaks
             .replace(/^\d+\.\s+(.*?)$/gm, "<li>$1</li>") // Convert numbered lists to HTML
             .replace(/(<li>.*?<\/li>)/gs, "<ol>$1</ol>"); // Wrap lists in <ol> tags
 
@@ -606,6 +608,12 @@ Additional Instructions: Focus on business value and practical benefits"
           // Fix bullet points that start with "- "
           safe = safe.replace(/<br>\s*-\s*([^<]+)/g, "<li>$1</li>");
 
+          // Fix the specific pattern: "1. <br> CONTENT" to "1. CONTENT"
+          safe = safe.replace(/(\d+\.)\s*<br>\s*([^<]+)/g, "$1 $2");
+
+          // Clean up any remaining line breaks after numbers
+          safe = safe.replace(/(\d+\.)\s*<br>\s*/g, "$1 ");
+
           // Remove name and position placeholders
           safe = safe.replace(/\[Your Name\]/g, "");
           safe = safe.replace(/\[Your Position\]/g, "");
@@ -624,9 +632,9 @@ Additional Instructions: Focus on business value and practical benefits"
           );
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                       <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                       <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                     </div>`;
+                                                             <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                             <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                           </div>`;
 
           this.editorContent += gptOutput;
           this.$refs.editor.innerHTML = this.editorContent;
@@ -655,9 +663,9 @@ Additional Instructions: Focus on business value and practical benefits"
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                         target="_blank" 
-                                                         rel="noopener noreferrer" 
-                                                         style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
+                                                               target="_blank" 
+                                                               rel="noopener noreferrer" 
+                                                               style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
