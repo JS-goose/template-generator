@@ -5,35 +5,13 @@
       <!-- * Close Button -->
       <button class="close-button" @click="closeModal">✖ Close</button>
 
-      <!-- * Unified Configuration Section -->
-      <div class="unified-config-section">
-        <h3>Email Configuration & Prompt</h3>
-        <div class="config-description">
-          <p>
-            Enter all your email configuration details and prompt in one place:
-          </p>
-        </div>
-
-        <textarea
-          v-model="unifiedPrompt"
-          placeholder="Enter customer name, email context, and any specific instructions here...
-
-Example:
-Customer Name: John Smith
-Email Context: This is for a customer who requested information about new video features
-Additional Instructions: Focus on business value and practical benefits"
-          class="unified-prompt-area"
-          rows="8"
-        ></textarea>
-
-        <!-- RSS Items Display -->
-        <div
-          v-if="includeRssInGpt && emailTemplates && emailTemplates.length > 0"
-          class="rss-items-section"
-        >
-          <h4>RSS Feed Items (for reference)</h4>
-          <div class="rss-items-container" v-html="formattedRssItems"></div>
-        </div>
+      <!-- * RSS Items Display -->
+      <div
+        v-if="includeRssInGpt && emailTemplates && emailTemplates.length > 0"
+        class="unified-config-section"
+      >
+        <h3>RSS Feed Items (for reference)</h3>
+        <div class="rss-items-container" v-html="formattedRssItems"></div>
       </div>
 
       <!-- * Editor Controls -->
@@ -110,7 +88,17 @@ Additional Instructions: Focus on business value and practical benefits"
       <div class="streamlined-instructions">
         <div class="instruction-item">
           <span class="instruction-icon">✏️</span>
-          <span>Edit content directly in the area above</span>
+          <span
+            >Add customer name, instructions, draft content, or any context in
+            the editor above</span
+          >
+        </div>
+        <div class="instruction-item">
+          <span class="instruction-icon">💡</span>
+          <span
+            >Examples: "Customer Name: John Smith" or "Instructions: Focus on
+            video features"</span
+          >
         </div>
         <div class="instruction-item">
           <span class="instruction-icon">🔗</span>
@@ -187,14 +175,8 @@ Additional Instructions: Focus on business value and practical benefits"
     data() {
       return {
         editorContent: "",
-        customerName: "",
-        emailContext:
-          "This email is for a customer. Focus on business value and practical benefits.",
         richTextMode: false,
         includeRssInGpt: true,
-        unifiedPrompt: `Customer Name: 
-                                            Email Context: This email is for a customer. Focus on business value and practical benefits.
-                                            Additional Instructions: `,
         isGeneratingWithPrompt: false,
         pollingProgress: "",
         hasGeneratedResponse: false,
@@ -210,36 +192,36 @@ Additional Instructions: Focus on business value and practical benefits"
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                                              ${email.enrichedFeatures
-                                                .map(
-                                                  (feature) => `
-                                                  <li style="margin-bottom: 8px;">
-                                                    <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                    <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                  </li>
-                                                `
-                                                )
-                                                .join("")}
-                                              </ul>`
+                                                  ${email.enrichedFeatures
+                                                    .map(
+                                                      (feature) => `
+                                                      <li style="margin-bottom: 8px;">
+                                                        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                                        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                                      </li>
+                                                    `
+                                                    )
+                                                    .join("")}
+                                                  </ul>`
               : "";
 
             return `
-                                          <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                            <div style="margin-bottom: 20px; padding: 10px;">
-                                              <ul>
-                                                <li>
-                                                  <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                    <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                      ${email.title}
-                                                    </a>
-                                                  </h4>
-                                                  <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                  ${enrichedHTML}
-                                                </li>
-                                              </ul>
-                                            </div>
-                                          </div>
-                                          `;
+                                              <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                                <div style="margin-bottom: 20px; padding: 10px;">
+                                                  <ul>
+                                                    <li>
+                                                      <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                                        <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                                          ${email.title}
+                                                        </a>
+                                                      </h4>
+                                                      <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                                      ${enrichedHTML}
+                                                    </li>
+                                                  </ul>
+                                                </div>
+                                              </div>
+                                              `;
           })
           .join("");
       },
@@ -278,8 +260,8 @@ Additional Instructions: Focus on business value and practical benefits"
     },
     methods: {
       initializeEditorContent() {
-        // Simplified editor content - just the placeholder since RSS items are now in config area
-        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...</p>`;
+        // Editor content with helpful placeholder
+        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...<br><br>You can also add:<br>• Customer name (e.g., "Customer Name: John Smith")<br>• Additional instructions or context<br>• Draft email content<br>• Any other details to guide the email generation</p>`;
 
         // Reset the generated response flag
         this.hasGeneratedResponse = false;
@@ -351,9 +333,9 @@ Additional Instructions: Focus on business value and practical benefits"
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                                          Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                                          URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                                          <button class="save-link">Save</button>`;
+                                                                              Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                                              URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                                              <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -385,8 +367,7 @@ Additional Instructions: Focus on business value and practical benefits"
 
           console.log("Making request to:", kickoffEndpoint);
 
-          // Extract any custom text the user has written in the email editing area
-          let userCustomText = "";
+          // Extract content from the editor
           let editorContent = "";
 
           // Get content from the appropriate editor based on mode
@@ -400,98 +381,141 @@ Additional Instructions: Focus on business value and practical benefits"
               this.$refs.editor.innerText || this.$refs.editor.textContent || "";
           }
 
-          // Look for content that's not the placeholder
+          // Parse customer name and instructions from editor content
+          let customerName = "";
+          let instructions = "";
+          let userCustomText = "";
+
+          // Remove placeholder text and RSS markers
+          const placeholderPatterns = [
+            "Write your email content here...",
+            "You can also add:",
+            "• Customer name",
+            "• Additional instructions or context",
+            "• Draft email content",
+            "• Any other details to guide the email generation",
+            "July",
+            "release notes",
+            "Publish Date:",
+          ];
+
           if (
             editorContent &&
             !editorContent.includes("Write your email content here...")
           ) {
-            // Extract text before any RSS content markers
             const lines = editorContent.split("\n");
+            let inInstructionsSection = false;
+            let instructionsLines = [];
             const customLines = [];
-            for (const line of lines) {
-              if (
-                line.trim() &&
-                !line.includes("Write your email content here...") &&
-                !line.includes("July") &&
-                !line.includes("release notes") &&
-                !line.includes("Publish Date:")
-              ) {
-                customLines.push(line.trim());
+
+            for (let i = 0; i < lines.length; i++) {
+              const trimmedLine = lines[i].trim();
+
+              // Skip placeholder patterns
+              const isPlaceholder = placeholderPatterns.some((pattern) =>
+                trimmedLine.includes(pattern)
+              );
+              if (isPlaceholder) continue;
+
+              // Check for customer name pattern
+              const customerNameMatch = trimmedLine.match(
+                /Customer\s+Name\s*:?\s*(.+)/i
+              );
+              if (customerNameMatch) {
+                customerName = customerNameMatch[1].trim();
+                continue;
+              }
+
+              // Check for instructions/context patterns
+              const instructionsHeaderMatch = trimmedLine.match(
+                /(?:Instructions|Context|Additional\s+Instructions|Additional\s+Context)\s*:?\s*(.+)?/i
+              );
+              if (instructionsHeaderMatch) {
+                inInstructionsSection = true;
+                if (instructionsHeaderMatch[1]) {
+                  instructionsLines.push(instructionsHeaderMatch[1].trim());
+                }
+                continue;
+              }
+
+              // If we're in instructions section, collect lines until we hit another header or empty line
+              if (inInstructionsSection) {
+                if (
+                  trimmedLine &&
+                  !/^(Customer\s+Name|Instructions|Context)/i.test(trimmedLine)
+                ) {
+                  instructionsLines.push(trimmedLine);
+                } else {
+                  inInstructionsSection = false;
+                  if (trimmedLine) {
+                    customLines.push(trimmedLine);
+                  }
+                }
+              } else if (trimmedLine) {
+                // Regular content line
+                customLines.push(trimmedLine);
               }
             }
+
+            // Join instructions if found
+            if (instructionsLines.length > 0) {
+              instructions = instructionsLines.join("\n").trim();
+            }
+
+            // Join custom text if found
             if (customLines.length > 0) {
-              userCustomText = customLines.join("\n");
+              userCustomText = customLines.join("\n").trim();
             }
           }
 
-          // Dynamically enhance the prompt with customer name and context
-          let enhancedPrompt = this.unifiedPrompt;
-
-          // Extract customer name, context, and instructions
-          const customerNameMatch = enhancedPrompt.match(
-            /Customer Name: (.+?)\n/
-          );
-          const emailContextMatch = enhancedPrompt.match(
-            /Email Context: (.+?)\n/
-          );
-          const instructionsMatch = enhancedPrompt.match(
-            /Additional Instructions: (.+?)\n/
-          );
-
-          this.customerName = customerNameMatch
-            ? customerNameMatch[1].trim()
-            : "";
-          this.emailContext = emailContextMatch
-            ? emailContextMatch[1].trim()
-            : "This email is for a customer. Focus on business value and practical benefits.";
-          const additionalInstructions = instructionsMatch
-            ? instructionsMatch[1].trim()
-            : "";
+          // Default context if no instructions provided
+          const defaultContext =
+            "This email is for a customer. Focus on business value and practical benefits.";
+          const emailContext = instructions || defaultContext;
 
           // Combine all parts into the final prompt
-          enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
+          let enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
 
-                                            **Context:** ${this.emailContext}
-                                            ${
-                                              additionalInstructions
-                                                ? `\n**Additional Instructions:** ${additionalInstructions}`
-                                                : ""
-                                            }
-                                            ${
-                                              userCustomText
-                                                ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-                                                : ""
-                                            }
+    **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
+    - ONLY use information that is explicitly stated in the RSS feed items
+    - DO NOT guess, assume, or make up any details, features, or benefits
+    - DO NOT add information that is not directly present in the RSS feed items
+    - If information is not in the RSS feed items, do not include it in the email
+    - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
 
-                                                              **Requirements:**
-                                      - Maximum 8 feature highlights (prioritize impact)
-                                      - Links formatted as: [Specific Benefit Description](complete-url)
-                                      - Professional but approachable tone
-                                      - Use quantifiable benefits where available
-                                      - If customer name is provided, use it; otherwise use [Customer's Name]
-                                      - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
-                                      - Do NOT include a subject line - the user will add their own
-                                      - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-                                      - Use proper bullet points (•) for lists, not dashes (-)
-                                                        - Format numbered lists as "1. Content" (no line breaks between number and content)
-                              - Each list item should be a single, continuous paragraph without internal line breaks
-                              - Focus on the content provided, do not reference RSS feed items unless specifically included
-                              - Incorporate the user's custom text naturally into the email
+    **Context:** ${emailContext}
+    ${
+      userCustomText
+        ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+        : ""
+    }
 
-                                                              **Structure:**
-                                      1. Personal greeting (use "Hi" or "Hello" with customer name if provided - avoid "Dear" as it's too formal for business emails)
-                                      2. Brief introduction about the update
-                                      3. 6-8 bulleted features with business impact
-                                      4. Appropriate call-to-action
-                                      5. Professional close
+    **Requirements:**
+    - Maximum 8 feature highlights (prioritize impact)
+    - Links formatted as: [Specific Benefit Description](complete-url)
+    - Professional but approachable tone
+    - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
+    - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
+    - Do NOT include a subject line - the user will add their own
+    - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
+    - Use proper bullet points (•) for lists, not dashes (-)
+    - Format numbered lists as "1. Content" (no line breaks between number and content)
+    - Each list item should be a single, continuous paragraph without internal line breaks
+    - ONLY reference features and information that are explicitly in the RSS feed items provided
+    - Incorporate the user's custom text naturally into the email
 
-                                            Generate the email:`;
+    **Structure:**
+    1. Personal greeting (use "Hi" or "Hello"${
+      customerName
+        ? ` with the customer's first name "${customerName.split(" ")[0]}"`
+        : ""
+    } - avoid "Dear" as it's too formal for business emails)
+    2. Brief introduction about the update
+    3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
+    4. Appropriate call-to-action
+    5. Professional close
 
-          if (this.customerName.trim()) {
-            // Extract first name only
-            const firstName = this.customerName.split(" ")[0];
-            enhancedPrompt = `${enhancedPrompt}\n\n**IMPORTANT:** The customer's first name is "${firstName}". Use this first name in the greeting instead of [Customer's Name].`;
-          }
+    Generate the email:`;
 
           // Always include RSS items in the content sent to GPT for reference
           // The toggle only controls visibility in the configuration area, not what's sent to GPT
@@ -681,9 +705,9 @@ Additional Instructions: Focus on business value and practical benefits"
           );
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                                             <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                                             <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                                           </div>`;
+                                                                                 <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                                                 <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                                               </div>`;
 
           this.editorContent += gptOutput;
 
@@ -721,9 +745,9 @@ Additional Instructions: Focus on business value and practical benefits"
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                                               target="_blank" 
-                                                                               rel="noopener noreferrer" 
-                                                                               style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
+                                                                                   target="_blank" 
+                                                                                   rel="noopener noreferrer" 
+                                                                                   style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
