@@ -39,50 +39,77 @@
         </div>
       </div>
 
-      <!-- Rich Text Editor (when enabled) -->
-      <div v-if="richTextMode" class="rich-text-editor">
-        <div class="rich-text-toolbar">
-          <button @click="formatText('bold')" title="Bold">
-            <strong>B</strong>
-          </button>
-          <button @click="formatText('italic')" title="Italic">
-            <em>I</em>
-          </button>
-          <button @click="formatText('underline')" title="Underline">
-            <u>U</u>
-          </button>
-          <button
-            @click="formatText('insertUnorderedList')"
-            title="Bullet List"
-          >
-            •
-          </button>
-          <button
-            @click="formatText('insertOrderedList')"
-            title="Numbered List"
-          >
-            1.
-          </button>
-          <button @click="formatText('createLink')" title="Insert Link">
-            🔗
-          </button>
+      <!-- Editor Section with Help Icon -->
+      <div class="editor-section-wrapper">
+        <div class="editor-help-container">
+          <div class="help-icon-wrapper">
+            <span class="help-icon">?</span>
+            <div class="help-tooltip">
+              <div class="tooltip-content">
+                <p class="tooltip-title">What can I add here?</p>
+                <p>
+                  Customer Name, Instructions, Draft content, or any other
+                  context to guide email generation.
+                </p>
+                <p class="tooltip-note">
+                  If left empty, defaults will be used.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Rich Text Editor (when enabled) -->
+        <div v-if="richTextMode" class="rich-text-editor">
+          <div class="rich-text-toolbar">
+            <button @click="formatText('bold')" title="Bold">
+              <strong>B</strong>
+            </button>
+            <button @click="formatText('italic')" title="Italic">
+              <em>I</em>
+            </button>
+            <button @click="formatText('underline')" title="Underline">
+              <u>U</u>
+            </button>
+            <button
+              @click="formatText('insertUnorderedList')"
+              title="Bullet List"
+            >
+              •
+            </button>
+            <button
+              @click="formatText('insertOrderedList')"
+              title="Numbered List"
+            >
+              1.
+            </button>
+            <button @click="formatText('createLink')" title="Insert Link">
+              🔗
+            </button>
+          </div>
+          <div
+            ref="richEditor"
+            class="rich-editor-area"
+            contenteditable="true"
+            data-placeholder='You can add: Customer Name (e.g., "Customer Name: John Smith"), Instructions (e.g., "Instructions: Focus on video features"), draft email content, or any other context to guide email generation. If left empty, defaults will be used.'
+            @input="updateRichEditorContent"
+            @focus="handleEditorFocus('rich')"
+            @blur="handleEditorBlur('rich')"
+          ></div>
+        </div>
+
+        <!-- Simple Editable Area (when rich text is disabled) -->
         <div
-          ref="richEditor"
-          class="rich-editor-area"
+          v-else
+          ref="editor"
+          class="editable-area"
           contenteditable="true"
-          @input="updateRichEditorContent"
+          data-placeholder='You can add: Customer Name (e.g., "Customer Name: John Smith"), Instructions (e.g., "Instructions: Focus on video features"), draft email content, or any other context to guide email generation. If left empty, defaults will be used.'
+          @input="updateEditorContent"
+          @focus="handleEditorFocus('simple')"
+          @blur="handleEditorBlur('simple')"
         ></div>
       </div>
-
-      <!-- Simple Editable Area (when rich text is disabled) -->
-      <div
-        v-else
-        ref="editor"
-        class="editable-area"
-        contenteditable="true"
-        @input="updateEditorContent"
-      ></div>
 
       <!-- * Streamlined Instructions -->
       <div class="streamlined-instructions">
@@ -192,36 +219,38 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                                                  ${email.enrichedFeatures
-                                                    .map(
-                                                      (feature) => `
-                                                      <li style="margin-bottom: 8px;">
-                                                        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                      </li>
-                                                    `
-                                                    )
-                                                    .join("")}
-                                                  </ul>`
+                                                                      ${email.enrichedFeatures
+                                                                        .map(
+                                                                          (
+                                                                            feature
+                                                                          ) => `
+                                                                          <li style="margin-bottom: 8px;">
+                                                                            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                                                            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                                                          </li>
+                                                                        `
+                                                                        )
+                                                                        .join("")}
+                                                                      </ul>`
               : "";
 
             return `
-                                              <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                                <div style="margin-bottom: 20px; padding: 10px;">
-                                                  <ul>
-                                                    <li>
-                                                      <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                        <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                          ${email.title}
-                                                        </a>
-                                                      </h4>
-                                                      <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                      ${enrichedHTML}
-                                                    </li>
-                                                  </ul>
-                                                </div>
-                                              </div>
-                                              `;
+                                                                  <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                                                    <div style="margin-bottom: 20px; padding: 10px;">
+                                                                      <ul>
+                                                                        <li>
+                                                                          <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                                                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                                                              ${email.title}
+                                                                            </a>
+                                                                          </h4>
+                                                                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                                                          ${enrichedHTML}
+                                                                        </li>
+                                                                      </ul>
+                                                                    </div>
+                                                                  </div>
+                                                                  `;
           })
           .join("");
       },
@@ -260,17 +289,39 @@
     },
     methods: {
       initializeEditorContent() {
-        // Editor content with helpful placeholder
-        this.editorContent = `<p style="font-family: Arial, sans-serif; font-size: 14px;">Write your email content here...<br><br>You can also add:<br>• Customer name (e.g., "Customer Name: John Smith")<br>• Additional instructions or context<br>• Draft email content<br>• Any other details to guide the email generation</p>`;
-
         // Reset the generated response flag
         this.hasGeneratedResponse = false;
 
+        // Set empty content - placeholder will be shown via CSS
+        this.editorContent = "";
+
         // Set content in the appropriate editor based on mode
         if (this.richTextMode && this.$refs.richEditor) {
-          this.$refs.richEditor.innerHTML = this.editorContent;
+          this.$refs.richEditor.innerHTML = "";
+          this.$refs.richEditor.classList.add("empty");
         } else if (this.$refs.editor) {
-          this.$refs.editor.innerHTML = this.editorContent;
+          this.$refs.editor.innerHTML = "";
+          this.$refs.editor.classList.add("empty");
+        }
+      },
+      handleEditorFocus(type) {
+        const editor =
+          type === "rich" ? this.$refs.richEditor : this.$refs.editor;
+        if (editor) {
+          editor.classList.remove("empty");
+        }
+      },
+      handleEditorBlur(type) {
+        const editor =
+          type === "rich" ? this.$refs.richEditor : this.$refs.editor;
+        if (editor) {
+          const text = editor.innerText || editor.textContent || "";
+          if (text.trim() === "") {
+            editor.classList.add("empty");
+            editor.innerHTML = "";
+          } else {
+            editor.classList.remove("empty");
+          }
         }
       },
 
@@ -285,7 +336,17 @@
         });
       },
       updateEditorContent() {
-        this.editorContent = this.$refs.editor.innerHTML;
+        const editor = this.$refs.editor;
+        if (editor) {
+          const text = editor.innerText || editor.textContent || "";
+          if (text.trim() === "") {
+            editor.classList.add("empty");
+            this.editorContent = "";
+          } else {
+            editor.classList.remove("empty");
+            this.editorContent = editor.innerHTML;
+          }
+        }
       },
       finalizeEmail() {
         this.updateEditorContent();
@@ -333,9 +394,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                                              Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                                              URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                                              <button class="save-link">Save</button>`;
+                                                                                                  Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                                                                  URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                                                                  <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -389,11 +450,6 @@
           // Remove placeholder text and RSS markers
           const placeholderPatterns = [
             "Write your email content here...",
-            "You can also add:",
-            "• Customer name",
-            "• Additional instructions or context",
-            "• Draft email content",
-            "• Any other details to guide the email generation",
             "July",
             "release notes",
             "Publish Date:",
@@ -476,46 +532,48 @@
           // Combine all parts into the final prompt
           let enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
 
-    **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
-    - ONLY use information that is explicitly stated in the RSS feed items
-    - DO NOT guess, assume, or make up any details, features, or benefits
-    - DO NOT add information that is not directly present in the RSS feed items
-    - If information is not in the RSS feed items, do not include it in the email
-    - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
+                        **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
+                        - ONLY use information that is explicitly stated in the RSS feed items
+                        - DO NOT guess, assume, or make up any details, features, or benefits
+                        - DO NOT add information that is not directly present in the RSS feed items
+                        - If information is not in the RSS feed items, do not include it in the email
+                        - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
 
-    **Context:** ${emailContext}
-    ${
-      userCustomText
-        ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-        : ""
-    }
+                        **Context:** ${emailContext}
+                        ${
+                          userCustomText
+                            ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+                            : ""
+                        }
 
-    **Requirements:**
-    - Maximum 8 feature highlights (prioritize impact)
-    - Links formatted as: [Specific Benefit Description](complete-url)
-    - Professional but approachable tone
-    - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
-    - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
-    - Do NOT include a subject line - the user will add their own
-    - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-    - Use proper bullet points (•) for lists, not dashes (-)
-    - Format numbered lists as "1. Content" (no line breaks between number and content)
-    - Each list item should be a single, continuous paragraph without internal line breaks
-    - ONLY reference features and information that are explicitly in the RSS feed items provided
-    - Incorporate the user's custom text naturally into the email
+                        **Requirements:**
+                        - Maximum 8 feature highlights (prioritize impact)
+                        - Links formatted as: [Specific Benefit Description](complete-url)
+                        - Professional but approachable tone
+                        - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
+                        - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
+                        - Do NOT include a subject line - the user will add their own
+                        - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
+                        - Use proper bullet points (•) for lists, not dashes (-)
+                        - Format numbered lists as "1. Content" (no line breaks between number and content)
+                        - Each list item should be a single, continuous paragraph without internal line breaks
+                        - ONLY reference features and information that are explicitly in the RSS feed items provided
+                        - Incorporate the user's custom text naturally into the email
 
-    **Structure:**
-    1. Personal greeting (use "Hi" or "Hello"${
-      customerName
-        ? ` with the customer's first name "${customerName.split(" ")[0]}"`
-        : ""
-    } - avoid "Dear" as it's too formal for business emails)
-    2. Brief introduction about the update
-    3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
-    4. Appropriate call-to-action
-    5. Professional close
+                        **Structure:**
+                        1. Personal greeting (use "Hi" or "Hello"${
+                          customerName
+                            ? ` with the customer's first name "${
+                                customerName.split(" ")[0]
+                              }"`
+                            : ""
+                        } - avoid "Dear" as it's too formal for business emails)
+                        2. Brief introduction about the update
+                        3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
+                        4. Appropriate call-to-action
+                        5. Professional close
 
-    Generate the email:`;
+                        Generate the email:`;
 
           // Always include RSS items in the content sent to GPT for reference
           // The toggle only controls visibility in the configuration area, not what's sent to GPT
@@ -705,9 +763,9 @@
           );
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                                                 <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                                                 <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                                               </div>`;
+                                                                                                     <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                                                                     <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                                                                   </div>`;
 
           this.editorContent += gptOutput;
 
@@ -745,9 +803,9 @@
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                                                   target="_blank" 
-                                                                                   rel="noopener noreferrer" 
-                                                                                   style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
+                                                                                                       target="_blank" 
+                                                                                                       rel="noopener noreferrer" 
+                                                                                                       style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
@@ -807,8 +865,16 @@
       },
 
       updateRichEditorContent() {
-        if (this.$refs.richEditor) {
-          this.editorContent = this.$refs.richEditor.innerHTML;
+        const editor = this.$refs.richEditor;
+        if (editor) {
+          const text = editor.innerText || editor.textContent || "";
+          if (text.trim() === "") {
+            editor.classList.add("empty");
+            this.editorContent = "";
+          } else {
+            editor.classList.remove("empty");
+            this.editorContent = editor.innerHTML;
+          }
         }
       },
 
@@ -1015,6 +1081,16 @@
     .streamlined-instructions {
       padding: 12px 15px;
     }
+
+    .help-tooltip {
+      width: 240px;
+      right: -10px;
+    }
+
+    .editor-help-container {
+      top: 8px;
+      right: 8px;
+    }
   }
 
   .close-button {
@@ -1026,6 +1102,134 @@
     font-size: 18px;
     cursor: pointer;
     color: var(--cldCoral);
+  }
+
+  /* Editor Section Wrapper */
+  .editor-section-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .editor-help-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+  }
+
+  /* Adjust position when rich text editor is active (account for toolbar) */
+  .editor-section-wrapper:has(.rich-text-editor) .editor-help-container {
+    top: 50px; /* Account for toolbar height */
+  }
+
+  .help-icon-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e3e3e3;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: help;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .help-icon:hover {
+    background-color: var(--cldBlue);
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .help-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 280px;
+    background: white;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .help-icon-wrapper:hover .help-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .tooltip-content {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+    text-align: left;
+  }
+
+  .tooltip-content p {
+    margin: 0 0 8px 0;
+    text-align: left;
+  }
+
+  .tooltip-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .tooltip-title {
+    font-weight: bold;
+    margin-bottom: 10px !important;
+    color: #222;
+  }
+
+  .tooltip-note {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid #e3e3e3;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    font-weight: normal;
+  }
+
+  /* Tooltip arrow */
+  .help-tooltip::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid white;
+  }
+
+  .help-tooltip::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #e3e3e3;
+    z-index: -1;
   }
 
   .editable-area {
@@ -1041,6 +1245,21 @@
     box-sizing: border-box;
     word-wrap: break-word;
     overflow-wrap: break-word;
+  }
+
+  /* Placeholder styling for contenteditable */
+  .editable-area.empty::before,
+  .rich-editor-area.empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+    font-style: italic;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .editable-area.empty,
+  .rich-editor-area.empty {
+    position: relative;
   }
 
   .editable-area * {
