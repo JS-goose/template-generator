@@ -1,40 +1,49 @@
 # Enhanced Email Generation Prompt
 
-## Core Prompt Structure:
+## Simplified Email Generation
+
+The email generation process has been streamlined to require minimal user input. The system uses sensible defaults and only requires optional instructions when needed.
+
+### User Interface
+
+Users can optionally provide:
+
+- **Additional Instructions**: Any specific instructions, tone preferences, or context for the email generation
+
+**Example optional instructions:**
+
+- "Focus on video features and emphasize performance improvements"
+- "Make it more technical and include implementation details"
+- "Keep it brief and highlight only the top 3 features"
+
+### Core Prompt Structure:
+
+The system automatically generates emails using this structure:
 
 ```
-Generate a compelling, customer-focused email announcement based on the provided Cloudinary release notes.
+Generate a compelling customer email based on the provided Cloudinary release notes.
+
+**Context:** This email is for a customer. Focus on business value and practical benefits.
 
 **Requirements:**
-- Maximum 8-10 feature highlights (prioritize most impactful)
-- Collaborative, consultative tone for unresponsive customers
-- Focus on business value and practical benefits
-- Use specific details from the release notes, not generic descriptions
-- Format links as: [Feature Name](URL) - compatible with Gmail and copy-paste
-- Include clear call-to-action for live demo/walkthrough
-- Keep each bullet point to 1-2 sentences maximum
+- Maximum 8 feature highlights (prioritize impact)
+- Links formatted as: [Specific Benefit Description](complete-url)
+- Professional but approachable tone
+- Use quantifiable benefits where available
+- Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
+- Do NOT include a subject line - the user will add their own
+- Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
+- Use proper bullet points (•) for lists, not dashes (-)
+- Format numbered lists as "1. Content" (no line breaks between number and content)
+- Each list item should be a single, continuous paragraph without internal line breaks
+- Focus on the content provided, do not reference RSS feed items unless specifically included
 
 **Structure:**
-1. Engaging subject line
-2. Personal greeting with context
-3. Brief intro highlighting release theme
-4. Bulleted feature list with business impact
-5. Collaborative closing with demo offer
-6. Professional signature
-
-**Tone Guidelines:**
-- Consultative, not salesy
-- Focus on "how this helps you" rather than "what we built"
-- Use action-oriented language
-- Show understanding of customer needs
-- Maintain professional enthusiasm
-
-**Link Formatting:**
-- Use descriptive link text (not "Learn more")
-- Ensure URLs are complete and clickable
-- Format: [Specific Feature Benefit](full-url)
-
-Based on these requirements, generate the email:
+1. Personal greeting (use "Hi" or "Hello" - avoid "Dear" as it's too formal for business emails)
+2. Brief introduction about the update
+3. 6-8 bulleted features with business impact
+4. Appropriate call-to-action
+5. Professional close
 ```
 
 ## Enhanced Email Structure Template:
@@ -73,8 +82,16 @@ Would you be available for a 20-minute demo this week or next?
 
 ---
 
-## Technical Implementation Improvements:
+## Key Improvements:
 
-<function_calls>
-<invoke name="read_file">
-<parameter name="target_file">template-generator/api/gpt-email.js
+1. **Simplified Input**: Removed the need for structured fields (Customer Name, Email Context, Additional Instructions). Users now only need to optionally provide instructions.
+
+2. **Sensible Defaults**: The system automatically uses appropriate defaults:
+
+   - Generic greeting (no customer name required)
+   - Standard business context focused on value and benefits
+   - Professional but approachable tone
+
+3. **Streamlined Workflow**: Users can generate emails with zero configuration, or add optional instructions for customization.
+
+## Example Email Output:
