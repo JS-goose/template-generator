@@ -234,40 +234,40 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                                                                                        ${email.enrichedFeatures
-                                                                                          .map(
-                                                                                            (
-                                                                                              feature
-                                                                                            ) => `
-                                                                                            <li style="margin-bottom: 8px;">
-                                                                                              <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                                                              <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                                                            </li>
-                                                                                          `
-                                                                                          )
-                                                                                          .join(
-                                                                                            ""
-                                                                                          )}
-                                                                                        </ul>`
+                                                                                            ${email.enrichedFeatures
+                                                                                              .map(
+                                                                                                (
+                                                                                                  feature
+                                                                                                ) => `
+                                                                                                <li style="margin-bottom: 8px;">
+                                                                                                  <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                                                                                  <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                                                                                </li>
+                                                                                              `
+                                                                                              )
+                                                                                              .join(
+                                                                                                ""
+                                                                                              )}
+                                                                                            </ul>`
               : "";
 
             return `
-                                                                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                                                                      <div style="margin-bottom: 20px; padding: 10px;">
-                                                                                        <ul>
-                                                                                          <li>
-                                                                                            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                                                              <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                                                                ${email.title}
-                                                                                              </a>
-                                                                                            </h4>
-                                                                                            <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                                                            ${enrichedHTML}
-                                                                                          </li>
-                                                                                        </ul>
-                                                                                      </div>
-                                                                                    </div>
-                                                                                    `;
+                                                                                        <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                                                                          <div style="margin-bottom: 20px; padding: 10px;">
+                                                                                            <ul>
+                                                                                              <li>
+                                                                                                <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                                                                                  <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                                                                                    ${email.title}
+                                                                                                  </a>
+                                                                                                </h4>
+                                                                                                <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                                                                                ${enrichedHTML}
+                                                                                              </li>
+                                                                                            </ul>
+                                                                                          </div>
+                                                                                        </div>
+                                                                                        `;
           })
           .join("");
       },
@@ -425,9 +425,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                                                                                    Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                                                                                    URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                                                                                    <button class="save-link">Save</button>`;
+                                                                                                                        Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                                                                                        URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                                                                                        <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -568,6 +568,9 @@
             userCustomText,
           });
 
+          // Log the prompt for debugging (remove in production if desired)
+          console.log("Generated prompt:", enhancedPrompt);
+
           // Always include RSS items in the content sent to GPT for reference
           // The toggle only controls visibility in the configuration area, not what's sent to GPT
           let contentToSend = this.editorContent;
@@ -690,6 +693,9 @@
 
           const text = result.data.choices[0]?.message?.content || "";
 
+          // Store customer name for post-processing (needed for greeting check)
+          const customerNameForProcessing = customerName;
+
           // Enhanced link processing for Gmail compatibility
           const processedText = this.processLinksForGmail(text);
 
@@ -798,10 +804,163 @@
             return match; // Keep short bold phrases
           });
 
+          // CRITICAL: Remove subject lines (must be done before other processing)
+          // Remove "Subject:" lines at the start (with or without line breaks)
+          safe = safe.replace(/^Subject:\s*[^<\n]*/i, "");
+          safe = safe.replace(/Subject:\s*[^<\n]*/gi, "");
+          // Remove subject lines that might be on their own line
+          safe = safe.replace(/<br>\s*Subject:\s*[^<\n]*<br>/gi, "<br>");
+          safe = safe.replace(/<br>\s*Subject:\s*[^<\n]*/gi, "<br>");
+          // Remove any text that appears on the same line as "Subject:"
+          safe = safe.replace(/Subject:[^<\n]*\n?/gi, "");
+
+          // CRITICAL: Ensure greeting is present and fix "Dear" if it appears
+          // Check if email starts with a greeting (check text content, not HTML)
+          const textContent = safe
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          const startsWithGreeting = /^(Hi|Hello)\s+/i.test(textContent);
+          if (!startsWithGreeting) {
+            // Email doesn't start with greeting - add it
+            // Remove any leading <br> tags first
+            safe = safe.replace(/^(<br\s*\/?>)+/i, "");
+            if (customerNameForProcessing) {
+              const firstName = customerNameForProcessing.split(" ")[0];
+              safe = `Hi ${firstName},<br><br>${safe}`;
+            } else {
+              safe = `Hi there,<br><br>${safe}`;
+            }
+          }
+
+          // Remove "Dear" if it appears (should never happen but safety check)
+          // Handle "Dear" at the start of content
+          safe = safe.replace(/^Dear\s+([^,<\n]+),?\s*/i, (match, name) => {
+            const trimmedName = name.trim();
+            return trimmedName ? `Hi ${trimmedName}, ` : "Hi ";
+          });
+          // Handle "Dear" anywhere else
+          safe = safe.replace(/Dear\s+([^,<]+),?\s*/gi, (match, name) => {
+            const trimmedName = name.trim();
+            return trimmedName ? `Hi ${trimmedName}, ` : "Hi ";
+          });
+          // Handle "Dear" followed by line break
+          safe = safe.replace(/Dear\s+([^,<\n]+),?\s*<br>/gi, (match, name) => {
+            const trimmedName = name.trim();
+            return trimmedName ? `Hi ${trimmedName},<br>` : "Hi<br>";
+          });
+
+          // Ensure ONE continuous list - merge multiple <ol> tags into one
+          // This handles cases where GPT creates multiple separate lists instead of one continuous list
+          const listMatches = [...safe.matchAll(/<ol[^>]*>(.*?)<\/ol>/gs)];
+          if (listMatches.length > 1) {
+            // Extract all <li> items from all lists
+            const allListItems = [];
+            let firstListStart = -1;
+            let lastListEnd = -1;
+
+            listMatches.forEach((match, index) => {
+              const listContent = match[1];
+              const items = listContent.match(/<li[^>]*>.*?<\/li>/gs);
+              if (items) {
+                allListItems.push(...items);
+              }
+
+              // Track positions
+              const matchStart = match.index;
+              const matchEnd = matchStart + match[0].length;
+              if (index === 0) {
+                firstListStart = matchStart;
+              }
+              if (matchEnd > lastListEnd) {
+                lastListEnd = matchEnd;
+              }
+            });
+
+            // If we found multiple lists with items, merge them
+            if (
+              allListItems.length > 0 &&
+              firstListStart !== -1 &&
+              lastListEnd !== -1
+            ) {
+              // Create one continuous list with all items
+              const singleList = `<ol style="margin: 12px 0; padding-left: 30px; font-family: Arial, sans-serif; line-height: 1.6;">${allListItems.join(
+                ""
+              )}</ol>`;
+
+              // Replace all lists (and any content between them) with the single continuous list
+              const beforeLists = safe.substring(0, firstListStart);
+              const afterLists = safe.substring(lastListEnd);
+              safe = beforeLists + singleList + afterLists;
+            }
+          }
+
+          // Add proper spacing between paragraphs and sections
+          // First, ensure spacing between introduction and list
+          safe = safe.replace(
+            /([^>])(<ol[^>]*>)/g,
+            (match, p1, p2, offset, string) => {
+              // Check if there's already spacing
+              const before = string.substring(Math.max(0, offset - 10), offset);
+              if (!before.match(/<br>\s*$/)) {
+                return `${p1}<br><br>${p2}`;
+              }
+              return match;
+            }
+          );
+
+          // Ensure spacing after list (before closing paragraph)
+          safe = safe.replace(
+            /(<\/ol>)([^<])/g,
+            (match, p1, p2, offset, string) => {
+              // Check if there's already spacing
+              const after = string.substring(
+                offset + match.length,
+                offset + match.length + 10
+              );
+              if (!after.match(/^\s*<br>/)) {
+                return `${p1}<br><br>${p2}`;
+              }
+              return match;
+            }
+          );
+
+          // Ensure spacing between text paragraphs (handle cases without <p> tags)
+          // Add spacing between consecutive text blocks separated by <br><br>
+          // This handles plain text paragraphs
+          safe = safe.replace(/([^>])(<br><br>)([^<])/g, "$1<br><br>$3");
+
+          // Ensure spacing between paragraphs with <p> tags (not in lists)
+          safe = safe.replace(
+            /(<\/p>)(<p[^>]*>)/g,
+            (match, p1, p2, offset, string) => {
+              // Check if we're inside a list
+              const beforeMatch = string.substring(0, offset);
+              const lastOlOpen = beforeMatch.lastIndexOf("<ol");
+              const lastOlClose = beforeMatch.lastIndexOf("</ol>");
+              // If we're inside a list, don't add spacing
+              if (lastOlOpen > lastOlClose) {
+                return match;
+              }
+              // Add spacing between paragraphs
+              return `${p1}<br><br>${p2}`;
+            }
+          );
+
+          // Clean up excessive spacing (more than 2 <br> in a row)
+          safe = safe.replace(/(<br>\s*){3,}/g, "<br><br>");
+
+          // Ensure there's spacing between the introduction and list if they're too close
+          // Look for pattern: text ending, then immediately <ol>
+          safe = safe.replace(/([a-z])(<ol[^>]*>)/gi, "$1<br><br>$2");
+
+          // Ensure there's spacing between list and closing paragraph
+          safe = safe.replace(/(<\/ol>)([A-Z])/g, "$1<br><br>$2");
+
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                                                                                       <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                                                                                       <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                                                                                     </div>`;
+                                                                                                                           <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                                                                                           <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                                                                                         </div>`;
 
           this.editorContent += gptOutput;
 
@@ -853,9 +1012,9 @@
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                                                                                         target="_blank" 
-                                                                                                                         rel="noopener noreferrer" 
-                                                                                                                         style="color: #0073e6; text-decoration: none;">${linkText}</a>`;
+                                                                                                                             target="_blank" 
+                                                                                                                             rel="noopener noreferrer" 
+                                                                                                                             style="color: #0073e6; text-decoration: none;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML

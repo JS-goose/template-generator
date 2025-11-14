@@ -26,48 +26,48 @@ export function generateEmailPrompt({ emailContext, customerName = "", userCusto
     ? ` ${customerName.split(" ")[0]}`
     : "";
 
-  return `Generate a compelling customer email based on the provided Cloudinary release notes and any additional context provided by the user.
+  const greetingExample = customerNameGreeting 
+    ? `Hi${customerNameGreeting},` 
+    : "Hi there,";
+  
+  return `Generate a customer email based on Cloudinary release notes. Your response MUST follow this EXACT format:
 
-**CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the primary source of information. You MUST:
-- ONLY use information that is explicitly stated in the RSS feed items
-- DO NOT guess, assume, or make up any details, features, or benefits
-- DO NOT add information that is not directly present in the RSS feed items unless it is explicitly stated in the user's custom text.
-- If information is not in the RSS feed items, do not include it in the email
-- Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
+**REQUIRED FORMAT (copy this structure):**
+
+${greetingExample}
+
+[Write one paragraph introducing why you're reaching out and what update you're sharing. Keep it concise and engaging.]
+
+1. [Feature Name](url): Description of feature and business value.
+2. [Feature Name](url): Description of feature and business value.
+3. [Feature Name](url): Description of feature and business value.
+4. [Feature Name](url): Description of feature and business value.
+5. [Feature Name](url): Description of feature and business value.
+6. [Feature Name](url): Description of feature and business value.
+
+[Write one closing paragraph with call-to-action and professional sign-off.]
+
+---
+
+**MANDATORY REQUIREMENTS:**
+- Your FIRST line MUST be "${greetingExample}" or "Hello${customerNameGreeting || ""},"
+- DO NOT include a subject line - start directly with the greeting
+- DO NOT use "Dear" - it is forbidden
+- Structure: greeting line → introduction paragraph → numbered list (1-8) → closing paragraph
+- ALL features in ONE continuous numbered list (1, 2, 3, 4, 5, 6, 7, 8) - do NOT restart numbering
+- ONLY use information from RSS feed items provided
+- Format links as: [Feature Name](complete-url)
 
 **Context:** ${emailContext}
 ${
   userCustomText
-    ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+    ? `\n**User's Custom Text:** ${userCustomText}\n\nIncorporate this naturally into the email.`
     : ""
 }
 
-**CRITICAL REQUIREMENTS - MUST FOLLOW:**
-- NEVER use "Dear" in greetings - it is too formal for business emails. ALWAYS use "Hi" or "Hello"${customerNameGreeting}
-- Maximum 8 feature highlights (prioritize most impactful)
-- Links formatted as: [Specific Benefit Description](complete-url)
-- Professional but approachable tone
-- Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
-- Do NOT include a subject line - the user will add their own
-- Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-- Format numbered lists as "1. Content" (no line breaks between number and content)
-- Each list item should be a single, continuous paragraph without internal line breaks
-- ONLY reference features and information that are explicitly in the RSS feed items provided
-- Incorporate the user's custom text naturally into the email
+**SOURCE OF TRUTH:** RSS feed items are the primary source. Only use information explicitly stated in them.
 
-**EMAIL STRUCTURE - FOLLOW EXACTLY (3 parts only):**
-1. Introduction paragraph: Start with "Hi" or "Hello"${customerNameGreeting} - NEVER use "Dear". Include a brief greeting, context about why you're reaching out, and introduce the update/release. This should be ONE cohesive paragraph.
-2. Ordered list (numbered 1, 2, 3, etc.): 6 to 8 numbered feature highlights with business impact (ONLY from RSS feed items unless explicitly stated in the user's custom text). Each item should be formatted as "1. [Feature Name with Link]: Description of the feature and its business value."
-3. Closing paragraph: Appropriate call-to-action and professional close. This should be ONE cohesive paragraph.
-
-**FORMATTING REQUIREMENTS:**
-- Use numbered lists (1., 2., 3., etc.) NOT bullet points for the feature list
-- Each numbered list item should start with a link to the feature, followed by a colon, then the description
-- Format: "1. [Feature Name](url): Description of feature and business value."
-- Keep paragraphs concise and focused
-- Maintain professional but approachable tone throughout
-
-Generate the email following this exact structure:`;
+Generate the email now, starting with "${greetingExample}":`;
 }
 
 /**

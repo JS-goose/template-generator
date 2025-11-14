@@ -191,8 +191,30 @@ export default {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      const safeContent = content.length > 8000 ? content.slice(0, 8000) + '\n\n[...truncated]' : content;
-      const safePrompt = prompt.length > 1000 ? prompt.slice(0, 1000) + ' [...truncated]' : prompt;
+
+      // Validate input sizes are reasonable (prevent abuse, not security)
+      // OpenAI GPT-4 has context windows up to 128k tokens (~500k chars)
+      // We set reasonable limits well below that to prevent abuse
+      const MAX_CONTENT_LENGTH = 200000; // ~50k tokens, reasonable for RSS feeds
+      const MAX_PROMPT_LENGTH = 10000; // ~2.5k tokens, more than enough for our prompt template
+
+      if (content.length > MAX_CONTENT_LENGTH) {
+        return new Response(JSON.stringify({ error: `Content too large: ${content.length} characters. Maximum allowed: ${MAX_CONTENT_LENGTH}` }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (prompt.length > MAX_PROMPT_LENGTH) {
+        return new Response(JSON.stringify({ error: `Prompt too large: ${prompt.length} characters. Maximum allowed: ${MAX_PROMPT_LENGTH}` }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // No truncation - let OpenAI handle limits and return proper errors if exceeded
+      const safeContent = content;
+      const safePrompt = prompt;
       const id = crypto.randomUUID();
       const token = crypto.randomUUID();
 

@@ -45,9 +45,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Worker is misconfigured (missing WORKER_AUTH_KEY)." });
   }
 
-  // ! Trim overly long content to avoid timeout until moving off Vercel
-  if (content.length > 5000) {
-    content = content.substring(0, 5000) + "\n\n[...truncated]";
+  // Validate content size (prevent abuse, not security)
+  // Note: Truncation removed - let the worker handle size validation
+  // This prevents silent data loss and ensures proper error handling
+  const MAX_CONTENT_LENGTH = 200000; // ~50k tokens
+  const MAX_PROMPT_LENGTH = 10000; // ~2.5k tokens
+  
+  if (content.length > MAX_CONTENT_LENGTH) {
+    return res.status(400).json({ error: `Content too large: ${content.length} characters. Maximum allowed: ${MAX_CONTENT_LENGTH}` });
+  }
+  
+  if (prompt && prompt.length > MAX_PROMPT_LENGTH) {
+    return res.status(400).json({ error: `Prompt too large: ${prompt.length} characters. Maximum allowed: ${MAX_PROMPT_LENGTH}` });
   }
 
   try {
