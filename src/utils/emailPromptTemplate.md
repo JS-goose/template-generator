@@ -1,13 +1,16 @@
-# Enhanced Email Generation Prompt
+# Email Generation Prompt Documentation
 
-## Simplified Email Generation
+> **Note:** The actual prompt implementation lives in `emailPromptTemplate.js` (same directory). This document serves as human-readable documentation and reference. For the authoritative source, see the JavaScript module.
+
+## Overview
 
 The email generation process has been streamlined to require minimal user input. The system uses sensible defaults and only requires optional instructions when needed.
 
-### User Interface
+## User Interface
 
 Users can optionally provide:
 
+- **Customer Name**: e.g., "Customer Name: John Smith"
 - **Additional Instructions**: Any specific instructions, tone preferences, or context for the email generation
 
 **Example optional instructions:**
@@ -15,36 +18,41 @@ Users can optionally provide:
 - "Focus on video features and emphasize performance improvements"
 - "Make it more technical and include implementation details"
 - "Keep it brief and highlight only the top 3 features"
+- "This is for a customer at Custom Ink who is a Salesforce developer interested in AI"
 
-### Core Prompt Structure:
+## Email Generation Guidelines
 
-The system automatically generates emails using this structure:
+### Key Requirements
 
-```
-Generate a compelling customer email based on the provided Cloudinary release notes.
+The system enforces the following requirements when generating emails:
 
-**Context:** This email is for a customer. Focus on business value and practical benefits.
+- **Maximum 8 feature highlights** (prioritizes most impactful)
+- **Links formatted as:** `[Specific Benefit Description](complete-url)`
+- **Professional but approachable tone**
+- **Use quantifiable benefits** where available (ONLY if explicitly stated in RSS feed items)
+- **NEVER use "Dear"** - Always use "Hi" or "Hello" for greetings
+- **Do NOT include a subject line** - The user will add their own
+- **Do NOT include placeholders** like [Your Name] or [Your Position] - The user will add their signature in Gmail
+- **Use numbered lists (1., 2., 3., etc.)** NOT bullet points for the feature list
+- **Format numbered lists** as "1. Content" (no line breaks between number and content)
+- **Each list item** should be a single, continuous paragraph without internal line breaks
 
-**Requirements:**
-- Maximum 8 feature highlights (prioritize impact)
-- Links formatted as: [Specific Benefit Description](complete-url)
-- Professional but approachable tone
-- Use quantifiable benefits where available
-- Use "Hi" or "Hello" for greetings (NEVER use "Dear" as it's too formal for business emails)
-- Do include a subject line unless the user provides their own and then use that one
-- Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-- Use proper bullet points (•) for lists, not dashes (-)
-- Format numbered lists as "1. Content" (no line breaks between number and content)
-- Each list item should be a single, continuous paragraph without internal line breaks
-- Focus on the content provided, do not reference RSS feed items unless specifically included
+### Email Structure (3 Parts Only)
 
-**Structure:**
-1. Personal greeting (use "Hi" or "Hello" - NEVER use "Dear" as it's too formal for business emails)
-2. Brief introduction about the update
-3. 6-8 bulleted features with business impact
-4. Appropriate call-to-action
-5. Professional close
-```
+1. **Introduction paragraph**: Start with "Hi" or "Hello" - NEVER use "Dear". Include a brief greeting, context about why you're reaching out, and introduce the update/release. This should be ONE cohesive paragraph.
+
+2. **Ordered list** (numbered 1, 2, 3, etc.): 6-8 numbered feature highlights with business impact (ONLY from RSS feed items). Each item should be formatted as "1. [Feature Name with Link]: Description of the feature and its business value."
+
+3. **Closing paragraph**: Appropriate call-to-action and professional close. This should be ONE cohesive paragraph.
+
+### Source of Truth
+
+The system enforces that **RSS feed items are the ONLY source of information**. The AI MUST:
+
+- ONLY use information that is explicitly stated in the RSS feed items
+- DO NOT guess, assume, or make up any details, features, or benefits
+- DO NOT add information that is not directly present in the RSS feed items
+- Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
 
 ## Enhanced Email Structure Template:
 
@@ -95,3 +103,4 @@ Would you be available for a 20-minute demo this week or next?
 3. **Streamlined Workflow**: Users can generate emails with zero configuration, or add optional instructions for customization.
 
 ## Example Email Output:
+

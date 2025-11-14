@@ -197,6 +197,10 @@
 <script>
   import { generateMimeEmail } from "@/utils/encodeEmail";
   import { nextTick } from "vue";
+  import {
+    generateEmailPrompt,
+    DEFAULT_EMAIL_CONTEXT,
+  } from "@/utils/emailPromptTemplate";
 
   export default {
     name: "EmailTemplate",
@@ -230,40 +234,40 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                                                                                  ${email.enrichedFeatures
-                                                                                    .map(
-                                                                                      (
-                                                                                        feature
-                                                                                      ) => `
-                                                                                      <li style="margin-bottom: 8px;">
-                                                                                        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                                                        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                                                      </li>
-                                                                                    `
-                                                                                    )
-                                                                                    .join(
-                                                                                      ""
-                                                                                    )}
-                                                                                  </ul>`
+                                                                                        ${email.enrichedFeatures
+                                                                                          .map(
+                                                                                            (
+                                                                                              feature
+                                                                                            ) => `
+                                                                                            <li style="margin-bottom: 8px;">
+                                                                                              <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                                                                              <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                                                                            </li>
+                                                                                          `
+                                                                                          )
+                                                                                          .join(
+                                                                                            ""
+                                                                                          )}
+                                                                                        </ul>`
               : "";
 
             return `
-                                                                              <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                                                                <div style="margin-bottom: 20px; padding: 10px;">
-                                                                                  <ul>
-                                                                                    <li>
-                                                                                      <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                                                        <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                                                          ${email.title}
-                                                                                        </a>
-                                                                                      </h4>
-                                                                                      <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                                                      ${enrichedHTML}
-                                                                                    </li>
-                                                                                  </ul>
-                                                                                </div>
-                                                                              </div>
-                                                                              `;
+                                                                                    <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                                                                      <div style="margin-bottom: 20px; padding: 10px;">
+                                                                                        <ul>
+                                                                                          <li>
+                                                                                            <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                                                                              <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                                                                                ${email.title}
+                                                                                              </a>
+                                                                                            </h4>
+                                                                                            <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                                                                            ${enrichedHTML}
+                                                                                          </li>
+                                                                                        </ul>
+                                                                                      </div>
+                                                                                    </div>
+                                                                                    `;
           })
           .join("");
       },
@@ -421,9 +425,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                                                                              Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                                                                              URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                                                                              <button class="save-link">Save</button>`;
+                                                                                                                    Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                                                                                    URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                                                                                    <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -554,55 +558,15 @@
           }
 
           // Default context if no instructions provided
-          const defaultContext =
-            "This email is for a customer. Focus on business value and practical benefits.";
-          const emailContext = instructions || defaultContext;
+          const emailContext = instructions || DEFAULT_EMAIL_CONTEXT;
 
-          // Combine all parts into the final prompt
-          let enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
-
-                                    **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
-                                    - ONLY use information that is explicitly stated in the RSS feed items
-                                    - DO NOT guess, assume, or make up any details, features, or benefits
-                                    - DO NOT add information that is not directly present in the RSS feed items
-                                    - If information is not in the RSS feed items, do not include it in the email
-                                    - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
-
-                                    **Context:** ${emailContext}
-                                    ${
-                                      userCustomText
-                                        ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-                                        : ""
-                                    }
-
-                                    **Requirements:**
-                                    - Maximum 8 feature highlights (prioritize impact)
-                                    - Links formatted as: [Specific Benefit Description](complete-url)
-                                    - Professional but approachable tone
-                                    - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
-                                    - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
-                                    - Do NOT include a subject line - the user will add their own
-                                    - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-                                    - Use proper bullet points (•) for lists, not dashes (-)
-                                    - Format numbered lists as "1. Content" (no line breaks between number and content)
-                                    - Each list item should be a single, continuous paragraph without internal line breaks
-                                    - ONLY reference features and information that are explicitly in the RSS feed items provided
-                                    - Incorporate the user's custom text naturally into the email
-
-                                    **Structure:**
-                                    1. Personal greeting (use "Hi" or "Hello"${
-                                      customerName
-                                        ? ` with the customer's first name "${
-                                            customerName.split(" ")[0]
-                                          }"`
-                                        : ""
-                                    } - avoid "Dear" as it's too formal for business emails)
-                                    2. Brief introduction about the update
-                                    3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
-                                    4. Appropriate call-to-action
-                                    5. Professional close
-
-                                    Generate the email:`;
+          // Generate the prompt using the template utility
+          // This keeps the prompt maintainable and separate from component logic
+          const enhancedPrompt = generateEmailPrompt({
+            emailContext,
+            customerName,
+            userCustomText,
+          });
 
           // Always include RSS items in the content sent to GPT for reference
           // The toggle only controls visibility in the configuration area, not what's sent to GPT
@@ -728,20 +692,23 @@
 
           // Enhanced link processing for Gmail compatibility
           const processedText = this.processLinksForGmail(text);
-          let safe = String(processedText).replace(/\n/g, "<br>");
 
-          // Convert markdown bold more conservatively - only for short phrases, not entire paragraphs
-          // First, handle numbered list headers with bold
-          safe = safe.replace(/^\d+\.\s+\*\*(.*?)\*\*:/gm, "$1:"); // Remove bold from list headers
-          // Then convert remaining bold markdown, but only for short phrases (less than 50 chars)
-          safe = safe.replace(/\*\*([^*]{1,50}?)\*\*/g, "<strong>$1</strong>"); // Convert **bold** to <strong> for short phrases only
+          // First, convert markdown to HTML before processing lists
+          let safe = String(processedText);
+
+          // Convert markdown bold more conservatively - only for short phrases
+          safe = safe.replace(/\*\*([^*]{1,50}?)\*\*/g, "<strong>$1</strong>");
           // Convert italic
-          safe = safe.replace(/\*([^*]{1,50}?)\*/g, "<em>$1</em>"); // Convert *italic* to <em> for short phrases only
+          safe = safe.replace(/\*([^*]{1,50}?)\*/g, "<em>$1</em>");
 
-          // Format numbered lists
-          safe = safe.replace(/^\d+\.\s*<br>\s*(.*?)$/gm, "<li>$1</li>"); // Fix numbered lists with line breaks
-          safe = safe.replace(/^\d+\.\s+(.*?)$/gm, "<li>$1</li>"); // Convert numbered lists to HTML
-          safe = safe.replace(/(<li>.*?<\/li>)/gs, "<ol>$1</ol>"); // Wrap lists in <ol> tags
+          // Convert newlines to <br> for non-list content
+          // But we need to be careful not to break list formatting
+          safe = safe.replace(/\n/g, "<br>");
+
+          // Now properly format numbered lists for Gmail
+          // This regex matches numbered list items: "1. " or "1. " at start of line or after <br>
+          // Pattern: number followed by period and space, then content until next number or end
+          safe = this.formatNumberedListsForGmail(safe);
 
           // Clean up any remaining malformed HTML attributes
           safe = safe.replace(
@@ -800,30 +767,28 @@
           safe = safe.replace(/\[Your Name\]<br>/g, "");
           safe = safe.replace(/\[Your Position\]<br>/g, "");
 
-          // Fix line breaks before links in paragraphs (e.g., "please visit our <br><a")
+          // Fix line breaks before links in paragraphs (outside of lists)
           // This handles cases where there's a line break between text and a link
           safe = safe.replace(/([^>])\s*<br>\s*<a\s+href=/g, "$1 <a href=");
-          // Also handle cases with multiple spaces or line breaks
-          safe = safe.replace(/([^>])\s+<br>\s+<a\s+href=/g, "$1 <a href=");
-          // Fix line breaks within paragraphs that split text before links
-          // This handles cases like "please visit our <br>release notes" or "please visit our <br><a"
-          safe = safe.replace(/([a-z])\s*<br>\s*([a-z])/gi, "$1 $2");
-          // More specific: fix common patterns like "our <br>release notes" or "our <br><a href"
+
+          // Fix line breaks within paragraphs that split text (but not within list items)
+          // Only fix if not inside an <li> tag
           safe = safe.replace(
-            /\b(our|the|a|an|this|that|these|those|visit|check|see|read)\s*<br>\s*(<a\s+href=|[a-z])/gi,
-            "$1 $2"
+            /([a-z])\s*<br>\s*([a-z])/gi,
+            (match, p1, p2, offset, string) => {
+              // Check if we're inside a list item
+              const beforeMatch = string.substring(0, offset);
+              const lastLiOpen = beforeMatch.lastIndexOf("<li");
+              const lastLiClose = beforeMatch.lastIndexOf("</li>");
+              // If we're inside a list item, don't fix this
+              if (lastLiOpen > lastLiClose) {
+                return match; // Keep the <br> inside list items
+              }
+              return `${p1} ${p2}`;
+            }
           );
-          // Fix "please visit our" specifically - handle both with and without link tags
-          safe = safe.replace(
-            /visit\s+our\s*<br>\s*(<a\s+href=|[a-z])/gi,
-            "visit our $1"
-          );
-          // General fix for any word followed by <br> and then a link or lowercase word
-          safe = safe.replace(/([a-z]+)\s*<br>\s*(<a\s+href=)/gi, "$1 $2");
 
           // Remove unwanted bold formatting from regular paragraphs (not in list items)
-          // This prevents entire paragraphs from being bolded
-          // Only remove <strong> tags that wrap entire paragraphs or large blocks of text
           safe = safe.replace(/<strong>([^<]+)<\/strong>/g, (match, content) => {
             // If it's a short phrase (likely intentional), keep it
             // If it's a long paragraph, remove bold
@@ -833,25 +798,10 @@
             return match; // Keep short bold phrases
           });
 
-          // COMPREHENSIVE LIST FORMATTING FIX
-          // Convert the content into proper numbered list structure
-          safe = this.formatAsNumberedList(safe);
-
-          // Wrap consecutive list items in ul tags
-          safe = safe.replace(
-            /(<li>.*?<\/li>)(<br><li>.*?<\/li>)*/gs,
-            (match) => {
-              if (match.includes("<ol>") || match.includes("</ol>")) {
-                return match; // Already wrapped in ol
-              }
-              return `<ul>${match}</ul>`;
-            }
-          );
-
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                                                                                 <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                                                                                 <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                                                                               </div>`;
+                                                                                                                       <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                                                                                       <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                                                                                     </div>`;
 
           this.editorContent += gptOutput;
 
@@ -903,9 +853,9 @@
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                                                                                   target="_blank" 
-                                                                                                                   rel="noopener noreferrer" 
-                                                                                                                   style="color: #0073e6; text-decoration: none;">${linkText}</a>`;
+                                                                                                                         target="_blank" 
+                                                                                                                         rel="noopener noreferrer" 
+                                                                                                                         style="color: #0073e6; text-decoration: none;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
@@ -1008,7 +958,130 @@
         console.log("Generation cancelled by user");
       },
 
-      // Format content as proper numbered list
+      // Format numbered lists for Gmail compatibility
+      formatNumberedListsForGmail(content) {
+        // First, handle cases where numbered lists might be on separate lines
+        // Pattern: "1. " at start or after <br>, followed by content
+        // We'll process the content line by line
+
+        // Split by <br> but preserve them for reconstruction
+        const lines = content.split(/<br>/);
+        const result = [];
+        let currentList = [];
+        let currentListItem = null;
+        let inList = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+
+          // Check if this line starts a new numbered list item
+          // Pattern: starts with digit(s), period, space, then content
+          const listItemMatch = line.match(/^(\d+)\.\s+(.+)$/);
+
+          if (listItemMatch) {
+            // Save previous list item if exists
+            if (currentListItem !== null) {
+              currentList.push(currentListItem);
+            }
+
+            // Start new list if not already in one
+            if (!inList) {
+              inList = true;
+            }
+
+            // Start new list item
+            currentListItem = listItemMatch[2]; // Content after "1. "
+          } else if (inList && line && currentListItem !== null) {
+            // This line continues the current list item (multi-line list item)
+            // Only continue if it doesn't look like a new list item
+            if (!line.match(/^\d+\.\s+/)) {
+              currentListItem += " " + line;
+            } else {
+              // This is actually a new list item, save the previous one
+              currentList.push(currentListItem);
+              const newMatch = line.match(/^(\d+)\.\s+(.+)$/);
+              if (newMatch) {
+                currentListItem = newMatch[2];
+              } else {
+                currentListItem = null;
+                inList = false;
+                result.push(this.createGmailOrderedList(currentList));
+                currentList = [];
+                if (line) result.push(line);
+              }
+            }
+          } else {
+            // Not a list item
+            if (inList && currentList.length > 0) {
+              // Save current list item if exists
+              if (currentListItem !== null) {
+                currentList.push(currentListItem);
+                currentListItem = null;
+              }
+              // Close the list
+              result.push(this.createGmailOrderedList(currentList));
+              currentList = [];
+              inList = false;
+            } else if (currentListItem !== null) {
+              // We had a single list item, but now we're out of list context
+              // This shouldn't happen often, but handle it
+              currentList.push(currentListItem);
+              currentListItem = null;
+            }
+
+            // Add non-list content
+            if (line) {
+              result.push(line);
+            }
+          }
+        }
+
+        // Handle any remaining list
+        if (inList) {
+          if (currentListItem !== null) {
+            currentList.push(currentListItem);
+          }
+          if (currentList.length > 0) {
+            result.push(this.createGmailOrderedList(currentList));
+          }
+        }
+
+        // Join all parts with <br>
+        return result.join("<br>");
+      },
+
+      // Create Gmail-compatible ordered list with inline styles
+      createGmailOrderedList(items) {
+        // Gmail needs inline styles and proper structure
+        // Use inline styles that Gmail supports
+        let listHtml =
+          '<ol style="margin: 12px 0; padding-left: 30px; font-family: Arial, sans-serif; line-height: 1.6;">';
+
+        items.forEach((item) => {
+          // Clean up the item - remove extra <br> tags within the item but preserve other HTML
+          let cleanItem = item.trim();
+
+          // Remove <br> tags that break up the list item content
+          cleanItem = cleanItem.replace(/<br>\s*/g, " ");
+
+          // Fix multiple spaces
+          cleanItem = cleanItem.replace(/\s+/g, " ");
+
+          // Ensure proper spacing after links (colon should be right after link)
+          cleanItem = cleanItem.replace(/(<\/a>)\s*:\s*/g, "$1: ");
+
+          // Ensure proper spacing before links
+          cleanItem = cleanItem.replace(/\s+(<a\s+href=)/g, " $1");
+
+          // Style the list item with Gmail-compatible inline styles
+          listHtml += `<li style="margin-bottom: 10px; padding-left: 0; line-height: 1.6; color: #333; font-size: 14px;">${cleanItem}</li>`;
+        });
+
+        listHtml += "</ol>";
+        return listHtml;
+      },
+
+      // Format content as proper numbered list (legacy method - keeping for compatibility)
       formatAsNumberedList(content) {
         // Remove subject line if present
         content = content.replace(/Subject:\s*[^<]*?<br>/gi, "");
