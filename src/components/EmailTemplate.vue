@@ -5,23 +5,27 @@
       <!-- * Close Button -->
       <button class="close-button" @click="closeModal">✖ Close</button>
 
-      <!-- * RSS Items Display -->
+      <!-- * RSS Items Display - Collapsible -->
       <div
-        v-if="includeRssInGpt && emailTemplates && emailTemplates.length > 0"
-        class="unified-config-section"
+        v-if="emailTemplates && emailTemplates.length > 0"
+        class="unified-config-section rss-collapsible-section"
       >
-        <h3>RSS Feed Items (for reference)</h3>
-        <div class="rss-items-container" v-html="formattedRssItems"></div>
+        <div class="rss-header" @click="toggleRssSection">
+          <h3>RSS Feed Items (for reference)</h3>
+          <span class="rss-caret" :class="{ expanded: rssSectionExpanded }"
+            >▼</span
+          >
+        </div>
+        <div
+          v-show="rssSectionExpanded"
+          class="rss-items-container"
+          v-html="formattedRssItems"
+        ></div>
       </div>
 
       <!-- * Editor Controls -->
       <div class="editor-controls">
         <div class="control-row">
-          <label class="include-rss-toggle">
-            <input type="checkbox" v-model="includeRssInGpt" />
-            <span>Show RSS items in configuration area</span>
-          </label>
-
           <label class="editor-mode-toggle">
             <input
               type="checkbox"
@@ -30,12 +34,6 @@
             />
             <span>Rich Text Editor</span>
           </label>
-        </div>
-        <div class="control-description" v-if="!includeRssInGpt">
-          <small
-            >💡 RSS items are hidden from the configuration area but will still
-            be included in the GPT prompt for reference.</small
-          >
         </div>
       </div>
 
@@ -157,7 +155,9 @@
           Finalize Email
         </button>
 
+        <!-- Generate Button (only shown before first generation) -->
         <button
+          v-if="!hasGeneratedResponse"
           class="finalize-button secondary"
           @click="generateEmailWithGPT"
           :disabled="isGeneratingWithPrompt"
@@ -179,6 +179,15 @@
             <span class="spinner"></span> Regenerating... {{ pollingProgress }}
           </span>
           <span v-else>🔄 Regenerate Response</span>
+        </button>
+
+        <!-- Cancel Button (only shown during generation) -->
+        <button
+          v-if="isGeneratingWithPrompt"
+          class="finalize-button cancel"
+          @click="cancelGeneration"
+        >
+          Cancel
         </button>
       </div>
     </div>
@@ -203,10 +212,12 @@
       return {
         editorContent: "",
         richTextMode: false,
-        includeRssInGpt: true,
+        includeRssInGpt: true, // Keep for GPT generation logic
+        rssSectionExpanded: true, // Default to expanded
         isGeneratingWithPrompt: false,
         pollingProgress: "",
         hasGeneratedResponse: false,
+        generationCancelled: false, // Flag to cancel ongoing generation
       };
     },
     computed: {
@@ -219,38 +230,40 @@
           .map((email) => {
             const enrichedHTML = email.enrichedFeatures
               ? `<ul style="padding-left: 1.5em;">
-                                                                      ${email.enrichedFeatures
-                                                                        .map(
-                                                                          (
-                                                                            feature
-                                                                          ) => `
-                                                                          <li style="margin-bottom: 8px;">
-                                                                            <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
-                                                                            <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
-                                                                          </li>
-                                                                        `
-                                                                        )
-                                                                        .join("")}
-                                                                      </ul>`
+                                                                                  ${email.enrichedFeatures
+                                                                                    .map(
+                                                                                      (
+                                                                                        feature
+                                                                                      ) => `
+                                                                                      <li style="margin-bottom: 8px;">
+                                                                                        <a href="${feature.url}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; font-weight: bold; text-decoration: none;">${feature.title}</a>
+                                                                                        <p style="margin: 4px 0 0 0; font-size: 13px; line-height: 1.4;">${feature.preview}</p>
+                                                                                      </li>
+                                                                                    `
+                                                                                    )
+                                                                                    .join(
+                                                                                      ""
+                                                                                    )}
+                                                                                  </ul>`
               : "";
 
             return `
-                                                                  <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                                                    <div style="margin-bottom: 20px; padding: 10px;">
-                                                                      <ul>
-                                                                        <li>
-                                                                          <h4 style="margin: 0 0 10px 0; font-size: 15px;">
-                                                                            <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
-                                                                              ${email.title}
-                                                                            </a>
-                                                                          </h4>
-                                                                          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
-                                                                          ${enrichedHTML}
-                                                                        </li>
-                                                                      </ul>
-                                                                    </div>
-                                                                  </div>
-                                                                  `;
+                                                                              <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                                                                <div style="margin-bottom: 20px; padding: 10px;">
+                                                                                  <ul>
+                                                                                    <li>
+                                                                                      <h4 style="margin: 0 0 10px 0; font-size: 15px;">
+                                                                                        <a href="${email.link}" target="_blank" rel="noopener noreferrer" style="color: #0073e6; text-decoration: none;">
+                                                                                          ${email.title}
+                                                                                        </a>
+                                                                                      </h4>
+                                                                                      <p style="margin: 0; font-size: 14px; line-height: 1.6;">${email.desc}</p>
+                                                                                      ${enrichedHTML}
+                                                                                    </li>
+                                                                                  </ul>
+                                                                                </div>
+                                                                              </div>
+                                                                              `;
           })
           .join("");
       },
@@ -291,6 +304,11 @@
       initializeEditorContent() {
         // Reset the generated response flag
         this.hasGeneratedResponse = false;
+        // Reset cancellation flag
+        this.generationCancelled = false;
+        // Reset loading state
+        this.isGeneratingWithPrompt = false;
+        this.pollingProgress = "";
 
         // Set empty content - placeholder will be shown via CSS
         this.editorContent = "";
@@ -323,6 +341,10 @@
             editor.classList.remove("empty");
           }
         }
+      },
+
+      toggleRssSection() {
+        this.rssSectionExpanded = !this.rssSectionExpanded;
       },
 
       copyHtmlToClipboard() {
@@ -373,6 +395,11 @@
         this.closeTemplateModal();
       },
       closeModal() {
+        // Cancel any ongoing generation
+        this.generationCancelled = true;
+        this.isGeneratingWithPrompt = false;
+        this.pollingProgress = "";
+        // Reset state
         this.editorContent = "";
         this.hasGeneratedResponse = false;
         document.body.style.overflow = "";
@@ -394,9 +421,9 @@
 
           const wrapper = document.createElement("span");
           wrapper.innerHTML = `
-                                                                                                  Text: <input type="text" value="${text}" class="edit-link-text" />
-                                                                                                  URL: <input type="text" value="${href}" class="edit-link-href" />
-                                                                                                  <button class="save-link">Save</button>`;
+                                                                                                              Text: <input type="text" value="${text}" class="edit-link-text" />
+                                                                                                              URL: <input type="text" value="${href}" class="edit-link-href" />
+                                                                                                              <button class="save-link">Save</button>`;
 
           target.replaceWith(wrapper);
 
@@ -415,6 +442,8 @@
         }
       },
       async generateEmailWithGPT() {
+        // Reset cancellation flag at start of generation
+        this.generationCancelled = false;
         this.isGeneratingWithPrompt = true;
         this.pollingProgress = "";
         try {
@@ -532,48 +561,48 @@
           // Combine all parts into the final prompt
           let enhancedPrompt = `Generate a compelling customer email based on the provided Cloudinary release notes.
 
-                        **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
-                        - ONLY use information that is explicitly stated in the RSS feed items
-                        - DO NOT guess, assume, or make up any details, features, or benefits
-                        - DO NOT add information that is not directly present in the RSS feed items
-                        - If information is not in the RSS feed items, do not include it in the email
-                        - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
+                                    **CRITICAL - SOURCE OF TRUTH:** The RSS feed items provided below are the ONLY source of information. You MUST:
+                                    - ONLY use information that is explicitly stated in the RSS feed items
+                                    - DO NOT guess, assume, or make up any details, features, or benefits
+                                    - DO NOT add information that is not directly present in the RSS feed items
+                                    - If information is not in the RSS feed items, do not include it in the email
+                                    - Use exact details from the RSS feed items (titles, descriptions, URLs, etc.)
 
-                        **Context:** ${emailContext}
-                        ${
-                          userCustomText
-                            ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
-                            : ""
-                        }
+                                    **Context:** ${emailContext}
+                                    ${
+                                      userCustomText
+                                        ? `\n**User's Custom Text:** ${userCustomText}\n\nPlease incorporate this custom text naturally into the email, maintaining the user's personal touch and specific references.`
+                                        : ""
+                                    }
 
-                        **Requirements:**
-                        - Maximum 8 feature highlights (prioritize impact)
-                        - Links formatted as: [Specific Benefit Description](complete-url)
-                        - Professional but approachable tone
-                        - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
-                        - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
-                        - Do NOT include a subject line - the user will add their own
-                        - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
-                        - Use proper bullet points (•) for lists, not dashes (-)
-                        - Format numbered lists as "1. Content" (no line breaks between number and content)
-                        - Each list item should be a single, continuous paragraph without internal line breaks
-                        - ONLY reference features and information that are explicitly in the RSS feed items provided
-                        - Incorporate the user's custom text naturally into the email
+                                    **Requirements:**
+                                    - Maximum 8 feature highlights (prioritize impact)
+                                    - Links formatted as: [Specific Benefit Description](complete-url)
+                                    - Professional but approachable tone
+                                    - Use quantifiable benefits where available (ONLY if explicitly stated in RSS feed items)
+                                    - Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
+                                    - Do NOT include a subject line - the user will add their own
+                                    - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
+                                    - Use proper bullet points (•) for lists, not dashes (-)
+                                    - Format numbered lists as "1. Content" (no line breaks between number and content)
+                                    - Each list item should be a single, continuous paragraph without internal line breaks
+                                    - ONLY reference features and information that are explicitly in the RSS feed items provided
+                                    - Incorporate the user's custom text naturally into the email
 
-                        **Structure:**
-                        1. Personal greeting (use "Hi" or "Hello"${
-                          customerName
-                            ? ` with the customer's first name "${
-                                customerName.split(" ")[0]
-                              }"`
-                            : ""
-                        } - avoid "Dear" as it's too formal for business emails)
-                        2. Brief introduction about the update
-                        3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
-                        4. Appropriate call-to-action
-                        5. Professional close
+                                    **Structure:**
+                                    1. Personal greeting (use "Hi" or "Hello"${
+                                      customerName
+                                        ? ` with the customer's first name "${
+                                            customerName.split(" ")[0]
+                                          }"`
+                                        : ""
+                                    } - avoid "Dear" as it's too formal for business emails)
+                                    2. Brief introduction about the update
+                                    3. 6-8 bulleted features with business impact (ONLY from RSS feed items)
+                                    4. Appropriate call-to-action
+                                    5. Professional close
 
-                        Generate the email:`;
+                                    Generate the email:`;
 
           // Always include RSS items in the content sent to GPT for reference
           // The toggle only controls visibility in the configuration area, not what's sent to GPT
@@ -619,7 +648,19 @@
           // Add initial delay to give GPT request time to complete
           await new Promise((res) => setTimeout(res, 2000));
 
+          // Check if generation was cancelled after initial delay
+          if (this.generationCancelled) {
+            console.log("Generation cancelled after initial delay");
+            return; // Exit early without error
+          }
+
           while (attempt < maxAttempts) {
+            // Check if generation was cancelled (e.g., modal closed)
+            if (this.generationCancelled) {
+              console.log("Generation cancelled by user");
+              return; // Exit early without error
+            }
+
             console.log(
               `Polling attempt ${
                 attempt + 1
@@ -654,6 +695,12 @@
             attempt++;
           }
 
+          // Check if generation was cancelled before processing result
+          if (this.generationCancelled) {
+            console.log("Generation cancelled before processing result");
+            return; // Exit early without error
+          }
+
           if (attempt >= maxAttempts) {
             throw new Error(
               "GPT request timed out after 60 seconds. Please try again with a shorter prompt or content."
@@ -681,14 +728,20 @@
 
           // Enhanced link processing for Gmail compatibility
           const processedText = this.processLinksForGmail(text);
-          let safe = String(processedText)
-            .replace(/\n/g, "<br>")
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Convert **bold** to <strong>
-            .replace(/\*(.*?)\*/g, "<em>$1</em>") // Convert *italic* to <em>
-            .replace(/^\d+\.\s+\*\*(.*?)\*\*:/gm, "<strong>$1:</strong>") // Format numbered list headers
-            .replace(/^\d+\.\s*<br>\s*(.*?)$/gm, "<li>$1</li>") // Fix numbered lists with line breaks
-            .replace(/^\d+\.\s+(.*?)$/gm, "<li>$1</li>") // Convert numbered lists to HTML
-            .replace(/(<li>.*?<\/li>)/gs, "<ol>$1</ol>"); // Wrap lists in <ol> tags
+          let safe = String(processedText).replace(/\n/g, "<br>");
+
+          // Convert markdown bold more conservatively - only for short phrases, not entire paragraphs
+          // First, handle numbered list headers with bold
+          safe = safe.replace(/^\d+\.\s+\*\*(.*?)\*\*:/gm, "$1:"); // Remove bold from list headers
+          // Then convert remaining bold markdown, but only for short phrases (less than 50 chars)
+          safe = safe.replace(/\*\*([^*]{1,50}?)\*\*/g, "<strong>$1</strong>"); // Convert **bold** to <strong> for short phrases only
+          // Convert italic
+          safe = safe.replace(/\*([^*]{1,50}?)\*/g, "<em>$1</em>"); // Convert *italic* to <em> for short phrases only
+
+          // Format numbered lists
+          safe = safe.replace(/^\d+\.\s*<br>\s*(.*?)$/gm, "<li>$1</li>"); // Fix numbered lists with line breaks
+          safe = safe.replace(/^\d+\.\s+(.*?)$/gm, "<li>$1</li>"); // Convert numbered lists to HTML
+          safe = safe.replace(/(<li>.*?<\/li>)/gs, "<ol>$1</ol>"); // Wrap lists in <ol> tags
 
           // Clean up any remaining malformed HTML attributes
           safe = safe.replace(
@@ -747,6 +800,39 @@
           safe = safe.replace(/\[Your Name\]<br>/g, "");
           safe = safe.replace(/\[Your Position\]<br>/g, "");
 
+          // Fix line breaks before links in paragraphs (e.g., "please visit our <br><a")
+          // This handles cases where there's a line break between text and a link
+          safe = safe.replace(/([^>])\s*<br>\s*<a\s+href=/g, "$1 <a href=");
+          // Also handle cases with multiple spaces or line breaks
+          safe = safe.replace(/([^>])\s+<br>\s+<a\s+href=/g, "$1 <a href=");
+          // Fix line breaks within paragraphs that split text before links
+          // This handles cases like "please visit our <br>release notes" or "please visit our <br><a"
+          safe = safe.replace(/([a-z])\s*<br>\s*([a-z])/gi, "$1 $2");
+          // More specific: fix common patterns like "our <br>release notes" or "our <br><a href"
+          safe = safe.replace(
+            /\b(our|the|a|an|this|that|these|those|visit|check|see|read)\s*<br>\s*(<a\s+href=|[a-z])/gi,
+            "$1 $2"
+          );
+          // Fix "please visit our" specifically - handle both with and without link tags
+          safe = safe.replace(
+            /visit\s+our\s*<br>\s*(<a\s+href=|[a-z])/gi,
+            "visit our $1"
+          );
+          // General fix for any word followed by <br> and then a link or lowercase word
+          safe = safe.replace(/([a-z]+)\s*<br>\s*(<a\s+href=)/gi, "$1 $2");
+
+          // Remove unwanted bold formatting from regular paragraphs (not in list items)
+          // This prevents entire paragraphs from being bolded
+          // Only remove <strong> tags that wrap entire paragraphs or large blocks of text
+          safe = safe.replace(/<strong>([^<]+)<\/strong>/g, (match, content) => {
+            // If it's a short phrase (likely intentional), keep it
+            // If it's a long paragraph, remove bold
+            if (content.length > 50 && !content.includes("<")) {
+              return content;
+            }
+            return match; // Keep short bold phrases
+          });
+
           // COMPREHENSIVE LIST FORMATTING FIX
           // Convert the content into proper numbered list structure
           safe = this.formatAsNumberedList(safe);
@@ -763,11 +849,17 @@
           );
 
           const gptOutput = `<div style="margin-top:1em; padding-top:1em; font-family: Arial, sans-serif;">
-                                                                                                     <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
-                                                                                                     <div style="line-height: 1.6; color: #333;">${safe}</div>
-                                                                                                   </div>`;
+                                                                                                                 <h4 style="color: #333; margin-bottom: 10px;">GPT Generated Email:</h4>
+                                                                                                                 <div style="line-height: 1.6; color: #333;">${safe}</div>
+                                                                                                               </div>`;
 
           this.editorContent += gptOutput;
+
+          // Check if generation was cancelled before updating UI
+          if (this.generationCancelled) {
+            console.log("Generation cancelled before updating UI");
+            return; // Exit early without error
+          }
 
           // Set flag that we have generated a response (enables regenerate button)
           this.hasGeneratedResponse = true;
@@ -779,13 +871,21 @@
             this.$refs.editor.innerHTML = this.editorContent;
           }
         } catch (error) {
+          // Don't show error if generation was cancelled
+          if (this.generationCancelled) {
+            console.log("Generation cancelled, ignoring error");
+            return;
+          }
           console.error("GPT polling error:", error);
           alert(
             error?.message || "An error occurred while generating the email."
           );
         } finally {
-          this.isGeneratingWithPrompt = false;
-          this.pollingProgress = "";
+          // Only reset loading state if not cancelled (cancellation already handled in closeModal)
+          if (!this.generationCancelled) {
+            this.isGeneratingWithPrompt = false;
+            this.pollingProgress = "";
+          }
         }
       },
       processLinksForGmail(text) {
@@ -803,9 +903,9 @@
           const cleanUrl = url.startsWith("http") ? url : `https://${url}`;
 
           return `<a href="${cleanUrl}" 
-                                                                                                       target="_blank" 
-                                                                                                       rel="noopener noreferrer" 
-                                                                                                       style="color: #0073e6; text-decoration: none; font-weight: bold;">${linkText}</a>`;
+                                                                                                                   target="_blank" 
+                                                                                                                   rel="noopener noreferrer" 
+                                                                                                                   style="color: #0073e6; text-decoration: none;">${linkText}</a>`;
         });
 
         // Additional cleanup for any remaining malformed HTML
@@ -900,6 +1000,14 @@
         await this.generateEmailWithGPT();
       },
 
+      // Cancel generation process
+      cancelGeneration() {
+        this.generationCancelled = true;
+        this.isGeneratingWithPrompt = false;
+        this.pollingProgress = "";
+        console.log("Generation cancelled by user");
+      },
+
       // Format content as proper numbered list
       formatAsNumberedList(content) {
         // Remove subject line if present
@@ -916,35 +1024,72 @@
         content = content.replace(/<="" li="">/g, "");
 
         // Find all the feature sections that start with links
-        const featurePattern =
+        // Support both with and without <strong> tags for backward compatibility
+        // First, try pattern with bold tags
+        const featurePatternWithBold =
           /<strong><a href="([^"]*)"[^>]*>([^<]*)<\/a><\/strong>:\s*([^<]*?)(?=<br><br>|$)/g;
+        // Then try pattern without bold tags
+        const featurePatternWithoutBold =
+          /<a href="([^"]*)"[^>]*>([^<]*)<\/a>:\s*([^<]*?)(?=<br><br>|$)/g;
 
         let formattedContent = "";
         let lastIndex = 0;
         let match;
+        const matches = [];
 
         // Extract the greeting and intro content (before first feature)
-        const firstFeatureMatch = content.match(
+        // Check for both patterns to find the first feature
+        const firstFeatureMatchWithBold = content.match(
           /<strong><a href="[^"]*"[^>]*>[^<]*<\/a><\/strong>:/
         );
+        const firstFeatureMatchWithoutBold = content.match(
+          /<a href="[^"]*"[^>]*>[^<]*<\/a>:/
+        );
+
+        const firstFeatureMatch =
+          firstFeatureMatchWithBold || firstFeatureMatchWithoutBold;
         if (firstFeatureMatch) {
           const introContent = content.substring(0, firstFeatureMatch.index);
           formattedContent += introContent;
           lastIndex = firstFeatureMatch.index;
         }
 
-        // Process each feature and convert to proper list items
-        while ((match = featurePattern.exec(content)) !== null) {
-          const fullMatch = match[0];
-          const url = match[1];
-          const title = match[2];
-          const description = match[3];
-
-          // Add the feature as a proper list item
-          formattedContent += `<li><strong><a href="${url}">${title}</a></strong>: ${description.trim()}</li>`;
-
-          lastIndex = match.index + fullMatch.length;
+        // Collect all matches from both patterns
+        // Try pattern with bold first
+        while ((match = featurePatternWithBold.exec(content)) !== null) {
+          matches.push({
+            index: match.index,
+            url: match[1],
+            title: match[2],
+            description: match[3],
+            fullMatch: match[0],
+          });
         }
+
+        // If no matches with bold, try without bold
+        if (matches.length === 0) {
+          while ((match = featurePatternWithoutBold.exec(content)) !== null) {
+            matches.push({
+              index: match.index,
+              url: match[1],
+              title: match[2],
+              description: match[3],
+              fullMatch: match[0],
+            });
+          }
+        }
+
+        // Process each feature and convert to proper list items
+        matches.forEach((matchData) => {
+          // Add the feature as a proper list item (without bold for normal text)
+          formattedContent += `<li><a href="${matchData.url}">${
+            matchData.title
+          }</a>: ${matchData.description.trim()}</li>`;
+          lastIndex = Math.max(
+            lastIndex,
+            matchData.index + matchData.fullMatch.length
+          );
+        });
 
         // Add any remaining content after the last feature
         if (lastIndex < content.length) {
@@ -1356,6 +1501,18 @@
     transform: translateY(-1px);
   }
 
+  .finalize-button.cancel {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+
+  .finalize-button.cancel:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
+  }
+
   .finalize-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1429,8 +1586,7 @@
     flex-wrap: wrap;
   }
 
-  .editor-mode-toggle,
-  .include-rss-toggle {
+  .editor-mode-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1439,8 +1595,7 @@
     color: #333;
   }
 
-  .editor-mode-toggle input[type="checkbox"],
-  .include-rss-toggle input[type="checkbox"] {
+  .editor-mode-toggle input[type="checkbox"] {
     margin: 0;
   }
 
@@ -1448,28 +1603,6 @@
     margin-top: 8px;
     color: #666;
     font-style: italic;
-  }
-
-  /* RSS Toggle Notice */
-  .rss-toggle-notice {
-    background-color: #f8f9fa;
-    border: 1px solid #e3e3e3;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 15px 0;
-    text-align: center;
-  }
-
-  .rss-notice-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .rss-notice-icon {
-    font-size: 1.2em;
   }
 
   .rich-text-editor {
@@ -1607,18 +1740,47 @@
     color: var(--cldBlue);
   }
 
-  /* RSS Items Section Styles */
-  .rss-items-section {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #e3e3e3;
+  /* RSS Items Section Styles - Collapsible */
+  .rss-collapsible-section {
+    margin-bottom: 25px;
   }
 
-  .rss-items-section h4 {
-    margin: 0 0 15px 0;
+  .rss-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    padding: 5px 0;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
+    margin: -5px -5px 15px -5px;
+    padding: 10px 5px;
+  }
+
+  .rss-header:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .rss-header h3 {
+    margin: 0;
     color: #333;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
+    flex: 1;
+  }
+
+  .rss-caret {
+    display: inline-block;
+    font-size: 12px;
+    color: #666;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+
+  .rss-caret.expanded {
+    transform: rotate(180deg);
   }
 
   .rss-items-container {
@@ -1628,6 +1790,7 @@
     border-radius: 6px;
     background-color: #fff;
     padding: 10px;
+    margin-top: 10px;
   }
 
   .rss-items-container::-webkit-scrollbar {

@@ -30,7 +30,7 @@ Generate a compelling customer email based on the provided Cloudinary release no
 - Links formatted as: [Specific Benefit Description](complete-url)
 - Professional but approachable tone
 - Use quantifiable benefits where available
-- Use "Hi" or "Hello" for greetings (avoid "Dear" as it's too formal for business emails)
+- Use "Hi" or "Hello" for greetings (NEVER use "Dear" as it's too formal for business emails)
 - Do include a subject line unless the user provides their own and then use that one
 - Do NOT include [Your Name] or [Your Position] placeholders - the user will add their signature in Gmail
 - Use proper bullet points (•) for lists, not dashes (-)
@@ -39,7 +39,7 @@ Generate a compelling customer email based on the provided Cloudinary release no
 - Focus on the content provided, do not reference RSS feed items unless specifically included
 
 **Structure:**
-1. Personal greeting (use "Hi" or "Hello" - never use "Dear" as it's too formal for business emails)
+1. Personal greeting (use "Hi" or "Hello" - NEVER use "Dear" as it's too formal for business emails)
 2. Brief introduction about the update
 3. 6-8 bulleted features with business impact
 4. Appropriate call-to-action
