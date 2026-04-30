@@ -227,27 +227,44 @@ export default {
         (async () => {
           console.log('Starting GPT request for id:', id);
           try {
+            // Use the latest, fastest model available
+            // GPT-5 models require max_completion_tokens instead of max_tokens
+            const model = 'gpt-5.1'; // Latest GPT-5 model, fastest and most capable
+
+            // GPT-5 models use max_completion_tokens, older models use max_tokens
+            const isGpt5Model = model.startsWith('gpt-5') || model.startsWith('o1') || model.startsWith('o3');
+
+            // Build request body with model-specific parameters
+            const requestBody: any = {
+              model: model,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    'You are an email generation assistant for Cloudinary customer communications. Follow the detailed instructions in the user prompt exactly. Generate professional, customer-focused emails based on the provided release notes and context.',
+                },
+                {
+                  role: 'user',
+                  content: `Prompt: ${safePrompt}\n\nRelease Notes:\n${safeContent}`,
+                },
+              ],
+            };
+
+            // GPT-5 models use max_completion_tokens, others use max_tokens
+            if (isGpt5Model) {
+              requestBody.max_completion_tokens = 800;
+            } else {
+              requestBody.temperature = 0.7;
+              requestBody.max_tokens = 800;
+            }
+
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${env.LLM_API_KEY}`,
               },
-              body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [
-                  {
-                    role: 'system',
-                    content: 'You are a helpful assistant that writes clear, professional customer email updates using provided release note data.',
-                  },
-                  {
-                    role: 'user',
-                    content: `Prompt: ${safePrompt}\n\nRelease Notes:\n${safeContent}`,
-                  },
-                ],
-                temperature: 0.7,
-                max_tokens: 800,
-              }),
+              body: JSON.stringify(requestBody),
             });
 
             if (!res.ok) {

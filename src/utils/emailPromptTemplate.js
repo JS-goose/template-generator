@@ -57,6 +57,8 @@ ${greetingExample}
 - ALL features in ONE continuous numbered list (1, 2, 3, 4, 5, 6, 7, 8) - do NOT restart numbering
 - ONLY use information from RSS feed items provided
 - Format links as: [Feature Name](complete-url)
+- NEVER use em dashes (—), emojis, or separators (---, ***, etc.) unless the user explicitly requests them
+- Use standard punctuation only: commas, periods, colons, hyphens (-), and parentheses
 
 **Context:** ${emailContext}
 ${
