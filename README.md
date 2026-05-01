@@ -164,6 +164,10 @@ If you encounter any issues, please check the Issues section on GitHub. You can 
 - Check browser console for CORS or network errors
 - Ensure the Vue dev server is running
 
+**Issue: Enrich functionality returns 404 or never loads feature text**
+- Ensure the local API server is running (`cd local-api-server && node server.cjs`) so `/api/rss` and `/api/enrich-rss-data` are proxied from the Vue dev server to port 3001
+- After pulling updates, restart that process so it picks up new routes
+
 **Issue: Modal content cut off or not responsive**
 
 - Clear browser cache and refresh

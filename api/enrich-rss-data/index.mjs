@@ -9,7 +9,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)' } });
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Cloudinary-CSM-Tool)',
+        // Without this, docs may return markdown for automation-style clients; cheerio expects HTML anchors.
+        Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
+      },
+    });
     console.log("Fetched HTML length:", response.data.length);
     if (!response?.data || typeof response.data !== 'string') {
       console.error("Unexpected HTML structure:", response.data);
